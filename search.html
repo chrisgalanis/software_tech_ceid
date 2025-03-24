@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Roommate - Search</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        background: #f9f9f9;
+      }
+      header {
+        background: #333;
+        color: #fff;
+        padding: 1rem;
+        text-align: center;
+      }
+      .container {
+        max-width: 600px;
+        margin: 2rem auto;
+        padding: 1rem;
+        background: #fff;
+        border: 1px solid #ccc;
+        text-align: center;
+        border-radius: 8px;
+      }
+      .profile-photo {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 1rem;
+      }
+      .btns {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+      .btns button {
+        padding: 0.6rem 1rem;
+        border: none;
+        background-color: #ddd;
+        cursor: pointer;
+        border-radius: 5px;
+        font-size: 1rem;
+      }
+      .btns button:hover {
+        background-color: #ccc;
+      }
+      .no-more {
+        font-size: 1.2rem;
+        color: #666;
+      }
+      a.back-link {
+        display: inline-block;
+        margin-top: 1rem;
+        text-decoration: none;
+        padding: 0.6rem 1rem;
+        color: #333;
+        background-color: #ddd;
+        border-radius: 5px;
+      }
+      a.back-link:hover {
+        background-color: #ccc;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Roommate - Search</h1>
+    </header>
+
+    <div class="container" id="profile-container">
+      <!-- Το προφίλ που θα εμφανίζεται δυναμικά από JS -->
+      <img id="profile-img" class="profile-photo" src="" alt="Profile Photo">
+      <h3 id="profile-name"></h3>
+      <p id="profile-age"></p>
+      <p id="profile-country"></p>
+      <p id="profile-interests"></p>
+
+      <div class="btns">
+        <button id="likeBtn">Like</button>
+        <button id="dislikeBtn">Dislike</button>
+      </div>
+    </div>
+
+    <div style="text-align:center;">
+      <a class="back-link" href="main.html">Go Back to Main</a>
+    </div>
+
+    <script>
+      // Λίστα με υποψήφια προφίλ (dummy data)
+      const profiles = [
+        {
+          name: "John Doe",
+          age: 25,
+          country: "USA",
+          interests: "Music, Sports, Travel",
+          img: "https://via.placeholder.com/150"
+        },
+        {
+          name: "Jane Smith",
+          age: 28,
+          country: "Canada",
+          interests: "Reading, Hiking",
+          img: "https://via.placeholder.com/150/ff6666" 
+        },
+        {
+          name: "Alex Johnson",
+          age: 30,
+          country: "UK",
+          interests: "Movies, Cooking",
+          img: "https://via.placeholder.com/150/66ff66"
+        }
+      ];
+
+      let currentIndex = 0;
+
+      // Στοχεύουμε τα HTML στοιχεία
+      const profileContainer = document.getElementById('profile-container');
+      const profileImg = document.getElementById('profile-img');
+      const profileName = document.getElementById('profile-name');
+      const profileAge = document.getElementById('profile-age');
+      const profileCountry = document.getElementById('profile-country');
+      const profileInterests = document.getElementById('profile-interests');
+
+      const likeBtn = document.getElementById('likeBtn');
+      const dislikeBtn = document.getElementById('dislikeBtn');
+
+      // Φόρτωση αρχικού προφίλ
+      showProfile(currentIndex);
+
+      function showProfile(index) {
+        if (index < profiles.length) {
+          const user = profiles[index];
+          profileImg.src = user.img;
+          profileName.textContent = user.name;
+          profileAge.textContent = `Age: ${user.age}`;
+          profileCountry.textContent = `From: ${user.country}`;
+          profileInterests.textContent = `Interests: ${user.interests}`;
+        } else {
+          // Δεν υπάρχουν άλλα προφίλ
+          profileContainer.innerHTML = '<p class="no-more">No more users.</p>';
+        }
+      }
+
+      // Διαχείριση Like/Dislike
+      likeBtn.addEventListener('click', () => {
+        // Απλώς προχωράμε στον επόμενο χρήστη
+        currentIndex++;
+        showProfile(currentIndex);
+      });
+
+      dislikeBtn.addEventListener('click', () => {
+        // Απλώς προχωράμε στον επόμενο χρήστη
+        currentIndex++;
+        showProfile(currentIndex);
+      });
+    </script>
+  </body>
+</html>
