@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Roommate - Chat</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        background: #f9f9f9;
+      }
+      header {
+        background: #333;
+        color: #fff;
+        padding: 1rem;
+        text-align: center;
+      }
+      .container {
+        max-width: 600px;
+        margin: 2rem auto;
+        padding: 1rem;
+        background: #fff;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+      }
+      h2 {
+        text-align: center;
+      }
+      .controls {
+        text-align: center;
+        margin-bottom: 1rem;
+      }
+      .controls button {
+        margin: 0 0.5rem;
+        padding: 0.5rem 1rem;
+        background: #ddd;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .controls button:hover {
+        background: #ccc;
+      }
+      .match-list {
+        margin: 1rem 0;
+      }
+      .match-item {
+        border: 1px solid #ddd;
+        padding: 1rem;
+        margin: 0.5rem 0;
+        border-radius: 5px;
+        position: relative;
+      }
+      .match-item h3 {
+        margin: 0.3rem 0;
+      }
+      .match-item p {
+        margin: 0.2rem 0;
+      }
+      .chat-btn {
+        margin-top: 0.5rem;
+        background: #ddd;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .chat-btn:hover {
+        background: #ccc;
+      }
+      .back-link {
+        display: inline-block;
+        text-align: center;
+        margin-top: 1rem;
+        text-decoration: none;
+        padding: 0.6rem 1rem;
+        color: #333;
+        background-color: #ddd;
+        border-radius: 5px;
+      }
+      .back-link:hover {
+        background-color: #ccc;
+      }
+
+      /* Το πλαίσιο συνομιλίας (chat box) */
+      #chatBox {
+        display: none; /* κρυφό μέχρι να επιλέξεις χρήστη */
+        max-width: 600px;
+        margin: 2rem auto;
+        padding: 1rem;
+        background: #fff;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+      }
+      #chatBox h3 {
+        margin-top: 0;
+        text-align: center;
+      }
+      #messages {
+        height: 200px;
+        overflow-y: auto;
+        border: 1px solid #ddd;
+        padding: 0.5rem;
+        margin-bottom: 0.5rem;
+      }
+      #messages p {
+        background: #eee;
+        padding: 0.4rem;
+        border-radius: 5px;
+        margin: 0.3rem 0;
+      }
+      #chatInput {
+        display: flex;
+        gap: 0.5rem;
+      }
+      #messageInput {
+        flex: 1;
+        padding: 0.5rem;
+      }
+      #sendMessageBtn {
+        padding: 0.5rem 1rem;
+        background: #ddd;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      #sendMessageBtn:hover {
+        background: #ccc;
+      }
+      .close-chat {
+        background: #ddd;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        cursor: pointer;
+        float: right;
+      }
+      .close-chat:hover {
+        background: #ccc;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Roommate - Chat</h1>
+    </header>
+
+    <div class="container">
+      <h2>Talk to Prospective Roommates</h2>
+
+      <div class="controls">
+        <button id="sortByRecentBtn">Sort by Most Recent Message</button>
+      </div>
+
+      <div class="match-list" id="matchList">
+        <!-- Εδώ θα εμφανίζονται οι matched χρήστες -->
+      </div>
+
+      <div style="text-align:center;">
+        <a class="back-link" href="main.html">Go Back to Main</a>
+      </div>
+    </div>
+
+    <!-- Chat Box (εμφανίζεται όταν ο χρήστης πατήσει “Send Message”) -->
+    <div id="chatBox">
+      <button class="close-chat" id="closeChatBtn">X</button>
+      <h3>Chat with <span id="chatUser"></span></h3>
+      <div id="messages"></div>
+      <div id="chatInput">
+        <input type="text" id="messageInput" placeholder="Type a message..." />
+        <button id="sendMessageBtn">Send</button>
+      </div>
+    </div>
+
+    <script>
+      // Dummy δεδομένα matched users (χωρίς backend)
+      // lastMessage: timestamp (με μορφή ISO)
+      const matchedUsers = [
+        {
+          name: "Jane Smith",
+          age: 28,
+          country: "Canada",
+          lastMessage: "2025-03-01T14:20:00",
+          snippet: "Hey, how are you?"
+        },
+        {
+          name: "Alex Johnson",
+          age: 30,
+          country: "UK",
+          lastMessage: "2025-03-05T09:15:00",
+          snippet: "What's up?"
+        }
+      ];
+
+      const matchListDiv = document.getElementById('matchList');
+      const sortByRecentBtn = document.getElementById('sortByRecentBtn');
+
+      // Στοιχεία για το chat box
+      const chatBox = document.getElementById('chatBox');
+      const chatUserSpan = document.getElementById('chatUser');
+      const messagesDiv = document.getElementById('messages');
+      const messageInput = document.getElementById('messageInput');
+      const sendMessageBtn = document.getElementById('sendMessageBtn');
+      const closeChatBtn = document.getElementById('closeChatBtn');
+
+      // Για να αποθηκεύουμε προσωρινά τα μηνύματα ανά χρήστη
+      // (αν κλείσεις/ανανεώσεις τη σελίδα, χάνονται)
+      const messagesData = {};
+
+      // Εμφανίζει τους matched χρήστες
+      function displayMatches(users) {
+        matchListDiv.innerHTML = "";
+        users.forEach((user, index) => {
+          const item = document.createElement('div');
+          item.classList.add('match-item');
+          // Χρησιμοποιούμε data-index για να ξέρουμε ποιος χρήστης είναι
+          item.dataset.index = index;
+
+          const nameElem = document.createElement('h3');
+          nameElem.textContent = `${user.name}, ${user.age}`;
+
+          const countryElem = document.createElement('p');
+          countryElem.textContent = `From: ${user.country}`;
+
+          const msgElem = document.createElement('p');
+          const date = new Date(user.lastMessage).toLocaleString();
+          msgElem.textContent = `Last message: ${date}`;
+
+          const snippetElem = document.createElement('p');
+          snippetElem.textContent = `Snippet: "${user.snippet}"`;
+
+          // Κουμπί για να ανοίξει το chat
+          const chatBtn = document.createElement('button');
+          chatBtn.textContent = "Send Message";
+          chatBtn.classList.add('chat-btn');
+
+          // Προσθέτουμε στοιχεία στο DOM
+          item.appendChild(nameElem);
+          item.appendChild(countryElem);
+          item.appendChild(msgElem);
+          item.appendChild(snippetElem);
+          item.appendChild(chatBtn);
+
+          matchListDiv.appendChild(item);
+
+          // Event Listener στο κουμπί
+          chatBtn.addEventListener('click', () => {
+            openChat(index);
+          });
+        });
+      }
+
+      // Φορτώνει τα μηνύματα για έναν χρήστη στο messagesDiv
+      function loadMessages(userIndex) {
+        const userMessages = messagesData[userIndex] || [];
+        messagesDiv.innerHTML = "";
+        userMessages.forEach(msg => {
+          const p = document.createElement('p');
+          p.textContent = msg;
+          messagesDiv.appendChild(p);
+        });
+      }
+
+      // Ανοίγει το chat box για τον χρήστη με index = userIndex
+      function openChat(userIndex) {
+        const user = matchedUsers[userIndex];
+        // Εμφανίζουμε το chat box
+        chatBox.style.display = "block";
+        // Βάζουμε το όνομα του χρήστη στον τίτλο
+        chatUserSpan.textContent = user.name;
+        // Φορτώνουμε τυχόν μηνύματα που είχαν αποθηκευτεί
+        loadMessages(userIndex);
+
+        // Όταν πατάμε “Send”, προσθέτουμε το μήνυμα στη λίστα
+        sendMessageBtn.onclick = () => {
+          const text = messageInput.value.trim();
+          if (text !== "") {
+            // Αποθηκεύουμε το μήνυμα στο messagesData
+            if (!messagesData[userIndex]) {
+              messagesData[userIndex] = [];
+            }
+            messagesData[userIndex].push(`You: ${text}`);
+            // Ενημερώνουμε το UI
+            loadMessages(userIndex);
+            messageInput.value = "";
+          }
+        };
+      }
+
+      // Κλείνει το chat box
+      closeChatBtn.addEventListener('click', () => {
+        chatBox.style.display = "none";
+      });
+
+      // Αρχική εμφάνιση
+      displayMatches(matchedUsers);
+
+      // Πατώντας "Sort by Most Recent Message"
+      sortByRecentBtn.addEventListener('click', () => {
+        matchedUsers.sort((a, b) => new Date(b.lastMessage) - new Date(a.lastMessage));
+        displayMatches(matchedUsers);
+      });
+    </script>
+  </body>
+</html>
