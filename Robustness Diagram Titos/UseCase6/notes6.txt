@@ -1,0 +1,13 @@
+to Εναλλακτική Ροή 2:
+
+6.2.1. Ο χρηστης επιλεγει “τροποποίηση αγγελίας”
+6.2.2 Ο χρηστης διαγράφει την αγγελια.
+6.2.3 Το σύστημα αποθηκεύει τις αλλαγές.
+
+den tha eprepe na ine enallaktiki roi tou 6ou use case alla 
+ena kainourgio usecase USE CASE 11 
+
+
+
+.
+Sthn paradohi me to edit ad . dino tin epilogo apo to menu rithmisis na epileksi kai thn epeksergasia ad
