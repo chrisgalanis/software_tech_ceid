@@ -1,6 +1,8 @@
 package com.example.roomie;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -10,7 +12,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class RegisterActivity extends AppCompatActivity {
-
+    private DatabaseHelper dbHelper;
     private EditText emailEditText;
     private EditText passwordEditText;
     private EditText confirmPasswordEditText;
@@ -23,6 +25,7 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
 
         // Initialize views
+        dbHelper = new DatabaseHelper(this);
         emailEditText = findViewById(R.id.registerEmailEditText);
         passwordEditText = findViewById(R.id.registerPasswordEditText);
         confirmPasswordEditText = findViewById(R.id.registerConfirmPasswordEditText);
@@ -43,14 +46,26 @@ public class RegisterActivity extends AppCompatActivity {
                     return;
                 }
 
-                if (!password.equals(confirmPassword)) {
-                    Toast.makeText(RegisterActivity.this, "Passwords do not match", Toast.LENGTH_SHORT).show();
-                    return;
-                }
+                if (password.equals(confirmPassword)) {
+                    SQLiteDatabase db = dbHelper.getWritableDatabase();
+                    ContentValues values = new ContentValues();
+                    values.put(DatabaseHelper.COLUMN_USER_EMAIL, email);
+                    values.put(DatabaseHelper.COLUMN_USER_PASSWORD, password); // In a real app, hash this!
 
-                // Here you would typically send the registration data to your backend
-                // For now, let's just show a success message
-                Toast.makeText(RegisterActivity.this, "Registration Successful!", Toast.LENGTH_SHORT).show();
+                    long newRowId = db.insert(DatabaseHelper.TABLE_USERS, null, values);
+                    db.close();
+
+                    if (newRowId != -1) {
+                        Toast.makeText(RegisterActivity.this, "Registration successful.", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        Toast.makeText(RegisterActivity.this, "Error during registration.", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    confirmPasswordEditText.setError("Passwords do not match.");
+                }
 
                 // Optionally, navigate back to the login screen after successful registration
                 Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
