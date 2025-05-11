@@ -22,7 +22,9 @@
         <activity android:name=".MainActivity"
             android:exported="false" />
         <activity android:name=".RegisterActivity"
-            android:exported="false" />
-    </application>
+      android:exported="false" />
+       <activity android:name=".MessagesActivity"
+                  android:exported="false" />
+          </application>
 
 </manifest>
