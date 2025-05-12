@@ -2,4 +2,18 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="gray">#B0B0B0</color>
+    <color name="light_gray">#E0E0E0</color>
+
+    <!-- Accent color for buttons when enabled -->
+    <color name="teal_700">#018786</color> <!-- used in Java example -->
+
+    <!-- For the Interests chips -->
+    <color name="chip_background">#F1F1F1</color>
+    <color name="chip_selected_background">#D0F0FF</color>
+    <color name="chip_text">#333333</color>
+    <color name="chip_selected_text">#018786</color>
+
+    <!-- Optional: Button disabled color -->
+    <color name="button_disabled">#CCCCCC</color>
 </resources>
