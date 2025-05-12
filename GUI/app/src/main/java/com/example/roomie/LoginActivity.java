@@ -36,7 +36,7 @@ public class LoginActivity extends AppCompatActivity {
 
         // Login logic
         loginButton.setOnClickListener(v -> {
-            String email = emailEditText.getText().toString().trim();
+            String email    = emailEditText.getText().toString().trim();
             String password = passwordEditText.getText().toString().trim();
 
             if (email.isEmpty() || password.isEmpty()) {
@@ -45,19 +45,17 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             SQLiteDatabase db = dbHelper.getReadableDatabase();
-            String[] projection = { DatabaseHelper.COLUMN_ID };
-            String selection = DatabaseHelper.COLUMN_USER_EMAIL + " = ? AND " +
+            String[] projection   = { DatabaseHelper.COLUMN_ID };
+            String   selection    = DatabaseHelper.COLUMN_USER_EMAIL + " = ? AND " +
                     DatabaseHelper.COLUMN_USER_PASSWORD + " = ?";
-            String[] selectionArgs = { email, password };
+            String[] selectionArgs= { email, password };
 
             Cursor cursor = db.query(
                     DatabaseHelper.TABLE_USERS,
                     projection,
                     selection,
                     selectionArgs,
-                    null,
-                    null,
-                    null
+                    null, null, null
             );
 
             boolean userExists = cursor.getCount() > 0;
@@ -65,24 +63,16 @@ public class LoginActivity extends AppCompatActivity {
             db.close();
 
             if (userExists) {
-                Toast.makeText(LoginActivity.this, "Login successful.", Toast.LENGTH_SHORT).show();
-
-                // Check SharedPreferences
-                SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
-                boolean isProfileCreated = prefs.getBoolean("isProfileCreated", false);
-
-                Intent intent;
-                if (isProfileCreated) {
-                    intent = new Intent(LoginActivity.this, MainActivity.class);
-                } else {
-                    intent = new Intent(LoginActivity.this, ProfileCreationActivity.class);
-                }
+                long userId = dbHelper.getUserIdByEmail(email);
+                Intent intent = new Intent(this, SignupStep1Activity.class);
+                intent.putExtra("user_id", userId);
                 startActivity(intent);
                 finish();
             } else {
                 Toast.makeText(LoginActivity.this, "Invalid credentials.", Toast.LENGTH_SHORT).show();
             }
         });
+
 
         // Navigate to registration
         View.OnClickListener goToRegister = v -> {

@@ -1,53 +1,58 @@
-package com.example.app;
+package com.example.roomie;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
-import android.widget.TextView;
+import android.widget.CheckBox;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.google.android.material.chip.Chip;
-import com.google.android.material.chip.ChipGroup;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class InterestsActivity extends AppCompatActivity {
-    private ChipGroup chipGroup;
-    private Button btnContinue;
-    private TextView tvSkip;
+    private long userId;
+    private DatabaseHelper dbHelper;
+
+    private CheckBox cb90s, cbHarry, cbHome, cbHockey;
+    private Button btnSkip, btnContinue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_interests);
 
-        chipGroup    = findViewById(R.id.chipGroup);
-        btnContinue  = findViewById(R.id.btnContinueStep2);
-        tvSkip       = findViewById(R.id.tvSkip);
+        dbHelper = new DatabaseHelper(this);
+        userId   = getIntent().getLongExtra("user_id", -1);
 
-        // Continue → collect selected interests
-        btnContinue.setOnClickListener(v -> {
-            List<String> selected = new ArrayList<>();
-            for (int i = 0; i < chipGroup.getChildCount(); i++) {
-                Chip chip = (Chip) chipGroup.getChildAt(i);
-                if (chip.isChecked()) {
-                    selected.add(chip.getText().toString());
-                }
-            }
-            // TODO: send `selected` back to server or next screen
-            Toast.makeText(this, "Selected: " + selected, Toast.LENGTH_SHORT).show();
-        });
+        cb90s     = findViewById(R.id.cb90sKid);
+        cbHarry   = findViewById(R.id.cbHarryPotter);
+        cbHome    = findViewById(R.id.cbHomeWorkout);
+        cbHockey  = findViewById(R.id.cbHockey);
+        btnSkip   = findViewById(R.id.btnSkip);
+        btnContinue = findViewById(R.id.btnContinueStep2);
 
-        // Skip → just finish or move on
-        tvSkip.setOnClickListener(v -> {
-            // Treat as empty selection
+        btnSkip.setOnClickListener(v -> {
             Toast.makeText(this, "No interests selected", Toast.LENGTH_SHORT).show();
             finish();
         });
 
-        // Back arrow
-        findViewById(R.id.btnBack).setOnClickListener(v -> onBackPressed());
+        btnContinue.setOnClickListener(v -> {
+            List<String> selected = new ArrayList<>();
+            if (cb90s.isChecked())    selected.add("90s Kid");
+            if (cbHarry.isChecked())  selected.add("Harry Potter");
+            if (cbHome.isChecked())   selected.add("Home Workout");
+            if (cbHockey.isChecked()) selected.add("Hockey");
+
+            dbHelper.insertUserInterests(userId, selected);
+
+            Toast.makeText(this,
+                    "Saved interests: " + selected,
+                    Toast.LENGTH_LONG).show();
+            // now go to your main screen:
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+        });
     }
 }
