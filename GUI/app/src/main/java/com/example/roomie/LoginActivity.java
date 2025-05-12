@@ -1,0 +1,97 @@
+package com.example.roomie;
+
+import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class LoginActivity extends AppCompatActivity {
+    private DatabaseHelper dbHelper;
+    private EditText emailEditText;
+    private EditText passwordEditText;
+    private Button loginButton;
+    private Button registerButton;
+    private TextView registerTextView;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_login);
+
+        // Initialize views
+        dbHelper = new DatabaseHelper(this);
+        emailEditText = findViewById(R.id.emailEditText);
+        passwordEditText = findViewById(R.id.passwordEditText);
+        loginButton = findViewById(R.id.loginButton);
+        registerButton = findViewById(R.id.registerButton);
+        registerTextView = findViewById(R.id.registerTextView);
+
+        // Set click listeners
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String email = emailEditText.getText().toString().trim();
+                String password = passwordEditText.getText().toString().trim();
+
+                // ... (Your existing input validation) ...
+
+                SQLiteDatabase db = dbHelper.getReadableDatabase();
+                String[] projection = {
+                        DatabaseHelper.COLUMN_ID
+                };
+                String selection = DatabaseHelper.COLUMN_USER_EMAIL + " = ? AND " +
+                        DatabaseHelper.COLUMN_USER_PASSWORD + " = ?"; // In a real app, compare against a hashed password!
+                String[] selectionArgs = { email, password };
+
+                Cursor cursor = db.query(
+                        DatabaseHelper.TABLE_USERS,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        null
+                );
+
+                boolean userExists = cursor.getCount() > 0;
+                cursor.close();
+                db.close();
+
+                if (userExists) {
+                    Toast.makeText(LoginActivity.this, "Login successful.", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class); // Replace with your main activity
+                    startActivity(intent);
+                    finish();
+                } else {
+                    Toast.makeText(LoginActivity.this, "Invalid credentials.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+
+        registerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Navigate to the registration activity
+                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        registerTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Navigate to the registration activity
+                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
+}
