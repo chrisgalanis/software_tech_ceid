@@ -12,19 +12,38 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Roomie"
         tools:targetApi="31">
-        <activity android:name=".LoginActivity"
+
+        <!-- Launcher -->
+        <activity
+            android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity"
-            android:exported="false" />
-        <activity android:name=".RegisterActivity"
-      android:exported="false" />
-       <activity android:name=".MessagesActivity"
-                  android:exported="false" />
-          </application>
 
+        <!-- After login -->
+        <activity
+            android:name=".SignupStep1Activity"
+            android:exported="false"/>
+
+        <activity
+            android:name=".InterestsActivity"
+            android:exported="false"/>
+
+        <!-- Main app screen (if you ever navigate here) -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="false"/>
+
+        <!-- Other screens -->
+        <activity
+            android:name=".RegisterActivity"
+            android:exported="false"/>
+        <activity
+            android:name=".MessagesActivity"
+            android:exported="false"/>
+
+    </application>
 </manifest>
