@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="24dp">
+
+    <TextView
+        android:id="@+id/tvFirstLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="My first name is"
+        android:textSize="18sp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <EditText
+        android:id="@+id/etFirstName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="First name"
+        app:layout_constraintTop_toBottomOf="@id/tvFirstLabel"
+        app:layout_constraintStart_toStartOf="@id/tvFirstLabel"
+        app:layout_constraintEnd_toEndOf="@id/tvFirstLabel"/>
+
+    <TextView
+        android:id="@+id/tvLastLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="My last name is"
+        android:textSize="18sp"
+        app:layout_constraintTop_toBottomOf="@id/etFirstName"
+        app:layout_constraintStart_toStartOf="@id/etFirstName"
+        app:layout_constraintEnd_toEndOf="@id/etFirstName"
+        android:layout_marginTop="16dp"/>
+
+    <EditText
+        android:id="@+id/etLastName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Last name"
+        app:layout_constraintTop_toBottomOf="@id/tvLastLabel"
+        app:layout_constraintStart_toStartOf="@id/tvLastLabel"
+        app:layout_constraintEnd_toEndOf="@id/tvLastLabel"/>
+
+    <TextView
+        android:id="@+id/tvGenderLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="I am a"
+        android:textSize="18sp"
+        app:layout_constraintTop_toBottomOf="@id/etLastName"
+        app:layout_constraintStart_toStartOf="@id/etLastName"
+        android:layout_marginTop="16dp"/>
+
+    <RadioGroup
+        android:id="@+id/rgGender"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/tvGenderLabel"
+        app:layout_constraintStart_toStartOf="@id/tvGenderLabel"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp">
+
+        <RadioButton
+            android:id="@+id/rbWoman"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="WOMAN"/>
+        <RadioButton
+            android:id="@+id/rbMan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="MAN"
+            android:layout_marginStart="24dp"/>
+    </RadioGroup>
+
+    <TextView
+        android:id="@+id/tvBirthdayLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="My birthday is"
+        android:textSize="18sp"
+        app:layout_constraintTop_toBottomOf="@id/rgGender"
+        app:layout_constraintStart_toStartOf="@id/rgGender"
+        android:layout_marginTop="16dp"/>
+
+    <EditText
+        android:id="@+id/etBirthday"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="YYYY/MM/DD"
+        android:inputType="date"
+        app:layout_constraintTop_toBottomOf="@id/tvBirthdayLabel"
+        app:layout_constraintStart_toStartOf="@id/tvBirthdayLabel"
+        app:layout_constraintEnd_toEndOf="@id/etFirstName"/>
+
+    <Button
+        android:id="@+id/btnContinue1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="CONTINUE 1/3"
+        android:enabled="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

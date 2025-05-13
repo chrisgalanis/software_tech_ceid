@@ -63,9 +63,9 @@ public class LoginActivity extends AppCompatActivity {
             db.close();
 
             if (userExists) {
-                long userId = dbHelper.getUserIdByEmail(email);
-                Intent intent = new Intent(this, SignupStep1Activity.class);
-                intent.putExtra("user_id", userId);
+                long newlyCreatedUserId = dbHelper.getUserIdByEmail(email);
+                Intent intent = new Intent(this, UserDetailsActivity.class);
+                intent.putExtra("USER_ID", newlyCreatedUserId);
                 startActivity(intent);
                 finish();
             } else {
