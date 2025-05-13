@@ -25,9 +25,11 @@
 
         <!-- After login -->
         <activity
-            android:name=".SignupStep1Activity"
+            android:name=".UserDetailsActivity"
             android:exported="false"/>
-
+        <activity
+            android:name=".AddPhotosActivity"
+            android:exported="false"/>
         <activity
             android:name=".InterestsActivity"
             android:exported="false"/>
