@@ -24,7 +24,12 @@ public class InterestsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_interests);
 
         dbHelper = new DatabaseHelper(this);
-        userId   = getIntent().getLongExtra("user_id", -1);
+        userId = SessionManager.get().getUserId();
+        if (userId < 0) {
+            Toast.makeText(this, "No user logged in", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
 
         cb90s     = findViewById(R.id.cb90sKid);
         cbHarry   = findViewById(R.id.cbHarryPotter);
@@ -51,7 +56,7 @@ public class InterestsActivity extends AppCompatActivity {
                     "Saved interests: " + selected,
                     Toast.LENGTH_LONG).show();
             // now go to your main screen:
-            startActivity(new Intent(this, MainActivity.class));
+            startActivity(new Intent(this, ProfileActivity.class));
             finish();
         });
     }

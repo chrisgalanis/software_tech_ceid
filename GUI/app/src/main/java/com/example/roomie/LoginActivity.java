@@ -63,11 +63,22 @@ public class LoginActivity extends AppCompatActivity {
             db.close();
 
             if (userExists) {
-                long newlyCreatedUserId = dbHelper.getUserIdByEmail(email);
-                Intent intent = new Intent(this, UserDetailsActivity.class);
-                intent.putExtra("USER_ID", newlyCreatedUserId);
-                startActivity(intent);
+                long userId = dbHelper.getUserIdByEmail(email);
+                SessionManager.init(this);
+                SessionManager.get().setUserId(userId);
+                // NEW: check profile completeness
+                boolean complete = dbHelper.isProfileComplete(userId);
+                Intent next;
+                if (complete) {
+                    // all set — go to main/profile page
+                    next = new Intent(this, ProfileActivity.class);
+                } else {
+                    // missing first/last name (or other fields) — send to profile‐setup
+                    next = new Intent(this, UserDetailsActivity.class);
+                }
+                startActivity(next);
                 finish();
+
             } else {
                 Toast.makeText(LoginActivity.this, "Invalid credentials.", Toast.LENGTH_SHORT).show();
             }

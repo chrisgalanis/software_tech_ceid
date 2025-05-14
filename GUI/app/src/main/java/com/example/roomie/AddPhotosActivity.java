@@ -30,10 +30,11 @@ public class AddPhotosActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_photos);
 
-        // 1) grab the userId from the Intent
-        userId = getIntent().getLongExtra("USER_ID", -1);
+        userId = SessionManager.get().getUserId();
         if (userId < 0) {
-            throw new IllegalStateException("AddPhotosActivity needs a USER_ID extra");
+            Toast.makeText(this, "No user logged in", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
         }
 
         // 2) init DB helper
@@ -63,7 +64,6 @@ public class AddPhotosActivity extends AppCompatActivity {
 
             // launch next screen (e.g. InterestsActivity)
             Intent intent = new Intent(this, InterestsActivity.class);
-            intent.putExtra("USER_ID", userId);
             startActivity(intent);
             finish();
         });

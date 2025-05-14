@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <!-- Profile header -->
+
+
+    <LinearLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="16dp"
+            android:src="@drawable/roomie_logo" />
+
+        <ImageView
+            android:id="@+id/ivProfilePic"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:src="@drawable/ic_profile_placeholder"
+            android:scaleType="centerCrop"
+            android:layout_marginTop="32dp"
+            android:background="@drawable/circle_white_background"/>
+
+        <TextView
+            android:id="@+id/tvNameAge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Name, Age"
+            android:textSize="20sp"
+            android:textColor="@color/black"
+            android:layout_marginTop="16dp"/>
+
+        <!-- Action buttons -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="24dp">
+
+            <ImageButton
+                android:id="@+id/btnSettings"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_settings"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/cd_settings"/>
+
+            <ImageButton
+                android:id="@+id/btnEditProfile"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_edit"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:layout_marginStart="32dp"
+                android:contentDescription="@string/cd_edit_profile"/>
+
+            <ImageButton
+                android:id="@+id/btnAddHouse"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_add_house"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:layout_marginStart="32dp"
+                android:contentDescription="@string/cd_add_house"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- App logo -->
+
+    <!-- include bottom nav -->
+    <include
+        android:id="@+id/bottom_navigation"
+        layout="@layout/layout_bottom_navigation"/>
+</LinearLayout>

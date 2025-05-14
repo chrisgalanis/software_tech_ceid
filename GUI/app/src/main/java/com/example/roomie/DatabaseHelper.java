@@ -13,7 +13,7 @@ import java.util.List;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME    = "RoomieApp.db";
-    private static final int    DATABASE_VERSION = 3;  // bumped
+    private static final int    DATABASE_VERSION = 5;  // bumped
 
     // Table: users
     public static final String TABLE_USERS            = "users";
@@ -202,5 +202,50 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         c.close();
         return list;
     }
+
+    /**
+     * Returns true if first name, last name, gender and birthday are all non-empty
+     */
+    public boolean isProfileComplete(long userId) {
+        SQLiteDatabase db = getReadableDatabase();
+        String[] cols = {
+                COLUMN_USER_FIRSTNAME,
+                COLUMN_USER_LASTNAME,
+                COLUMN_USER_GENDER,
+                COLUMN_USER_BIRTHDAY
+        };
+        String   sel  = COLUMN_ID + "=?";
+        String[] args = { String.valueOf(userId) };
+
+        Cursor c = db.query(
+                TABLE_USERS,
+                cols,
+                sel,
+                args,
+                null, null, null
+        );
+
+        boolean complete = false;
+        if (c.moveToFirst()) {
+            // get column indexes once
+            int idxFirst    = c.getColumnIndexOrThrow(COLUMN_USER_FIRSTNAME);
+            int idxLast     = c.getColumnIndexOrThrow(COLUMN_USER_LASTNAME);
+            int idxGender   = c.getColumnIndexOrThrow(COLUMN_USER_GENDER);
+            int idxBirthday = c.getColumnIndexOrThrow(COLUMN_USER_BIRTHDAY);
+
+            // check for NULL or blank
+            boolean missingFirst    = c.isNull(idxFirst)    || c.getString(idxFirst).trim().isEmpty();
+            boolean missingLast     = c.isNull(idxLast)     || c.getString(idxLast).trim().isEmpty();
+            boolean missingGender   = c.isNull(idxGender)   || c.getString(idxGender).trim().isEmpty();
+            boolean missingBirthday = c.isNull(idxBirthday) || c.getString(idxBirthday).trim().isEmpty();
+
+            complete = !(missingFirst || missingLast || missingGender || missingBirthday);
+        }
+
+        c.close();
+        return complete;
+    }
+
+
 
 }
