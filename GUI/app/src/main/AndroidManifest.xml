@@ -33,13 +33,24 @@
         <activity
             android:name=".InterestsActivity"
             android:exported="false"/>
-
+        <activity
+            android:name=".ProfileActivity"
+            android:exported="false"/>
         <!-- Main app screen (if you ever navigate here) -->
         <activity
             android:name=".MainActivity"
             android:exported="false"/>
 
         <!-- Other screens -->
+        <activity
+            android:name=".HomeActivity"
+            android:exported="false"/>
+        <activity
+            android:name=".FavoritesActivity"
+            android:exported="false"/>
+        <activity
+            android:name=".SearchRoommatesActivity"
+            android:exported="false"/>
         <activity
             android:name=".RegisterActivity"
             android:exported="false"/>

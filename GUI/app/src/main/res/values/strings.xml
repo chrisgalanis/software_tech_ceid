@@ -1,3 +1,21 @@
 <resources>
     <string name="app_name">Roomie</string>
+    <string name="title_home">Home</string>
+    <string name="title_search">Search</string>
+    <string name="title_favorites">Favorites</string>
+    <string name="title_messages">Messages</string>
+    <string name="title_feed">Profile</string>
+
+    <!-- (If you haven’t already) other labels -->
+    <string name="title_settings">Settings</string>
+    <string name="title_edit_profile">Edit Profile</string>
+    <string name="title_add_house">Add House</string>
+
+    <string name="cd_settings">Open settings</string>
+    <string name="cd_edit_profile">Edit profile</string>
+    <string name="cd_add_house">Add a house</string>
+
+    <!-- placeholders -->
+    <string name="placeholder_name_age">Name, Age</string>
+
 </resources>

@@ -8,6 +8,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Toast;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -36,11 +38,11 @@ public class UserDetailsActivity extends AppCompatActivity {
 
         // 3) figure out which user we're editing:
         //    Ideally you passed the DB row ID in the Intent:
-        userId = getIntent().getLongExtra("USER_ID", -1);
+        userId = SessionManager.get().getUserId();
         if (userId < 0) {
-            // fallback: maybe you passed their email instead?
-            String email = getIntent().getStringExtra("EMAIL");
-            userId = dbHelper.getUserIdByEmail(email);
+            Toast.makeText(this, "No user logged in", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
         }
 
         // 4) only enable Continue when all fields non-empty
@@ -67,7 +69,6 @@ public class UserDetailsActivity extends AppCompatActivity {
 
             // now pass along userId into AddPhotosActivity
             Intent intent = new Intent(this, AddPhotosActivity.class);
-            intent.putExtra("USER_ID", userId);
             startActivity(intent);
         });
     }

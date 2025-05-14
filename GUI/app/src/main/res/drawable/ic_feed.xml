@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="24" android:viewportHeight="24">
+    <!-- “dynamic_feed” style: list lines -->
+    <path
+        android:fillColor="@android:color/black"
+        android:pathData="M3,13h8v-2H3v2zm0,-4h18v2H3V9zm0,-6v2h18V3H3zm0,16h14v-2H3v2z"/>
+</vector>
