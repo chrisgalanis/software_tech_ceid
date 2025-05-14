@@ -143,9 +143,33 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     + "FOREIGN KEY(" + COLUMN_LIKE_TARGET + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_ID + ") ON DELETE CASCADE"
                     + ");";
 
-    public DatabaseHelper(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
-    }
+  private static final String SQL_CREATE_MATCHES =
+      "CREATE TABLE "
+          + TABLE_MATCHES
+          + " ("
+          + COLUMN_MATCH_ID 
+          + " INTEGER NOT NULL, "
+          + COLUMN_USER_ID 
+          + " INTEGER NOT NULL, "
+          + COLUMN_MATCH_TIMESTAMP + " DATETIME DEFAULT CURRENT_TIMESTAMP, "
+          + "FOREIGN KEY("
+          + COLUMN_USER_ID 
+          + ") REFERENCES "
+          + TABLE_USERS
+          + "("
+          + COLUMN_ID
+          + ") ON DELETE CASCADE, "
+          + "PRIMARY KEY ("
+          + COLUMN_MATCH_ID 
+          + ", "
+          + COLUMN_MATCH_ID 
+          + ")" // Composite Primary Key
+          + ");";
+
+  // Create Matches Table
+  public DatabaseHelper(Context context) {
+    super(context, DATABASE_NAME, null, DATABASE_VERSION);
+  }
 
     @Override
     public void onConfigure(SQLiteDatabase db) {
