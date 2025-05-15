@@ -43,7 +43,10 @@
 
         <!-- Other screens -->
         <activity
-            android:name=".HomeActivity"
+            android:name=".HomeFilterActivity"
+            android:exported="false"/>
+        <activity
+            android:name=".ListingsActivity"
             android:exported="false"/>
         <activity
             android:name=".FavoritesActivity"
@@ -57,6 +60,11 @@
         <activity
             android:name=".MessagesActivity"
             android:exported="false"/>
+        <activity android:name=".SearchHousesActivity"
+            android:exported="false"/>
+        <activity android:name=".HouseDetailActivity"
+            android:exported="false"/>
+
 
     </application>
 </manifest>

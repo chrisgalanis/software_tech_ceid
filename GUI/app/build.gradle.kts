@@ -1,6 +1,3 @@
-
-
-
 plugins {
     alias(libs.plugins.android.application)
 }
@@ -35,7 +32,7 @@ android {
 }
 
 dependencies {
-    implementation("com.google.android.material:material:1.9.0")
+    //implementation("com.google.android.material:material:1.9.0")
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
@@ -43,4 +40,15 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+
+    implementation("com.google.android.material:material:1.9.0")
+
+    implementation("com.google.android.gms:play-services-maps:18.1.0")
+
+    // FlexboxLayout for tag‐wrapping
+    implementation("com.google.android.flexbox:flexbox:3.0.0")
+
+    // Glide for image loading
+    implementation("com.github.bumptech.glide:glide:4.15.1")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")
 }
