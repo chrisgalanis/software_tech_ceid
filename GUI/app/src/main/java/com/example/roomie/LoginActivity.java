@@ -1,6 +1,7 @@
 package com.example.roomie;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -33,65 +34,64 @@ public class LoginActivity extends AppCompatActivity {
         registerButton = findViewById(R.id.registerButton);
         registerTextView = findViewById(R.id.registerTextView);
 
-        // Set click listeners
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String email = emailEditText.getText().toString().trim();
-                String password = passwordEditText.getText().toString().trim();
+        // Login logic
+        loginButton.setOnClickListener(v -> {
+            String email    = emailEditText.getText().toString().trim();
+            String password = passwordEditText.getText().toString().trim();
 
-                // ... (Your existing input validation) ...
+            if (email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(this, "Please enter all fields", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-                SQLiteDatabase db = dbHelper.getReadableDatabase();
-                String[] projection = {
-                        DatabaseHelper.COLUMN_ID
-                };
-                String selection = DatabaseHelper.COLUMN_USER_EMAIL + " = ? AND " +
-                        DatabaseHelper.COLUMN_USER_PASSWORD + " = ?"; // In a real app, compare against a hashed password!
-                String[] selectionArgs = { email, password };
+            SQLiteDatabase db = dbHelper.getReadableDatabase();
+            String[] projection   = { DatabaseHelper.COLUMN_ID };
+            String   selection    = DatabaseHelper.COLUMN_USER_EMAIL + " = ? AND " +
+                    DatabaseHelper.COLUMN_USER_PASSWORD + " = ?";
+            String[] selectionArgs= { email, password };
 
-                Cursor cursor = db.query(
-                        DatabaseHelper.TABLE_USERS,
-                        projection,
-                        selection,
-                        selectionArgs,
-                        null,
-                        null,
-                        null
-                );
+            Cursor cursor = db.query(
+                    DatabaseHelper.TABLE_USERS,
+                    projection,
+                    selection,
+                    selectionArgs,
+                    null, null, null
+            );
 
-                boolean userExists = cursor.getCount() > 0;
-                cursor.close();
-                db.close();
+            boolean userExists = cursor.getCount() > 0;
+            cursor.close();
+            db.close();
 
-                if (userExists) {
-                    Toast.makeText(LoginActivity.this, "Login successful.", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class); // Replace with your main activity
-                    startActivity(intent);
-                    finish();
+            if (userExists) {
+                long userId = dbHelper.getUserIdByEmail(email);
+                SessionManager.init(this);
+                SessionManager.get().setUserId(userId);
+                // NEW: check profile completeness
+                boolean complete = dbHelper.isProfileComplete(userId);
+                Intent next;
+                if (complete) {
+                    // all set — go to main/profile page
+                    next = new Intent(this, ProfileActivity.class);
                 } else {
-                    Toast.makeText(LoginActivity.this, "Invalid credentials.", Toast.LENGTH_SHORT).show();
+                    // missing first/last name (or other fields) — send to profile‐setup
+                    next = new Intent(this, UserDetailsActivity.class);
                 }
+                startActivity(next);
+                finish();
+
+            } else {
+                Toast.makeText(LoginActivity.this, "Invalid credentials.", Toast.LENGTH_SHORT).show();
             }
         });
 
 
-        registerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Navigate to the registration activity
-                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
-                startActivity(intent);
-            }
-        });
+        // Navigate to registration
+        View.OnClickListener goToRegister = v -> {
+            Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+            startActivity(intent);
+        };
 
-        registerTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Navigate to the registration activity
-                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
-                startActivity(intent);
-            }
-        });
+        registerButton.setOnClickListener(goToRegister);
+        registerTextView.setOnClickListener(goToRegister);
     }
 }

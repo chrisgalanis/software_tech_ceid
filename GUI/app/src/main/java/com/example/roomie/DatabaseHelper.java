@@ -1,68 +1,251 @@
 package com.example.roomie;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.net.Uri;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    private static final String DATABASE_NAME = "RoomieApp.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final String DATABASE_NAME    = "RoomieApp.db";
+    private static final int    DATABASE_VERSION = 5;  // bumped
 
-    // Table names
-    public static final String TABLE_USERS = "users";
-    public static final String TABLE_LISTINGS = "house_listings";
-    // For simplicity, we'll handle messages differently for now
+    // Table: users
+    public static final String TABLE_USERS            = "users";
+    public static final String COLUMN_ID              = "_id";
+    public static final String COLUMN_USER_EMAIL      = "email";
+    public static final String COLUMN_USER_PASSWORD   = "password";
+    public static final String COLUMN_USER_FIRSTNAME  = "first_name";
+    public static final String COLUMN_USER_LASTNAME   = "last_name";
+    public static final String COLUMN_USER_GENDER     = "gender";
+    public static final String COLUMN_USER_BIRTHDAY   = "birthday";
 
-    // Common column names
-    public static final String COLUMN_ID = "_id";
+    // Table: user_photos
+    public static final String TABLE_PHOTOS       = "user_photos";
+    public static final String COLUMN_PHOTO_ID    = "_id";
+    public static final String COLUMN_PHOTO_USER  = "user_id";
+    public static final String COLUMN_PHOTO_URI   = "uri";
 
-    // Users table columns
-    public static final String COLUMN_USER_EMAIL = "email";
-    public static final String COLUMN_USER_PASSWORD = "password";
-    // Add other user info columns as needed
+    // Table: user_interests
+    public static final String TABLE_INTERESTS        = "user_interests";
+    public static final String COLUMN_INTEREST_ID     = "_id";
+    public static final String COLUMN_INTEREST_USER   = "user_id";
+    public static final String COLUMN_INTEREST_STRING = "interest";
 
-    // House listings table columns
-    public static final String COLUMN_LISTING_OWNER_ID = "owner_id";
-    public static final String COLUMN_LISTING_ADDRESS = "address";
-    public static final String COLUMN_LISTING_RENT = "rent";
-    // Add other listing info columns as needed
+    // Create users table
+    private static final String SQL_CREATE_USERS =
+            "CREATE TABLE " + TABLE_USERS + " ("
+                    + COLUMN_ID            + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + COLUMN_USER_EMAIL    + " TEXT UNIQUE, "
+                    + COLUMN_USER_PASSWORD + " TEXT, "
+                    + COLUMN_USER_FIRSTNAME+ " TEXT, "
+                    + COLUMN_USER_LASTNAME + " TEXT, "
+                    + COLUMN_USER_GENDER   + " TEXT, "
+                    + COLUMN_USER_BIRTHDAY + " TEXT"
+                    + ");";
 
-    // SQL statement to create the users table
-    private static final String SQL_CREATE_USERS_TABLE =
-            "CREATE TABLE " + TABLE_USERS + "(" +
-                    COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    COLUMN_USER_EMAIL + " TEXT UNIQUE," +
-                    COLUMN_USER_PASSWORD + " TEXT" +
-                    ");";
+    // Create photos table
+    private static final String SQL_CREATE_PHOTOS =
+            "CREATE TABLE " + TABLE_PHOTOS + " ("
+                    + COLUMN_PHOTO_ID   + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + COLUMN_PHOTO_USER + " INTEGER, "
+                    + COLUMN_PHOTO_URI  + " TEXT, "
+                    + "FOREIGN KEY(" + COLUMN_PHOTO_USER + ") REFERENCES "
+                    + TABLE_USERS + "(" + COLUMN_ID + ") ON DELETE CASCADE"
+                    + ");";
 
-    // SQL statement to create the house listings table
-    private static final String SQL_CREATE_LISTINGS_TABLE =
-            "CREATE TABLE " + TABLE_LISTINGS + "(" +
-                    COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    COLUMN_LISTING_OWNER_ID + " INTEGER," + // Foreign key to users table?
-                    COLUMN_LISTING_ADDRESS + " TEXT," +
-                    COLUMN_LISTING_RENT + " REAL" +
-                    ");";
+    // Create interests table
+    private static final String SQL_CREATE_INTERESTS =
+            "CREATE TABLE " + TABLE_INTERESTS + " ("
+                    + COLUMN_INTEREST_ID     + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + COLUMN_INTEREST_USER   + " INTEGER, "
+                    + COLUMN_INTEREST_STRING + " TEXT, "
+                    + "FOREIGN KEY(" + COLUMN_INTEREST_USER + ") REFERENCES "
+                    + TABLE_USERS + "(" + COLUMN_ID + ") ON DELETE CASCADE"
+                    + ");";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
+    // enable FKs so ON DELETE CASCADE works
     @Override
-    public void onCreate(SQLiteDatabase db) {
-        db.execSQL(SQL_CREATE_USERS_TABLE);
-        db.execSQL(SQL_CREATE_LISTINGS_TABLE);
-        // Create other tables here if needed (e.g., for matches later)
+    public void onConfigure(SQLiteDatabase db) {
+        super.onConfigure(db);
+        db.setForeignKeyConstraintsEnabled(true);
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // This method is called when the database needs to be upgraded.
-        // You should handle schema changes here.
-        // For simplicity, we'll just drop the old tables and create new ones.
+    public void onCreate(SQLiteDatabase db) {
+        db.execSQL(SQL_CREATE_USERS);
+        db.execSQL(SQL_CREATE_PHOTOS);
+        db.execSQL(SQL_CREATE_INTERESTS);
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldV, int newV) {
+        // drop & recreate (for demo only!)
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_INTERESTS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PHOTOS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_LISTINGS);
         onCreate(db);
     }
+
+    /** Get a user’s ID by their email. */
+    public long getUserIdByEmail(String email) {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor c = db.query(
+                TABLE_USERS,
+                new String[]{ COLUMN_ID },
+                COLUMN_USER_EMAIL + "=?",
+                new String[]{ email },
+                null, null, null
+        );
+        long id = -1;
+        if (c.moveToFirst()) {
+            id = c.getLong(c.getColumnIndexOrThrow(COLUMN_ID));
+        }
+        c.close();
+        return id;
+    }
+
+    /** Update both name, gender & birthday for this user in one go. */
+    public void updateUserProfile(long userId,
+                                  String first, String last,
+                                  String gender, String birthday) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_USER_FIRSTNAME, first);
+        cv.put(COLUMN_USER_LASTNAME,  last);
+        cv.put(COLUMN_USER_GENDER,    gender);
+        cv.put(COLUMN_USER_BIRTHDAY,  birthday);
+        db.update(
+                TABLE_USERS,
+                cv,
+                COLUMN_ID + "=?",
+                new String[]{ String.valueOf(userId) }
+        );
+    }
+
+    /** Insert each photo URI for this user. */
+    public void insertUserPhotos(long userId, List<Uri> uris) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.beginTransaction();
+        try {
+            for (Uri uri: uris) {
+                if (uri == null) continue;
+                ContentValues cv = new ContentValues();
+                cv.put(COLUMN_PHOTO_USER, userId);
+                cv.put(COLUMN_PHOTO_URI,  uri.toString());
+                db.insert(TABLE_PHOTOS, null, cv);
+            }
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+    }
+
+    /** Pull back all photo-URIs for a user. */
+    public List<String> getUserPhotos(long userId) {
+        List<String> list = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor c = db.query(
+                TABLE_PHOTOS,
+                new String[]{ COLUMN_PHOTO_URI },
+                COLUMN_PHOTO_USER + "=?",
+                new String[]{ String.valueOf(userId) },
+                null, null, null
+        );
+        while (c.moveToNext()) {
+            list.add(c.getString(c.getColumnIndexOrThrow(COLUMN_PHOTO_URI)));
+        }
+        c.close();
+        return list;
+    }
+
+    /** Insert each interest for this user. */
+    public void insertUserInterests(long userId, List<String> interests) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.beginTransaction();
+        try {
+            for (String interest: interests) {
+                ContentValues cv = new ContentValues();
+                cv.put(COLUMN_INTEREST_USER,   userId);
+                cv.put(COLUMN_INTEREST_STRING, interest);
+                db.insert(TABLE_INTERESTS, null, cv);
+            }
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+    }
+
+    /** Pull back all interests for a user. */
+    public List<String> getUserInterests(long userId) {
+        List<String> list = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor c = db.query(
+                TABLE_INTERESTS,
+                new String[]{ COLUMN_INTEREST_STRING },
+                COLUMN_INTEREST_USER + "=?",
+                new String[]{ String.valueOf(userId) },
+                null, null, null
+        );
+        while (c.moveToNext()) {
+            list.add(c.getString(c.getColumnIndexOrThrow(COLUMN_INTEREST_STRING)));
+        }
+        c.close();
+        return list;
+    }
+
+    /**
+     * Returns true if first name, last name, gender and birthday are all non-empty
+     */
+    public boolean isProfileComplete(long userId) {
+        SQLiteDatabase db = getReadableDatabase();
+        String[] cols = {
+                COLUMN_USER_FIRSTNAME,
+                COLUMN_USER_LASTNAME,
+                COLUMN_USER_GENDER,
+                COLUMN_USER_BIRTHDAY
+        };
+        String   sel  = COLUMN_ID + "=?";
+        String[] args = { String.valueOf(userId) };
+
+        Cursor c = db.query(
+                TABLE_USERS,
+                cols,
+                sel,
+                args,
+                null, null, null
+        );
+
+        boolean complete = false;
+        if (c.moveToFirst()) {
+            // get column indexes once
+            int idxFirst    = c.getColumnIndexOrThrow(COLUMN_USER_FIRSTNAME);
+            int idxLast     = c.getColumnIndexOrThrow(COLUMN_USER_LASTNAME);
+            int idxGender   = c.getColumnIndexOrThrow(COLUMN_USER_GENDER);
+            int idxBirthday = c.getColumnIndexOrThrow(COLUMN_USER_BIRTHDAY);
+
+            // check for NULL or blank
+            boolean missingFirst    = c.isNull(idxFirst)    || c.getString(idxFirst).trim().isEmpty();
+            boolean missingLast     = c.isNull(idxLast)     || c.getString(idxLast).trim().isEmpty();
+            boolean missingGender   = c.isNull(idxGender)   || c.getString(idxGender).trim().isEmpty();
+            boolean missingBirthday = c.isNull(idxBirthday) || c.getString(idxBirthday).trim().isEmpty();
+
+            complete = !(missingFirst || missingLast || missingGender || missingBirthday);
+        }
+
+        c.close();
+        return complete;
+    }
+
+
+
 }
