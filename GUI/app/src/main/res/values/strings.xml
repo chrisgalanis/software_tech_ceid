@@ -18,4 +18,17 @@
     <!-- placeholders -->
     <string name="placeholder_name_age">Name, Age</string>
 
+    <!-- Accessibility -->
+    <string name="desc_filter_form">Filter criteria form</string>
+
+    <!-- Labels & hints -->
+    <string name="filter_title">Type your filters</string>
+    <string name="hint_address">Street, Number, Area</string>
+    <string name="hint_price_from">€ From</string>
+    <string name="hint_price_to">€ To</string>
+    <string name="hint_area_from">m² From</string>
+    <string name="hint_area_to">m² To</string>
+    <string name="search_button">Search</string>
+
+
 </resources>
