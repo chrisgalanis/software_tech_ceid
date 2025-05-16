@@ -66,22 +66,4 @@ public class HouseDetailActivity extends AppCompatActivity {
                         Toast.LENGTH_SHORT).show()
         );
     }
-
-    private void addTag(String text) {
-        // Inflate a Material Chip programmatically
-        Chip chip = new Chip(this);
-        chip.setText(text);
-
-        // Optionally apply the default outlined style:
-        ChipDrawable drawable = ChipDrawable.createFromAttributes(
-                this, null, 0, com.google.android.material.R.style.Widget_MaterialComponents_Chip_Choice);
-        chip.setChipDrawable(drawable);
-
-        // You can tweak appearance if needed:
-        // chip.setChipBackgroundColorResource(R.color.some_light_gray);
-        // chip.setTextColor(getResources().getColor(R.color.some_dark_text));
-
-        flexTags.addView(chip);
-    }
-
 }
