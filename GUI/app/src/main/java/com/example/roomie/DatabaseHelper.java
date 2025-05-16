@@ -85,11 +85,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(SQL_CREATE_USERS);
         db.execSQL(SQL_CREATE_PHOTOS);
         db.execSQL(SQL_CREATE_INTERESTS);
+
+
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldV, int newV) {
-        // drop & recreate (for demo only!)
+        // drop in reverse order of dependencies
+
+
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_INTERESTS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PHOTOS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
@@ -247,5 +251,5 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-
 }
+
