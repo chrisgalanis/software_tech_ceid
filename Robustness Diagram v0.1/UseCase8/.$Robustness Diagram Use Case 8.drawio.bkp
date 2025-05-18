@@ -1,0 +1,103 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/26.2.2 Chrome/134.0.6998.178 Electron/35.1.2 Safari/537.36" version="26.2.2">
+  <diagram name="Page-1" id="1or2OIbfOhG0MGPaR1Wy">
+    <mxGraphModel dx="1898" dy="1225" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="FT4K1kiOGgC_nJAK17g1-1" value="User&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="30" y="370" width="30" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="FT4K1kiOGgC_nJAK17g1-9" value="&quot;Αγγελία Σπιτιού&quot; Page" style="shape=umlBoundary;whiteSpace=wrap;html=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="70" y="180" width="100" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="FT4K1kiOGgC_nJAK17g1-10" value="" style="endArrow=classic;html=1;rounded=1;exitX=1.007;exitY=0.665;exitDx=0;exitDy=0;exitPerimeter=0;entryX=-0.034;entryY=0.667;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="FT4K1kiOGgC_nJAK17g1-9" target="FT4K1kiOGgC_nJAK17g1-11">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="380" y="610" as="sourcePoint" />
+            <mxPoint x="480" y="290" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="FT4K1kiOGgC_nJAK17g1-11" value="Eμφάνιση" style="ellipse;shape=umlControl;whiteSpace=wrap;html=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="450" y="190" width="70" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="FT4K1kiOGgC_nJAK17g1-12" value="&quot;Like House&quot;&lt;div&gt;Button&lt;/div&gt;" style="shape=umlBoundary;whiteSpace=wrap;html=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="210" y="670" width="100" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="FT4K1kiOGgC_nJAK17g1-13" value="" style="endArrow=classic;html=1;rounded=1;entryX=0.8;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.494;exitY=0.987;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="FT4K1kiOGgC_nJAK17g1-11" target="FT4K1kiOGgC_nJAK17g1-12">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="500" y="310" as="sourcePoint" />
+            <mxPoint x="430" y="660" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="FT4K1kiOGgC_nJAK17g1-14" value="&quot;Back to Map&quot; Icon" style="shape=umlBoundary;whiteSpace=wrap;html=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="200" y="300" width="100" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="FT4K1kiOGgC_nJAK17g1-15" value="" style="endArrow=classic;html=1;rounded=1;exitX=0.161;exitY=0.86;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1.002;entryY=0.265;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="FT4K1kiOGgC_nJAK17g1-11" target="FT4K1kiOGgC_nJAK17g1-14">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="390" y="490" as="sourcePoint" />
+            <mxPoint x="470" y="520" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="FT4K1kiOGgC_nJAK17g1-16" value="" style="endArrow=classic;html=1;rounded=1;exitX=0.5;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=-0.02;entryY=0.46;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="FT4K1kiOGgC_nJAK17g1-1" target="FT4K1kiOGgC_nJAK17g1-12">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="270" y="540" as="sourcePoint" />
+            <mxPoint x="320" y="490" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="FT4K1kiOGgC_nJAK17g1-17" value="" style="endArrow=classic;html=1;rounded=1;exitX=0.5;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=-0.026;entryY=0.532;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="FT4K1kiOGgC_nJAK17g1-1" target="FT4K1kiOGgC_nJAK17g1-14">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="160" y="620" as="sourcePoint" />
+            <mxPoint x="280" y="490" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="FT4K1kiOGgC_nJAK17g1-19" value="Use Case 7: Aναζήτηση σπιτού για συγκατοίκηση" style="ellipse;whiteSpace=wrap;html=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="200" y="420" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="FT4K1kiOGgC_nJAK17g1-20" value="" style="endArrow=classic;html=1;rounded=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.623;exitY=1.024;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="FT4K1kiOGgC_nJAK17g1-14" target="FT4K1kiOGgC_nJAK17g1-19">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="260" y="700" as="sourcePoint" />
+            <mxPoint x="310" y="650" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="FT4K1kiOGgC_nJAK17g1-21" value="" style="endArrow=classic;html=1;rounded=1;exitX=0.971;exitY=0.724;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.008;entryY=0.617;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="FT4K1kiOGgC_nJAK17g1-12" target="FT4K1kiOGgC_nJAK17g1-22">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="250" y="760" as="sourcePoint" />
+            <mxPoint x="450" y="728" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="FT4K1kiOGgC_nJAK17g1-22" value="Καταγραφή Like" style="ellipse;shape=umlControl;whiteSpace=wrap;html=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="400" y="680" width="70" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="FT4K1kiOGgC_nJAK17g1-23" value="" style="endArrow=classic;html=1;rounded=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" target="FT4K1kiOGgC_nJAK17g1-24">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="470" y="730" as="sourcePoint" />
+            <mxPoint x="600" y="730" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="FT4K1kiOGgC_nJAK17g1-24" value="ΒΔ" style="ellipse;shape=umlEntity;whiteSpace=wrap;html=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="600" y="690" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="FT4K1kiOGgC_nJAK17g1-25" value="" style="endArrow=classic;html=1;rounded=1;entryX=0.188;entryY=0.856;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="FT4K1kiOGgC_nJAK17g1-22" target="FT4K1kiOGgC_nJAK17g1-26">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="480" y="640" as="sourcePoint" />
+            <mxPoint x="530" y="590" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="FT4K1kiOGgC_nJAK17g1-26" value="Ενημέρωση Ιδιοκτήτη-Χρήστη" style="ellipse;shape=umlControl;whiteSpace=wrap;html=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="510" y="550" width="70" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="FT4K1kiOGgC_nJAK17g1-27" value="" style="endArrow=classic;html=1;rounded=1;exitX=1.039;exitY=0.558;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="FT4K1kiOGgC_nJAK17g1-26">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="600" y="600" as="sourcePoint" />
+            <mxPoint x="690" y="595" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="FT4K1kiOGgC_nJAK17g1-28" value="Σελίδα με Likes" style="shape=umlBoundary;whiteSpace=wrap;html=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="690" y="560" width="100" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="FT4K1kiOGgC_nJAK17g1-29" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;Ρώτα τον Τίτο&lt;/h1&gt;&lt;div&gt;Πως αποκάλεσε την σελίδα που αναφέρεις στο πιο κάτω boundary object.&lt;/div&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="660" y="420" width="180" height="120" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
