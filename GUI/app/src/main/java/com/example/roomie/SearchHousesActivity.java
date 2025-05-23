@@ -1,67 +1,76 @@
-// com/example/roomie/SearchHousesActivity.java
 package com.example.roomie;
 
 import android.content.Intent;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
-import java.util.*;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.util.List;
 
 public class SearchHousesActivity extends AppCompatActivity
         implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
-    private GoogleMap map;
-    private List<House> houses;
+    private GoogleMap     map;
+    private List<House>   houses;
+    private DatabaseHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_houses);
-        houses = getMockHouses();
+
+        // ——— 1) init DB helper and load real houses
+        dbHelper = new DatabaseHelper(this);
+        houses   = dbHelper.getAllHouses();   // SELECT * FROM houses
+
+        // ——— 2) Bottom nav (optional)
+        BottomNavigationHelper.setup(
+                findViewById(R.id.bottom_navigation),
+                this,
+                R.id.nav_search
+        );
+
+        // ——— 3) Map fragment wiring
         SupportMapFragment mapFrag = (SupportMapFragment)
-                getSupportFragmentManager().findFragmentById(R.id.map_fragment);
+                getSupportFragmentManager()
+                        .findFragmentById(R.id.map_fragment);
         mapFrag.getMapAsync(this);
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
+    public void onMapReady(@NonNull GoogleMap googleMap) {
         map = googleMap;
         for (House h : houses) {
-            Marker m = map.addMarker(new MarkerOptions()
+            Marker marker = map.addMarker(new MarkerOptions()
                     .position(h.location)
                     .title(h.address)
                     .snippet("€" + (int)h.rent + "/mo"));
-            m.setTag(h.id);
+            if (marker != null) marker.setTag(h.id);
         }
+
         map.setOnMarkerClickListener(this);
+
+        // Zoom camera to show all (or just center on first)
         if (!houses.isEmpty()) {
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                    houses.get(0).location, 12f));
+            LatLng first = houses.get(0).location;
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(first, 12f));
         }
     }
 
     @Override
     public boolean onMarkerClick(@NonNull Marker marker) {
-        long houseId = (Long)marker.getTag();
-        Intent i = new Intent(this, HouseDetailActivity.class);
-        i.putExtra("EXTRA_HOUSE_ID", houseId);
-        startActivity(i);
+        Object tag = marker.getTag();
+        if (tag instanceof Long) {
+            long houseId = (Long) tag;
+            Intent i = new Intent(this, HouseDetailActivity.class);
+            i.putExtra("EXTRA_HOUSE_ID", houseId);
+            startActivity(i);
+        }
         return true;
-    }
-
-    public List<House> getMockHouses() {
-        return Arrays.asList(
-                new House(1, "Lemesou 20, Patras", 180, 88, 3,
-                        Arrays.asList("https://ex.com/1.jpg","https://ex.com/2.jpg"), "KwstasMav", "avatarURL",
-                        new LatLng(38.2466,21.7345)),
-                new House(2, "Agiou Nikolaou 5, Patras", 200, 95, 2,
-                        Arrays.asList("https://ex.com/a1.jpg","https://ex.com/a2.jpg"), "whodis", "avatarURL",
-                        new LatLng(38.2460,21.7320)),
-                new House(3, "Sisinis 25, Patras", 400, 109, 4,
-                        Arrays.asList("https://ex.com/b1.jpg","https://ex.com/b2.jpg"), "mikethefreak", "avatarURL",
-                        new LatLng(38.2440,21.7300))
-        );
     }
 }

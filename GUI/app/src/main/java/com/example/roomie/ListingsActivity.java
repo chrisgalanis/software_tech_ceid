@@ -27,32 +27,35 @@ public class ListingsActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_listings);
 
-        // 1) Bottom nav
+        // 1) Bottom nav setup…
         BottomNavigationHelper.setup(
                 (BottomNavigationView) findViewById(R.id.bottom_navigation),
-                this,
-                R.id.nav_home
+                this, R.id.nav_home
         );
 
-        // 2) RecyclerView setup
+        // 2) RecyclerView
         recycler = findViewById(R.id.recyclerHouses);
         recycler.setLayoutManager(new LinearLayoutManager(this));
-        allHouses = new SearchHousesActivity().getMockHouses();
+
+        // 3) Real DB instead of mocks
+        DatabaseHelper dbHelper = new DatabaseHelper(this);
+        dbHelper.clearAllHousesAndPhotos();
+        dbHelper.seedMockDataIfEmpty();
+        allHouses = dbHelper.getAllHouses();    // <--- SELECT * FROM houses
+
+
         ListingsAdapter adapter = new ListingsAdapter(allHouses, house -> {
-            Intent i = new Intent(this, HouseDetailActivity.class);
-            i.putExtra("EXTRA_HOUSE_ID", house.id);
-            startActivity(i);
+            startActivity(new Intent(this, HouseDetailActivity.class)
+                    .putExtra("EXTRA_HOUSE_ID", house.id));
         });
         recycler.setAdapter(adapter);
 
-        // 3) Map fragment setup
+        // 4) Map setup…
         SupportMapFragment mapFrag = (SupportMapFragment)
-                getSupportFragmentManager()
-                        .findFragmentById(R.id.map_fragment);
-        if (mapFrag != null) {
-            mapFrag.getMapAsync(this);
-        }
+                getSupportFragmentManager().findFragmentById(R.id.map_fragment);
+        if (mapFrag != null) mapFrag.getMapAsync(this);
     }
+
 
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {

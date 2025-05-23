@@ -39,6 +39,9 @@
                 android:hint="@string/hint_address"
                 android:inputType="textPostalAddress"
                 android:autofillHints="postalAddress"
+                android:drawableStart="@drawable/ic_person_search"
+                android:drawablePadding="8dp"
+                android:paddingStart="10dp"
                 android:layout_marginBottom="12dp"/>
 
             <!-- Price From / To -->

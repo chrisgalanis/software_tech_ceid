@@ -36,6 +36,7 @@ public class ListingsAdapter
         House house = houses.get(position);
         holder.tvAddr.setText(house.address);
         holder.tvRent.setText("€" + (int)house.rent + "/month");
+        holder.tvOwner.setText(house.ownerName);
 
         holder.itemView.setOnClickListener(v ->
                 listener.onItemClick(house)
@@ -48,11 +49,13 @@ public class ListingsAdapter
     }
 
     static class VH extends RecyclerView.ViewHolder {
-        final TextView tvAddr, tvRent;
+        final TextView tvAddr, tvRent, tvOwner;
         VH(@NonNull View itemView) {
             super(itemView);
             tvAddr = itemView.findViewById(R.id.tvItemAddress);
             tvRent = itemView.findViewById(R.id.tvItemRent);
+            tvOwner = itemView.findViewById(R.id.tvItemOwner);
         }
     }
+
 }
