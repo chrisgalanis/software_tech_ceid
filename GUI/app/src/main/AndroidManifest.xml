@@ -54,6 +54,10 @@
         <activity
             android:name=".SearchRoommatesActivity"
             android:exported="false"/>
+
+        <activity
+            android:name=".RecommendationActivity"
+            android:exported="false"/>
         <activity
             android:name=".RegisterActivity"
             android:exported="false"/>

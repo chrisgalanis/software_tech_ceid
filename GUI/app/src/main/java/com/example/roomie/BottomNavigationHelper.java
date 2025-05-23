@@ -30,7 +30,7 @@ public class BottomNavigationHelper {
                 intent = new Intent(activity, HomeFilterActivity.class);
             }
             else if (id == R.id.nav_search) {
-                intent = new Intent(activity, SearchRoommatesActivity.class);
+                intent = new Intent(activity, RecommendationActivity.class);
             }
             else if (id == R.id.nav_favorites) {
                 intent = new Intent(activity, FavoritesActivity.class);

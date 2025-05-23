@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <!-- Budget input -->
+    <EditText
+        android:id="@+id/etBudget"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Budget (€)"
+        android:inputType="number"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/etCity"
+        app:layout_constraintWidth_percent="0.45"/>
+
+    <!-- City input -->
+    <EditText
+        android:id="@+id/etCity"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="City"
+        android:inputType="text"
+        app:layout_constraintTop_toTopOf="@+id/etBudget"
+        app:layout_constraintStart_toEndOf="@+id/etBudget"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintWidth_percent="0.50"/>
+
+    <!-- Save button -->
+    <Button
+        android:id="@+id/btnSubmitPrefs"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save"
+        app:layout_constraintTop_toBottomOf="@+id/etBudget"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp"/>
+
+    <!-- Recommendation card (hidden until Save) -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardContainer"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:cardCornerRadius="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/btnSubmitPrefs"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="16dp">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <!-- Profile pic placeholder -->
+            <ImageView
+                android:id="@+id/imgProfile"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_profile_placeholder"/>
+
+            <!-- Name, age -->
+            <TextView
+                android:id="@+id/tvNameAge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Name, Age"
+                android:textStyle="bold"
+                android:layout_marginTop="8dp"/>
+
+            <!-- Budget, city -->
+            <TextView
+                android:id="@+id/tvBudgetCity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Budget, City"/>
+
+            <!-- X / ❤️ buttons -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginTop="16dp">
+
+                <ImageButton
+                    android:id="@+id/btnReject"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:src="@drawable/ic_close"
+                    android:background="@null"/>
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"/>
+
+                <ImageButton
+                    android:id="@+id/btnAccept"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:src="@drawable/ic_favorite"
+                    android:background="@null"/>
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+</androidx.constraintlayout.widget.ConstraintLayout>
