@@ -522,10 +522,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         };
 
         // 2) pick template index by ownerId so each user gets one unique house
-        int idx = (int)(ownerId % addrs.length);
+        long houseId = -1;
+        int idx = (int) (ownerId % addrs.length); // Use modulo to cycle through templates
 
         // 3) insert house
-        long houseId = insertHouse(
+        houseId = insertHouse(
                 ownerId,
                 addrs[idx],
                 rents[idx],
