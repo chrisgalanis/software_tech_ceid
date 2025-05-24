@@ -2,7 +2,6 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-<<<<<<< HEAD
     <color name="gray">#B0B0B0</color>
     <color name="light_gray">#E0E0E0</color>
 
@@ -17,8 +16,6 @@
 
     <!-- Optional: Button disabled color -->
     <color name="button_disabled">#CCCCCC</color>
-</resources>
-=======
     <color name="icon_tint_gray">#757575</color>
     <color name="sent_message_bubble_color">#007AFF</color>
     <color name="chat_timestamp_sent">#A0FFFFFF</color>
@@ -26,4 +23,3 @@
     <color name="chat_timestamp_received">#9E9E9E</color>
     <color name="light_gray_button">#E0E0E0</color>
 </resources>
->>>>>>> b73eddf (chat code done - need testing)

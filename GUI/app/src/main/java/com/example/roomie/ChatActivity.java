@@ -1,37 +1,34 @@
-package com.example.roomie; // Replace with your package name
+package com.example.roomie;
 
+import android.content.Intent; // Make sure this is imported
 import android.os.Bundle;
-import android.view.View;
+import android.util.Log; // Make sure this is imported
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-
 import java.util.ArrayList;
 import java.util.List;
-
-import de.hdodenhof.circleimageview.CircleImageView; // If using CircleImageView
+import de.hdodenhof.circleimageview.CircleImageView; // Import if you use it here
 
 public class ChatActivity extends AppCompatActivity {
 
+    // Fields for ChatActivity
     private ImageView ivBackButton;
-    private CircleImageView ivToolbarProfile;
-    private TextView tvToolbarTitle;
+    private CircleImageView ivToolbarProfile; // For the toolbar
+    private TextView tvToolbarTitle;        // For the toolbar
     private ImageView ivInfoButton;
 
-    private CircleImageView ivCenterProfile;
+    private CircleImageView ivCenterProfile;  // For the center profile view
     private Button btnViewProfile;
 
     private RecyclerView rvChatMessages;
-    private ChatMessageAdapter chatMessageAdapter;
-    private List<ChatMessage> messageList;
+    private ChatMessageAdapter chatMessageAdapter; // Adapter for individual chat messages
+    private List<ChatMessage> messageList;      // List of ChatMessage objects
 
     private ImageView ivEmoji;
     private EditText etMessage;
@@ -39,75 +36,108 @@ public class ChatActivity extends AppCompatActivity {
     private ImageView ivAttach;
     private ImageView ivSend;
 
+    // Fields to store data received from MessagesActivity
+    private String chatPartnerName;
+    private int chatPartnerProfileImageRes;
+    // private String chatPartnerUserId; // If you pass a user ID
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chat);
+        Log.d("ChatActivity", "onCreate: ChatActivity started.");
+        setContentView(R.layout.activity_chat); // Layout for the chat screen
 
+        // --- RECEIVE AND PROCESS INTENT DATA HERE ---
+        Intent intent = getIntent();
+        if (intent != null) {
+            chatPartnerName = intent.getStringExtra("USER_NAME");
+            chatPartnerProfileImageRes = intent.getIntExtra("PROFILE_IMAGE_RES", R.drawable.roomie_logo); // Default
+            // chatPartnerUserId = intent.getStringExtra("USER_ID"); // If you pass a user ID
 
-        // Setup RecyclerView
+            Log.d("ChatActivity", "onCreate: Received USER_NAME=" + chatPartnerName + ", PROFILE_IMAGE_RES=" + chatPartnerProfileImageRes);
+        } else {
+            Log.e("ChatActivity", "onCreate: Intent was null!");
+            // Handle case where intent is null, maybe finish activity or show an error
+        }
+
+        // Initialize your views from R.layout.activity_chat
+        ivBackButton = findViewById(R.id.ivBackButton);
+        ivToolbarProfile = findViewById(R.id.ivToolbarProfile); // Ensure this ID exists in activity_chat.xml
+        tvToolbarTitle = findViewById(R.id.tvToolbarTitle);     // Ensure this ID exists
+        ivInfoButton = findViewById(R.id.ivInfoButton);
+
+        ivCenterProfile = findViewById(R.id.ivCenterProfile);   // Ensure this ID exists
+        btnViewProfile = findViewById(R.id.btnViewProfile);
+
+        rvChatMessages = findViewById(R.id.rvChatMessages);
+        etMessage = findViewById(R.id.etMessage);
+        ivEmoji = findViewById(R.id.ivEmoji);
+        ivMic = findViewById(R.id.ivMic);
+        ivAttach = findViewById(R.id.ivAttach);
+        ivSend = findViewById(R.id.ivSend);
+
+        // --- Use the received data to set up UI ---
+        if (tvToolbarTitle != null && chatPartnerName != null) {
+            tvToolbarTitle.setText(chatPartnerName);
+        } else {
+            Log.e("ChatActivity", "onCreate: tvToolbarTitle or chatPartnerName is null after intent processing.");
+            // Potentially set a default title or handle error
+        }
+
+        if (ivToolbarProfile != null && chatPartnerProfileImageRes != 0) {
+            ivToolbarProfile.setImageResource(chatPartnerProfileImageRes);
+        }
+        if (ivCenterProfile != null && chatPartnerProfileImageRes != 0) {
+            ivCenterProfile.setImageResource(chatPartnerProfileImageRes);
+        }
+
+        // Setup RecyclerView for chat messages
         messageList = new ArrayList<>();
-        // TODO: Populate messageList with actual chat data
-        loadDummyMessages(); // Example method
-        chatMessageAdapter = new ChatMessageAdapter(this, messageList);
+        loadDummyMessagesForUser(); // This method should use chatPartnerName/Id to load relevant messages
+        chatMessageAdapter = new ChatMessageAdapter(this, messageList); // Assuming ChatMessageAdapter is for these messages
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        linearLayoutManager.setStackFromEnd(true); // To show latest messages at the bottom
+        linearLayoutManager.setStackFromEnd(true);
         rvChatMessages.setLayoutManager(linearLayoutManager);
         rvChatMessages.setAdapter(chatMessageAdapter);
 
-        // Set Click Listeners
+        // Set Click Listeners for ChatActivity's buttons
         ivBackButton.setOnClickListener(v -> onBackPressed());
-
-        ivInfoButton.setOnClickListener(v -> {
-            // Handle info button click
-            Toast.makeText(ChatActivity.this, "Info clicked", Toast.LENGTH_SHORT).show();
-        });
-
-        btnViewProfile.setOnClickListener(v -> {
-            // Handle view profile button click
-            Toast.makeText(ChatActivity.this, "View Profile clicked", Toast.LENGTH_SHORT).show();
-            // Example: Intent to ProfileActivity
-            // Intent intent = new Intent(ChatActivity.this, ProfileActivity.class);
-            // intent.putExtra("USER_ID", "mike_m_id"); // Pass user identifier
-            // startActivity(intent);
-        });
-
+        ivInfoButton.setOnClickListener(v -> Toast.makeText(ChatActivity.this, "Info clicked for " + chatPartnerName, Toast.LENGTH_SHORT).show());
+        btnViewProfile.setOnClickListener(v -> Toast.makeText(ChatActivity.this, "View Profile for " + chatPartnerName, Toast.LENGTH_SHORT).show());
         ivSend.setOnClickListener(v -> sendMessage());
+        // ... other listeners
+    }
 
-        ivEmoji.setOnClickListener(v -> {
-            // Handle emoji button click
-            Toast.makeText(ChatActivity.this, "Emoji clicked", Toast.LENGTH_SHORT).show();
-        });
+    private void loadDummyMessagesForUser() {
+        // This should be populated based on chatPartnerName or a unique ID
+        // For now, let's just log it
+        Log.d("ChatActivity", "loadDummyMessagesForUser: called for " + chatPartnerName);
+        messageList.clear(); // Clear any old messages
 
-        ivMic.setOnClickListener(v -> {
-            // Handle mic button click
-            Toast.makeText(ChatActivity.this, "Mic clicked", Toast.LENGTH_SHORT).show();
-        });
-
-        ivAttach.setOnClickListener(v -> {
-            // Handle attach button click
-            Toast.makeText(ChatActivity.this, "Attach clicked", Toast.LENGTH_SHORT).show();
-        });
-
-        // Optionally set the current item as selected
+        if (chatPartnerName != null && chatPartnerName.equals("Mike M.")) {
+             messageList.add(new ChatMessage(chatPartnerName, "currentUser", "Hello nice to meet you.", "00:01", false, chatPartnerProfileImageRes));
+             messageList.add(new ChatMessage("currentUser", chatPartnerName, "I dont talk to strangers..", "4:19", true));
+             messageList.add(new ChatMessage(chatPartnerName, "currentUser", "But why?", "4:20", false, chatPartnerProfileImageRes));
+        } else if (chatPartnerName != null) {
+            // Add some generic message if no specific dummy data
+            messageList.add(new ChatMessage(chatPartnerName, "currentUser", "Hi there!", "00:01", false, chatPartnerProfileImageRes));
+        }
+        if (chatMessageAdapter != null) {
+             chatMessageAdapter.notifyDataSetChanged();
+        }
     }
 
     private void sendMessage() {
         String messageText = etMessage.getText().toString().trim();
         if (!messageText.isEmpty()) {
-            // TODO: Replace "currentUser" with actual sender logic
-            // TODO: Replace "Mike M." and profile resource with actual recipient/sender info
-            // For simplicity, new messages are added as "sent" by current user
-            long timestamp = System.currentTimeMillis(); // Or get a proper timestamp string
+            long timestamp = System.currentTimeMillis();
             String timeString = android.text.format.DateFormat.format("HH:mm", timestamp).toString();
-
             ChatMessage newMessage = new ChatMessage(
-                "currentUser", // senderId
-                "Mike M.",     // receiverId (or use a generic ID for the other person)
+                "currentUser", // Replace with actual current user ID
+                chatPartnerName, // Or chatPartnerUserId
                 messageText,
                 timeString,
-                true // isSentByCurrentUser
+                true
             );
             messageList.add(newMessage);
             chatMessageAdapter.notifyItemInserted(messageList.size() - 1);
@@ -117,18 +147,4 @@ public class ChatActivity extends AppCompatActivity {
             Toast.makeText(this, "Message cannot be empty", Toast.LENGTH_SHORT).show();
         }
     }
-
-    private void loadDummyMessages() {
-        // Simulating loading existing messages
-        messageList.add(new ChatMessage("mike_m_id", "currentUser", "Hello nice to meet you.", "00:01", false, R.drawable.roomie_logo));
-        messageList.add(new ChatMessage("currentUser", "mike_m_id", "I dont talk to strangers..", "4:19", true)); // Current user doesn't need a profile pic for their own bubble usually
-        messageList.add(new ChatMessage("mike_m_id", "currentUser", "But why?", "4:20", false, R.drawable.roomie_logo));
-        // Add more messages as needed
-    }
-
-    // You will need a ChatMessage data class (POJO)
-    // public static class ChatMessage { ... } - See below
-
-    // You will need a RecyclerView.Adapter
-    // public class ChatMessageAdapter extends RecyclerView.Adapter<...> { ... } - See below
 }
