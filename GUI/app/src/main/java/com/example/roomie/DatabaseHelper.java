@@ -13,7 +13,7 @@ import java.util.List;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME    = "RoomieApp.db";
-    private static final int    DATABASE_VERSION = 6;  // bumped from 5 → 6
+    private static final int    DATABASE_VERSION = 7;
 
     // users table
     public static final String TABLE_USERS           = "users";
@@ -108,13 +108,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldV, int newV) {
-        if (oldV < 6) {
-            db.execSQL("ALTER TABLE " + TABLE_USERS +
-                    " ADD COLUMN " + COLUMN_USER_BUDGET + " INTEGER DEFAULT 0");
-            db.execSQL("ALTER TABLE " + TABLE_USERS +
-                    " ADD COLUMN " + COLUMN_USER_CITY   + " TEXT");
-            db.execSQL(SQL_CREATE_LIKES);
-        }
+        // Drop all tables in dependency order
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_LIKES);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_INTERESTS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PHOTOS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
+        // Recreate
+        onCreate(db);
     }
 
     /*** ORIGINAL METHODS ***/

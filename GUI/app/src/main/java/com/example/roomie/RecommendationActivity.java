@@ -3,14 +3,14 @@ package com.example.roomie;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
+
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 
@@ -33,7 +33,7 @@ public class RecommendationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recommendation);
 
-        // initialize your session manager
+        // session check…
         SessionManager.init(this);
         currentUserId = SessionManager.get().getUserId();
         if (currentUserId < 0) {
@@ -42,7 +42,7 @@ public class RecommendationActivity extends AppCompatActivity {
             return;
         }
 
-        // view binding
+        // bind views
         etBudget      = findViewById(R.id.etBudget);
         etCity        = findViewById(R.id.etCity);
         btnSubmit     = findViewById(R.id.btnSubmitPrefs);
@@ -55,16 +55,9 @@ public class RecommendationActivity extends AppCompatActivity {
 
         dbHelper = new DatabaseHelper(this);
 
-        // listeners
         btnSubmit.setOnClickListener(v -> savePreferences());
-        btnReject.setOnClickListener(v -> {
-            mark(false);
-            nextCard();
-        });
-        btnAccept.setOnClickListener(v -> {
-            mark(true);
-            nextCard();
-        });
+        btnReject.setOnClickListener(v -> { mark(false); nextCard(); });
+        btnAccept.setOnClickListener(v -> { mark(true);  nextCard(); });
     }
 
     private void savePreferences() {
@@ -99,7 +92,29 @@ public class RecommendationActivity extends AppCompatActivity {
     }
 
     private void showCard(User u) {
-        // if you store photos, load here with Glide/Picasso...
+        List<String> photos = dbHelper.getUserPhotos(u.id);
+        if (!photos.isEmpty()) {
+            Uri uri = Uri.parse(photos.get(0));
+
+            // (Optional) ensure we still have read permission
+            try {
+                getContentResolver().openInputStream(uri).close();
+            } catch (Exception e) {
+                // if this fails, you’ve lost the URI grant –
+                // you’d need to re-pick or re-grant permission.
+            }
+
+            // Glide is more robust than setImageURI()
+            Glide.with(this)
+                    .load(uri)
+                    .placeholder(R.drawable.ic_profile_placeholder)
+                    .error(R.drawable.ic_profile_placeholder)
+                    .into(imgProfile);
+
+        } else {
+            imgProfile.setImageResource(R.drawable.ic_profile_placeholder);
+        }
+
         tvNameAge.setText(u.firstName + " " + u.lastName
                 + (u.age > 0 ? ", " + u.age : ""));
         tvBudgetCity.setText("Budget: €" + u.budget

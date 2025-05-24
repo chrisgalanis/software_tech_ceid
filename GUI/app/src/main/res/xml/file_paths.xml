@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- allow files under getExternalFilesDir(Pictures)/roomie -->
+    <external-files-path
+        name="user_photos"
+        path="Pictures/roomie/" />
+</paths>
