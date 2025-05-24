@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.*;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.List;
 
@@ -32,7 +33,11 @@ public class RecommendationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recommendation);
-
+        BottomNavigationHelper.setup(
+                (BottomNavigationView) findViewById(R.id.bottom_navigation),
+                this,
+                R.id.nav_search
+        );
         // session check…
         SessionManager.init(this);
         currentUserId = SessionManager.get().getUserId();
@@ -41,6 +46,7 @@ public class RecommendationActivity extends AppCompatActivity {
             finish();
             return;
         }
+
 
         // bind views
         etBudget      = findViewById(R.id.etBudget);
