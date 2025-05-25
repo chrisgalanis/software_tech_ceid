@@ -1,7 +1,13 @@
 plugins {
     alias(libs.plugins.android.application)
+    id("com.diffplug.spotless") version "6.25.0"
 }
-
+spotless {
+    java {
+        googleJavaFormat()
+        target("src/**/*.java")
+    }
+}
 android {
     namespace = "com.example.roomie"
     compileSdk = 35
