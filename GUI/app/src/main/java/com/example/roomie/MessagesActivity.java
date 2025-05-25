@@ -1,120 +1,42 @@
 package com.example.roomie;
 
-<<<<<<< HEAD
+import android.content.Intent; // <<< --- 1. IMPORT INTENT ---
 import android.os.Bundle;
 import android.widget.Toast;
-<<<<<<< HEAD
-
-=======
-import android.util.Log;
-import android.content.Intent; // Make sure this is imported
->>>>>>> 3f39587 (messages-page done)
-=======
-import android.content.Intent; // Make sure this is imported
-import android.os.Bundle;
-import android.util.Log;
-import android.widget.Toast;
->>>>>>> 313cd41 (fix during rebase)
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
 import java.util.ArrayList;
 import java.util.List;
 
+// --- 2. Implement the CORRECTLY QUALIFIED interface ---
 public class MessagesActivity extends AppCompatActivity
     implements MessageAdapter.OnMessageItemClickListener {
 
-    private RecyclerView recyclerViewMessages;
-    private MessageAdapter messageAdapter;
-    private List<MessageItem> messageList;
-    private long currentUserId;
+  private RecyclerView recyclerViewMessages;
+  private MessageAdapter messageAdapter; // Use the custom MessageAdapter
+  private List<MessageItem> messageList;
+  private long currentUserId;
 
-<<<<<<< HEAD
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-<<<<<<< HEAD
-        setContentView(R.layout.activity_messages);
-
-        // 1) grab the stored user ID
-        currentUserId = SessionManager.get().getUserId();
-=======
-        setContentView(R.layout.activity_messages); // Sets up the layout for MessagesActivity
-=======
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_messages); // Sets up the layout for MessagesActivity
->>>>>>> 313cd41 (fix during rebase)
+    setContentView(R.layout.activity_messages); // Ensure this layout exists
 
-    Log.d("MessagesActivity", "onCreate: MessagesActivity started."); // Log for this activity
-
-<<<<<<< HEAD
-        // 1) grab the stored user ID
-        currentUserId = SessionManager.get().getUserId(); // Assuming SessionManager is correct
->>>>>>> 3f39587 (messages-page done)
-        if (currentUserId < 0) {
-            Toast.makeText(this, "No user logged in", Toast.LENGTH_SHORT).show();
-            finish();
-            return;
-        }
-
-        // 2) init RecyclerView
-        recyclerViewMessages = findViewById(R.id.recyclerViewMessages);
-        recyclerViewMessages.setLayoutManager(new LinearLayoutManager(this));
-
-        // 3) load your (real) data source
-        messageList = new ArrayList<>();
-<<<<<<< HEAD
-        messageList.add(new MessageItem("Chris G.",  "2 new messages!!",          "13:40", R.drawable.roomie_logo));
-        messageList.add(new MessageItem("Titos H.", "New message!!",             "19:43", R.drawable.roomie_logo));
-        messageList.add(new MessageItem("Kostas M.","I am hungry, let's go!!!!","10:13", R.drawable.roomie_logo));
-        messageList.add(new MessageItem("Mike M.",  "But why?",                  "04:20", R.drawable.roomie_logo));
-        messageList.add(new MessageItem("Rafas P.", "When will we meet?",        "11:20", R.drawable.roomie_logo));
-
-        messageAdapter = new MessageAdapter(messageList);
-        recyclerViewMessages.setAdapter(messageAdapter);
-
-        // 4) wire up bottom nav (it will also highlight "Messages")
-        BottomNavigationHelper.setup(
-=======
-        messageList.add(new MessageItem("Chris G.", "2 new messages!!", "13:40", R.drawable.roomie_logo));
-        messageList.add(new MessageItem("Titos H.", "New message!!", "19:43", R.drawable.roomie_logo));
-        messageList.add(new MessageItem("Kostas M.","I am hungry, let's go!!!!","10:13", R.drawable.roomie_logo));
-        messageList.add(new MessageItem("Mike M.", "But why?", "04:20", R.drawable.roomie_logo));
-        messageList.add(new MessageItem("Rafas P.", "When will we meet?", "11:20", R.drawable.roomie_logo));
-
-        messageAdapter = new MessageAdapter(messageList, this);
-        recyclerViewMessages.setAdapter(messageAdapter);
-
-        // 4) wire up bottom nav (it will also highlight "Messages")
-        BottomNavigationHelper.setup( // Assuming BottomNavigationHelper is correct
->>>>>>> 3f39587 (messages-page done)
-                (BottomNavigationView) findViewById(R.id.bottom_navigation),
-                this,
-                R.id.nav_messages
-        );
-=======
-    // 1) grab the stored user ID
-    currentUserId = SessionManager.get().getUserId(); // Assuming SessionManager is correct
+    currentUserId = SessionManager.get().getUserId(); // Assuming SessionManager is correctly set up
     if (currentUserId < 0) {
       Toast.makeText(this, "No user logged in", Toast.LENGTH_SHORT).show();
       finish();
       return;
->>>>>>> 313cd41 (fix during rebase)
     }
-<<<<<<< HEAD
-=======
 
-    // 2) init RecyclerView
-    recyclerViewMessages = findViewById(R.id.recyclerViewMessages);
+    recyclerViewMessages =
+        findViewById(R.id.recyclerViewMessages); // Ensure this ID exists in activity_messages.xml
     recyclerViewMessages.setLayoutManager(new LinearLayoutManager(this));
 
-    // 3) load your (real) data source
     messageList = new ArrayList<>();
+    // Populate messageList (your existing code)
     messageList.add(
         new MessageItem("Chris G.", "2 new messages!!", "13:40", R.drawable.roomie_logo));
     messageList.add(new MessageItem("Titos H.", "New message!!", "19:43", R.drawable.roomie_logo));
@@ -124,43 +46,30 @@ public class MessagesActivity extends AppCompatActivity
     messageList.add(
         new MessageItem("Rafas P.", "When will we meet?", "11:20", R.drawable.roomie_logo));
 
+    // --- 3. Pass 'this' as the listener to the MessageAdapter constructor ---
     messageAdapter = new MessageAdapter(messageList, this);
     recyclerViewMessages.setAdapter(messageAdapter);
 
-<<<<<<< HEAD
-        Log.d("MessagesActivity", "onMessageItemClick: Starting ChatActivity with USER_NAME=" + clickedMessageItem.getUserName());
-        startActivity(intent);
-    }
->>>>>>> 3f39587 (messages-page done)
-=======
-    // 4) wire up bottom nav (it will also highlight "Messages")
-    BottomNavigationHelper.setup( // Assuming BottomNavigationHelper is correct
-        (BottomNavigationView) findViewById(R.id.bottom_navigation), this, R.id.nav_messages);
+    BottomNavigationHelper.setup( // Assuming BottomNavigationHelper is correctly set up
+        (BottomNavigationView) findViewById(R.id.bottom_navigation), // Ensure this ID exists
+        this,
+        R.id.nav_messages // Ensure this menu ID exists
+        );
   }
 
+  // --- 4. Override the interface method ---
   @Override
   public void onMessageItemClick(MessageItem clickedMessageItem, int position) {
-    Log.d(
-        "MessagesActivity",
-        "onMessageItemClick: Clicked on item at position "
-            + position
-            + " with name: "
-            + clickedMessageItem.getUserName());
-
     Toast.makeText(this, "Clicked on: " + clickedMessageItem.getUserName(), Toast.LENGTH_SHORT)
         .show();
 
     Intent intent = new Intent(MessagesActivity.this, ChatActivity.class);
     intent.putExtra("USER_NAME", clickedMessageItem.getUserName());
     intent.putExtra("PROFILE_IMAGE_RES", clickedMessageItem.getProfileImageRes());
-    // You might want to pass a unique ID too:
-    // intent.putExtra("USER_ID", clickedMessageItem.getSomeUniqueId());
+    // Add other relevant data like a unique user/chat ID
+    // intent.putExtra("USER_ID", clickedMessageItem.getUserId()); // If you added getUserId() to
+    // MessageItem
 
-    Log.d(
-        "MessagesActivity",
-        "onMessageItemClick: Starting ChatActivity with USER_NAME="
-            + clickedMessageItem.getUserName());
     startActivity(intent);
   }
->>>>>>> 313cd41 (fix during rebase)
 }

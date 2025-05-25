@@ -4,28 +4,7 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-<<<<<<< HEAD
-        <DropdownSelection timestamp="2025-05-23T13:07:47.483983900Z">
-          <Target type="DEFAULT_BOOT">
-            <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\titos\.android\avd\Medium_Phone.avd" />
-=======
-        <DropdownSelection timestamp="2025-05-24T19:04:41.405647461Z">
-          <Target type="DEFAULT_BOOT">
-            <handle>
-              <DeviceId pluginId="PhysicalDevice" identifier="serial=R5CWA2Z6FAL" />
->>>>>>> 14f9fab (messages-page done)
-            </handle>
-          </Target>
-        </DropdownSelection>
-        <DialogSelection />
       </SelectionState>
-<<<<<<< HEAD
-=======
-      <SelectionState runConfigName="MessagesActivity (1)">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
->>>>>>> 14f9fab (messages-page done)
     </selectionStates>
   </component>
 </project>
