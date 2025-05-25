@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.time.LocalDate;
@@ -71,11 +72,16 @@ public class ProfileActivity extends AppCompatActivity {
     private void loadProfileData() {
         // photos
         List<String> photos = dbHelper.getUserPhotos(currentUserId);
-//        if (!photos.isEmpty()) {
-//            ivProfilePic.setImageURI(Uri.parse(photos.get(0)));
-//        } else {
-//            ivProfilePic.setImageResource(R.drawable.ic_profile_placeholder);
-//        }
+        if (!photos.isEmpty()) {
+            Uri uri = Uri.parse(photos.get(0));
+            Glide.with(this)
+                    .load(uri)
+                    .placeholder(R.drawable.ic_profile_placeholder)
+                    .error(R.drawable.ic_profile_placeholder)
+                    .into(ivProfilePic);
+        } else {
+            ivProfilePic.setImageResource(R.drawable.ic_profile_placeholder);
+        }
 
         // name + age
         Cursor c = dbHelper.getReadableDatabase().query(

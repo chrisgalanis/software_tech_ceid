@@ -1,24 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Center the title horizontally -->
-    <TextView
-        android:id="@+id/tvHome"
+    <!-- App logo top‐center -->
+    <ImageView
+        android:id="@+id/ivLogo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:text="Search Roommates"
-        android:textSize="24sp" />
+        android:src="@drawable/roomie_logo"
+        android:contentDescription="@string/app_name"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"/>
 
-    <!-- Spacer to push the nav down -->
+    <!-- Instruction text -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Type your filters"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_gravity="center"
+        android:layout_marginTop="24dp"/>
+
+    <!-- 1) City search field -->
+    <EditText
+        android:id="@+id/etCitySearch"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_margin="16dp"
+        android:hint="Search City"
+        android:drawableStart="@drawable/ic_person_search"
+        android:drawablePadding="8dp"
+        android:padding="12dp"
+        android:background="@drawable/bg_filter_input"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"/>
+
+    <!-- 2) Price range inputs -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp">
+
+        <EditText
+            android:id="@+id/etBudgetFrom"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:hint="From €"
+            android:gravity="center"
+            android:padding="12dp"
+            android:background="@drawable/bg_filter_input"
+            android:textColor="@android:color/black"
+            android:textSize="16sp"/>
+
+        <Space
+            android:layout_width="16dp"
+            android:layout_height="wrap_content"/>
+
+        <EditText
+            android:id="@+id/etBudgetTo"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:hint="To €"
+            android:gravity="center"
+            android:padding="12dp"
+            android:background="@drawable/bg_filter_input"
+            android:textColor="@android:color/black"
+            android:textSize="16sp"/>
+    </LinearLayout>
+
+    <!-- Search button (blue) -->
+    <Button
+        android:id="@+id/btnApplyFilters"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Search"
+        android:textColor="@android:color/white"
+        android:backgroundTint="@android:color/holo_blue_light"
+        android:layout_gravity="end"
+        android:layout_margin="16dp"/>
+
+    <!-- Spacer pushes nav bar to the bottom -->
     <View
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"/>
 
-    <!-- Bottom nav always at the bottom -->
+    <!-- Bottom navigation bar -->
     <include
         android:id="@+id/bottom_navigation"
         layout="@layout/layout_bottom_navigation"
