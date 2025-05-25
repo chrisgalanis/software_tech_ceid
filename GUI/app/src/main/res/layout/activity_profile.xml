@@ -25,12 +25,12 @@
 
         <ImageView
             android:id="@+id/ivProfilePic"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:src="@drawable/ic_profile_placeholder"
-            android:scaleType="centerCrop"
+            android:layout_width="197dp"
+            android:layout_height="191dp"
             android:layout_marginTop="32dp"
-            android:background="@drawable/circle_white_background"/>
+            android:background="@drawable/circle_white_background"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_profile_placeholder" />
 
         <TextView
             android:id="@+id/tvNameAge"

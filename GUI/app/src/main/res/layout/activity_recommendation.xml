@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Budget and City inputs side by side -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp">
+
+        <EditText
+            android:id="@+id/etBudget"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.45"
+            android:hint="Budget (€)"
+            android:inputType="number" />
+
+        <Space
+            android:layout_width="8dp"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/etCity"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.50"
+            android:hint="City"
+            android:inputType="text" />
+    </LinearLayout>
+
+    <!-- Save button and content share space -->
+    <Button
+        android:id="@+id/btnSubmitPrefs"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save"
+        android:layout_gravity="end"
+        android:paddingEnd="16dp" />
+
+    <!-- Content container with weight and bottom nav pinned -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <!-- Empty placeholder shown until search -->
+        <TextView
+            android:id="@+id/emptyView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="No recommendations yet. Perform a search to see results."
+            android:gravity="center"
+            android:textSize="16sp"
+            android:textColor="@color/black" />
+
+        <!-- Recommendation card (hidden until Save/Search) -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            app:cardCornerRadius="8dp"
+            android:layout_margin="16dp">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <!-- Profile pic placeholder -->
+                <ImageView
+                    android:id="@+id/imgProfile"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_profile_placeholder" />
+
+                <!-- Name, age -->
+                <TextView
+                    android:id="@+id/tvNameAge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Name, Age"
+                    android:textStyle="bold"
+                    android:layout_marginTop="8dp" />
+
+                <!-- Budget, city -->
+                <TextView
+                    android:id="@+id/tvBudgetCity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Budget, City" />
+
+                <!-- X / ❤️ buttons -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:layout_marginTop="16dp">
+
+                    <ImageButton
+                        android:id="@+id/btnReject"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:contentDescription="Reject"
+                        android:src="@drawable/ic_close"
+                        android:background="@null" />
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <ImageButton
+                        android:id="@+id/btnAccept"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:contentDescription="Accept"
+                        android:src="@drawable/ic_favorite"
+                        android:background="@null" />
+                </LinearLayout>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Bottom nav bar fixed at bottom of container -->
+        <include
+            android:id="@+id/bottom_navigation"
+            layout="@layout/layout_bottom_navigation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom" />
+
+    </FrameLayout>
+
+</LinearLayout>
