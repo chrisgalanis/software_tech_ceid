@@ -1,23 +1,29 @@
 package com.example.roomie;
 
 public class MessageItem {
-  private String userName;
+  private long userId; // <<< ADD THIS: The actual ID from the users table
+  private String displayName; // Name to show in the list
   private String lastMessage;
   private String timestamp;
   private int profileImageRes;
-  private String userId; // Optional: for a unique ID
 
-  // Constructor
-  public MessageItem(String userName, String lastMessage, String timestamp, int profileImageRes) {
-    this.userName = userName;
+  // Updated constructor
+  public MessageItem(
+      long userId, String displayName, String lastMessage, String timestamp, int profileImageRes) {
+    this.userId = userId;
+    this.displayName = displayName;
     this.lastMessage = lastMessage;
     this.timestamp = timestamp;
     this.profileImageRes = profileImageRes;
   }
 
-  // --- Public Getter Methods ---
-  public String getUserName() {
-    return userName;
+  // Getters
+  public long getUserId() { // <<< ADD THIS
+    return userId;
+  }
+
+  public String getUserName() { // <<< RENAME from getUserName for clarity
+    return displayName;
   }
 
   public String getLastMessage() {
@@ -31,8 +37,4 @@ public class MessageItem {
   public int getProfileImageRes() {
     return profileImageRes;
   }
-
-  public String getUserId() {
-    return userId;
-  } // Uncomment if you have and need this
 }

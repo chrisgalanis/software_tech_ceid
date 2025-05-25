@@ -8,15 +8,15 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import com.google.android.gms.maps.model.LatLng;
+import android.util.Log;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    private static final String DATABASE_NAME    = "RoomieApp.db";
-
-    private static final int    DATABASE_VERSION = 8;  // bumped
+  private static final String DATABASE_NAME = "RoomieApp.db";
+  private static final int DATABASE_VERSION = 10;
 
     // Table: users
     public static final String TABLE_USERS            = "users";
@@ -78,7 +78,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_USER_ID = "user_id";
     public static final String COLUMN_MATCH_TIMESTAMP = "match_timestamp";
 
-    // CREATE statements
+
+
+  // chat messages
+  public static final String TABLE_CHAT_MESSAGES = "chat_messages";
+  public static final String COLUMN_MESSAGE_ID = "_id"; // Primary key
+  public static final String COLUMN_MESSAGE_SENDER_ID = "sender_user_id";
+  public static final String COLUMN_MESSAGE_RECEIVER_ID = "receiver_user_id";
+  public static final String COLUMN_MESSAGE_TEXT = "message_text";
+  public static final String COLUMN_MESSAGE_TIMESTAMP_MS = "timestamp_ms";
+
+  // CREATE statements
    private static final String SQL_CREATE_USERS =
                       "CREATE TABLE " + TABLE_USERS + " ("
                     +   COLUMN_ID              + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -93,8 +103,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     +   COLUMN_USER_BUDGET_TO  + " INTEGER DEFAULT 0, "
                     +   COLUMN_USER_CITY       + " TEXT"
                     +   ");";
-
-
 
   private static final String SQL_CREATE_PHOTOS =
       "CREATE TABLE "
@@ -169,20 +177,53 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     + "FOREIGN KEY(" + COLUMN_LIKE_TARGET + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_ID + ") ON DELETE CASCADE"
                     + ");";
 
+
   private static final String SQL_CREATE_MATCHES =
       "CREATE TABLE "
           + TABLE_MATCHES
           + " ("
-          + COLUMN_MATCH_ID
+          + COLUMN_MATCHES_ID
           + " INTEGER NOT NULL, "
-          + COLUMN_USER_ID
+          + COLUMN_MATCHES_USER_ID
           + " INTEGER NOT NULL, "
-          + COLUMN_MATCH_TIMESTAMP
-          + " DATETIME DEFAULT CURRENT_TIMESTAMP, "
+          // Optional: + COLUMN_MATCHES_TIMESTAMP + " DATETIME DEFAULT CURRENT_TIMESTAMP, "
           + "FOREIGN KEY("
-          + COLUMN_USER_ID
+          + COLUMN_MATCHES_USER_ID
+          + ") REFERENCES "
+          + TABLE_USERS
+          + "("
+          + COLUMN_ID
+          + ") ON DELETE CASCADE, "
+          + "PRIMARY KEY ("
+          + COLUMN_MATCHES_ID
+          + ", "
+          + COLUMN_MATCHES_USER_ID
+          + ")" // Composite Primary Key
+          + ");";
+
+  private static final String SQL_CREATE_CHAT_MESSAGES =
+      "CREATE TABLE "
+          + TABLE_CHAT_MESSAGES
+          + " ("
+          + COLUMN_MESSAGE_ID
+          + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+          + COLUMN_MESSAGE_SENDER_ID
+          + " INTEGER NOT NULL, "
+          + COLUMN_MESSAGE_RECEIVER_ID
+          + " INTEGER NOT NULL, "
+          + COLUMN_MESSAGE_TEXT
+          + " TEXT NOT NULL, "
+          + COLUMN_MESSAGE_TIMESTAMP_MS
+          + " INTEGER NOT NULL, "
           + "FOREIGN KEY("
-          + COLUMN_LIKE_TARGET
+          + COLUMN_MESSAGE_SENDER_ID
+          + ") REFERENCES "
+          + TABLE_USERS
+          + "("
+          + COLUMN_ID
+          + ") ON DELETE CASCADE, "
+          + "FOREIGN KEY("
+          + COLUMN_MESSAGE_RECEIVER_ID
           + ") REFERENCES "
           + TABLE_USERS
           + "("
@@ -206,11 +247,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     db.execSQL(SQL_CREATE_PHOTOS);
     db.execSQL(SQL_CREATE_INTERESTS);
     db.execSQL(SQL_CREATE_LIKES);
+    db.execSQL(SQL_CREATE_MATCHES);
+    db.execSQL(SQL_CREATE_CHAT_MESSAGES);
   }
 
   @Override
   public void onUpgrade(SQLiteDatabase db, int oldV, int newV) {
     // Drop all tables in dependency order
+
+    db.execSQL("DROP TABLE IF EXISTS " + TABLE_CHAT_MESSAGES);
+    db.execSQL("DROP TABLE IF EXISTS " + TABLE_MATCHES);
     db.execSQL("DROP TABLE IF EXISTS " + TABLE_LIKES);
     db.execSQL("DROP TABLE IF EXISTS " + TABLE_INTERESTS);
     db.execSQL("DROP TABLE IF EXISTS " + TABLE_PHOTOS);
@@ -717,70 +763,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
 
-    public void likeUser(long userId, long targetId) {
-        SQLiteDatabase db = getWritableDatabase();
-        ContentValues cv = new ContentValues();
-        cv.put(COLUMN_LIKE_USER,   userId);
-        cv.put(COLUMN_LIKE_TARGET, targetId);
-        db.insertWithOnConflict(
-                TABLE_LIKES,
-                null,
-                cv,
-                SQLiteDatabase.CONFLICT_IGNORE
-        );
-        db.close();
-    }
-
-    /** Remove a like: delete the row entirely */
-    public void unlikeUser(long userId, long targetId) {
-        SQLiteDatabase db = getWritableDatabase();
-        db.delete(
-                TABLE_LIKES,
-                COLUMN_LIKE_USER   + "=? AND " + COLUMN_LIKE_TARGET + "=?",
-                new String[]{ String.valueOf(userId), String.valueOf(targetId) }
-        );
-        db.close();
-    }
-    public List<Long> getUsersWhoLikedMe(long userId) {
-        List<Long> list = new ArrayList<>();
-        SQLiteDatabase db = getReadableDatabase();
-        Cursor c = db.query(
-                TABLE_LIKES,
-                new String[]{ COLUMN_LIKE_USER },
-                COLUMN_LIKE_TARGET + "=?",
-                new String[]{ String.valueOf(userId) },
-                null, null, null
-        );
-        while (c.moveToNext()) {
-            list.add(c.getLong(c.getColumnIndexOrThrow(COLUMN_LIKE_USER)));
-        }
-        c.close();
-        return list;
-    }
-
-    /**
-     * Fetch a User object by its ID.
-     */
-    public User getUserById(long id) {
-        SQLiteDatabase db = getReadableDatabase();
-        Cursor c = db.query(
-                TABLE_USERS,
-                null,
-                COLUMN_ID + "=?",
-                new String[]{ String.valueOf(id) },
-                null, null, null
-        );
-        User u = null;
-        if (c.moveToFirst()) {
-            u = new User();
-            u.id        = c.getLong(c.getColumnIndexOrThrow(COLUMN_ID));
-            u.firstName = c.getString(c.getColumnIndexOrThrow(COLUMN_USER_FIRSTNAME));
-            u.lastName  = c.getString(c.getColumnIndexOrThrow(COLUMN_USER_LASTNAME));
-            // you can fill in other fields on User if needed
-        }
-        c.close();
-        return u;
-    }
+    
   /** Save budget & city for this user */
   public void updateUserPreferences(long userId, int budget, String city) {
     SQLiteDatabase db = getWritableDatabase();
@@ -860,5 +843,445 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     c.close();
     return list;
   }
+  /** Record a like (true) or dislike (false) */
+  public void likeUser(long userId, long targetId) {
+    SQLiteDatabase db = getWritableDatabase();
+    ContentValues cv = new ContentValues();
+    cv.put(COLUMN_LIKE_USER, userId);
+    cv.put(COLUMN_LIKE_TARGET, targetId);
+    db.insertWithOnConflict(TABLE_LIKES, null, cv, SQLiteDatabase.CONFLICT_IGNORE);
+    db.close();
+  }
 
+  /** Remove a like: delete the row entirely */
+  public void unlikeUser(long userId, long targetId) {
+    SQLiteDatabase db = getWritableDatabase();
+    db.delete(
+        TABLE_LIKES,
+        COLUMN_LIKE_USER + "=? AND " + COLUMN_LIKE_TARGET + "=?",
+        new String[] {String.valueOf(userId), String.valueOf(targetId)});
+    db.close();
+  }
+
+  public List<Long> getUsersWhoLikedMe(long userId) {
+    List<Long> list = new ArrayList<>();
+    SQLiteDatabase db = getReadableDatabase();
+    Cursor c =
+        db.query(
+            TABLE_LIKES,
+            new String[] {COLUMN_LIKE_USER},
+            COLUMN_LIKE_TARGET + "=?",
+            new String[] {String.valueOf(userId)},
+            null,
+            null,
+            null);
+    while (c.moveToNext()) {
+      list.add(c.getLong(c.getColumnIndexOrThrow(COLUMN_LIKE_USER)));
+    }
+    c.close();
+    return list;
+  }
+
+  /** Fetch a User object by its ID. */
+  public User getUserById(long id) {
+    SQLiteDatabase db = getReadableDatabase();
+    Cursor c =
+        db.query(
+            TABLE_USERS,
+            null,
+            COLUMN_ID + "=?",
+            new String[] {String.valueOf(id)},
+            null,
+            null,
+            null);
+    User u = null;
+    if (c.moveToFirst()) {
+      u = new User();
+      u.id = c.getLong(c.getColumnIndexOrThrow(COLUMN_ID));
+      u.firstName = c.getString(c.getColumnIndexOrThrow(COLUMN_USER_FIRSTNAME));
+      u.lastName = c.getString(c.getColumnIndexOrThrow(COLUMN_USER_LASTNAME));
+      // you can fill in other fields on User if needed
+    }
+    c.close();
+    return u;
+  }
+
+  public long insertMatchEntry(long matchEventId, long userId) {
+    SQLiteDatabase db = this.getWritableDatabase();
+    ContentValues values = new ContentValues();
+    values.put(COLUMN_MATCHES_ID, matchEventId);
+    values.put(COLUMN_MATCHES_USER_ID, userId);
+
+    long newRowId = -1;
+    try {
+      newRowId = db.insertOrThrow(TABLE_MATCHES, null, values);
+    } catch (android.database.sqlite.SQLiteConstraintException e) {
+      // This can happen if the (match_event_id, user_id) pair already exists due to the PRIMARY KEY
+      // constraint
+      Log.e("DatabaseHelper", "Constraint violation on inserting match entry: " + e.getMessage());
+      // Or if the foreign key constraint for user_id fails
+    } catch (Exception e) {
+      Log.e("DatabaseHelper", "Error inserting match entry: " + e.getMessage());
+    }
+    // db.close(); // Don't close here if called within a transaction or by other methods managing
+    // the DB instance
+    return newRowId;
+  }
+
+  public long createMatch(long userId1, long userId2) {
+    if (userId1 == userId2) {
+      Log.w("DatabaseHelper", "Cannot create match: userId1 and userId2 are the same.");
+      return -1; // Users cannot match with themselves
+    }
+
+    // Optional: Check if these users are already matched in any existing event.
+    // This logic can be complex: you'd need to see if there's any match_event_id
+    // that contains both userId1 and userId2. For simplicity, this example
+    // creates a new match event regardless. If you want to prevent duplicate
+    // pairings under different event IDs, you'd add that check here.
+
+    SQLiteDatabase db = this.getWritableDatabase();
+    long newMatchEventId = -1;
+
+    // Get the next available match_event_id
+    // This is a simple way; for high concurrency, a more robust UUID or server-side ID might be
+    // better.
+    Cursor c =
+        db.rawQuery(
+            "SELECT IFNULL(MAX(" + COLUMN_MATCHES_ID + "), 0) + 1 FROM " + TABLE_MATCHES, null);
+    if (c.moveToFirst()) {
+      newMatchEventId = c.getLong(0);
+    }
+    c.close();
+
+    if (newMatchEventId == 0) newMatchEventId = 1; // Start with 1 if table was empty
+
+    if (newMatchEventId == -1) {
+      Log.e("DatabaseHelper", "Failed to generate a new match_event_id.");
+      return -1;
+    }
+
+    db.beginTransaction();
+    try {
+      // Insert entry for the first user
+      ContentValues values1 = new ContentValues();
+      values1.put(COLUMN_MATCHES_ID, newMatchEventId);
+      values1.put(COLUMN_MATCHES_USER_ID, userId1);
+      long result1 = db.insert(TABLE_MATCHES, null, values1);
+
+      // Insert entry for the second user
+      ContentValues values2 = new ContentValues();
+      values2.put(COLUMN_MATCHES_USER_ID, newMatchEventId);
+      values2.put(COLUMN_MATCHES_USER_ID, userId2);
+      long result2 = db.insert(TABLE_MATCHES, null, values2);
+
+      if (result1 != -1 && result2 != -1) {
+        db.setTransactionSuccessful();
+        Log.d(
+            "DatabaseHelper",
+            "Match created successfully with event ID: "
+                + newMatchEventId
+                + " for users "
+                + userId1
+                + " & "
+                + userId2);
+        return newMatchEventId; // Return the ID of the match event
+      } else {
+        Log.e(
+            "DatabaseHelper",
+            "Failed to insert one or both match entries. Result1: "
+                + result1
+                + ", Result2: "
+                + result2);
+        return -1; // Indicate failure
+      }
+    } catch (Exception e) {
+      Log.e("DatabaseHelper", "Error during createMatch transaction: " + e.getMessage());
+      return -1;
+    } finally {
+      db.endTransaction();
+      // db.close(); //  Caller should manage DB open/close lifecycle if multiple ops are chained
+    }
+  }
+
+  public List<Long> getMatchedUserIds(long userId) {
+    List<Long> matchedUserIds = new ArrayList<>();
+    SQLiteDatabase db = this.getReadableDatabase();
+
+    // This query finds all match_event_ids the user is in,
+    // then joins back to the matches table to find the other user(s) in those same events.
+    String queryString =
+        "SELECT DISTINCT m2."
+            + COLUMN_MATCHES_USER_ID
+            + " FROM "
+            + TABLE_MATCHES
+            + " m1"
+            + " INNER JOIN "
+            + TABLE_MATCHES
+            + " m2 ON m1."
+            + COLUMN_MATCHES_ID
+            + " = m2."
+            + COLUMN_MATCHES_ID
+            + " WHERE m1."
+            + COLUMN_MATCHES_USER_ID
+            + " = ? AND m2."
+            + COLUMN_MATCHES_USER_ID
+            + " != ?";
+
+    Cursor cursor =
+        db.rawQuery(queryString, new String[] {String.valueOf(userId), String.valueOf(userId)});
+
+    try {
+      if (cursor.moveToFirst()) {
+        do {
+          matchedUserIds.add(cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_MATCHES_USER_ID)));
+        } while (cursor.moveToNext());
+      }
+    } catch (Exception e) {
+      Log.e("DatabaseHelper", "Error getting matched user IDs: " + e.getMessage());
+    } finally {
+      if (cursor != null) {
+        cursor.close();
+      }
+      // db.close(); // Caller should manage DB open/close
+    }
+    Log.d("DatabaseHelper", "User " + userId + " is matched with: " + matchedUserIds.toString());
+    return matchedUserIds;
+  }
+
+  public long addChatMessage(long senderId, long receiverId, String messageText, long timestampMs) {
+    SQLiteDatabase db = this.getWritableDatabase();
+    ContentValues values = new ContentValues();
+    values.put(COLUMN_MESSAGE_SENDER_ID, senderId);
+    values.put(COLUMN_MESSAGE_RECEIVER_ID, receiverId);
+    values.put(COLUMN_MESSAGE_TEXT, messageText);
+    values.put(COLUMN_MESSAGE_TIMESTAMP_MS, timestampMs);
+
+    long newRowId = -1;
+    try {
+      newRowId = db.insertOrThrow(TABLE_CHAT_MESSAGES, null, values);
+      Log.d("DatabaseHelper", "Chat message inserted with row ID: " + newRowId);
+    } catch (Exception e) {
+      Log.e("DatabaseHelper", "Error inserting chat message: " + e.getMessage());
+    }
+    // db.close(); // Managed by the caller or higher-level component
+    return newRowId;
+  }
+
+  /**
+   * Retrieves chat messages between two users, ordered by timestamp.
+   *
+   * @param currentUserId The ID of the current logged-in user.
+   * @param chatPartnerId The ID of the other user in the conversation.
+   * @return A list of ChatMessage objects.
+   */
+  public List<ChatMessage> getChatMessagesBetweenUsers(
+      long currentUserId, long chatPartnerId, int chatPartnerProfileImageRes) {
+    List<ChatMessage> messages = new ArrayList<>();
+    SQLiteDatabase db = this.getReadableDatabase();
+    String selection =
+        "("
+            + COLUMN_MESSAGE_SENDER_ID
+            + " = ? AND "
+            + COLUMN_MESSAGE_RECEIVER_ID
+            + " = ?) OR "
+            + "("
+            + COLUMN_MESSAGE_SENDER_ID
+            + " = ? AND "
+            + COLUMN_MESSAGE_RECEIVER_ID
+            + " = ?)";
+    String[] selectionArgs = {
+      String.valueOf(currentUserId), String.valueOf(chatPartnerId),
+      String.valueOf(chatPartnerId), String.valueOf(currentUserId)
+    };
+    String orderBy = COLUMN_MESSAGE_TIMESTAMP_MS + " ASC"; // Order by time, oldest first
+
+    Cursor cursor = null;
+    try {
+      cursor = db.query(TABLE_CHAT_MESSAGES, null, selection, selectionArgs, null, null, orderBy);
+
+      if (cursor != null && cursor.moveToFirst()) {
+        do {
+          String senderIdFromDbStr =
+              String.valueOf(
+                  cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_MESSAGE_SENDER_ID)));
+          String receiverIdFromDbStr =
+              String.valueOf(
+                  cursor.getLong(
+                      cursor.getColumnIndexOrThrow(
+                          COLUMN_MESSAGE_RECEIVER_ID))); // Not directly used in ChatMessage model
+          // now
+          String messageText = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_MESSAGE_TEXT));
+          long timestampMs =
+              cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_MESSAGE_TIMESTAMP_MS));
+
+          // Convert timestampMs to "HH:mm" string format for ChatMessage model
+          String timeString =
+              android.text.format.DateFormat.format("HH:mm", timestampMs).toString();
+
+          boolean isSentByCurrentUser = (Long.parseLong(senderIdFromDbStr) == currentUserId);
+
+          // Determine profile image: only show for received messages
+          int profileImgRes = isSentByCurrentUser ? 0 : chatPartnerProfileImageRes;
+
+          String chatMessageSenderId;
+          String chatMessageReceiverId;
+          if (isSentByCurrentUser) {
+            chatMessageSenderId = String.valueOf(currentUserId); // Or "currentUser"
+            chatMessageReceiverId =
+                String.valueOf(chatPartnerId); // Or actual partner name/ID if ChatMessage needs it
+          } else {
+            chatMessageSenderId = String.valueOf(chatPartnerId); // Or actual partner name/ID
+            chatMessageReceiverId = String.valueOf(currentUserId); // Or "currentUser"
+          }
+
+          ChatMessage message;
+          if (isSentByCurrentUser) {
+            message =
+                new ChatMessage(
+                    chatMessageSenderId, chatMessageReceiverId, messageText, timeString, true);
+          } else {
+            message =
+                new ChatMessage(
+                    chatMessageSenderId,
+                    chatMessageReceiverId,
+                    messageText,
+                    timeString,
+                    false,
+                    profileImgRes);
+          }
+          messages.add(message);
+
+        } while (cursor.moveToNext());
+      }
+    } catch (Exception e) {
+      Log.e("DatabaseHelper", "Error getting chat messages: " + e.getMessage());
+    } finally {
+      if (cursor != null) {
+        cursor.close();
+      }
+      // db.close();
+    }
+    Log.d(
+        "DatabaseHelper",
+        "Retrieved "
+            + messages.size()
+            + " messages between "
+            + currentUserId
+            + " and "
+            + chatPartnerId);
+    return messages;
+  }
+
+  /**
+   * Finds a user by email. If not found, inserts a new dummy user with basic details.
+   *
+   * @param email The unique email for the user.
+   * @param defaultFirstName Default first name if creating.
+   * @param defaultLastName Default last name if creating.
+   * @return The user's ID (_id) from the database, or -1 if error.
+   */
+  public long findOrInsertUser(
+      String email,
+      String defaultPassword,
+      String defaultFirstName,
+      String defaultLastName,
+      String defaultGender,
+      String defaultBirthday) {
+    SQLiteDatabase db = this.getReadableDatabase();
+    long userId = -1;
+
+    // Try to find existing user by email
+    Cursor cursor =
+        db.query(
+            TABLE_USERS,
+            new String[] {COLUMN_ID},
+            COLUMN_USER_EMAIL + "=?",
+            new String[] {email},
+            null,
+            null,
+            null);
+
+    if (cursor != null && cursor.moveToFirst()) {
+      userId = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_ID));
+      Log.d("DatabaseHelper", "User found with email " + email + ", ID: " + userId);
+    }
+    if (cursor != null) {
+      cursor.close();
+    }
+
+    if (userId == -1) { // User not found, insert new dummy user
+      db = this.getWritableDatabase(); // Get writable database for insert
+      ContentValues values = new ContentValues();
+      values.put(COLUMN_USER_EMAIL, email);
+      values.put(COLUMN_USER_PASSWORD, defaultPassword); // You should hash passwords in a real app
+      values.put(COLUMN_USER_FIRSTNAME, defaultFirstName);
+      values.put(COLUMN_USER_LASTNAME, defaultLastName);
+      values.put(COLUMN_USER_GENDER, defaultGender); // Provide a default
+      values.put(COLUMN_USER_BIRTHDAY, defaultBirthday); // Provide a default
+
+      try {
+        userId = db.insertOrThrow(TABLE_USERS, null, values);
+        Log.d(
+            "DatabaseHelper",
+            "Inserted new dummy user "
+                + defaultFirstName
+                + " with ID: "
+                + userId
+                + " and email: "
+                + email);
+      } catch (Exception e) {
+        Log.e("DatabaseHelper", "Error inserting dummy user " + email + ": " + e.getMessage());
+        return -1; // Return -1 on error
+      }
+    }
+    return userId;
+  }
+
+  /**
+   * Checks if there are any messages exchanged between two users.
+   *
+   * @param userId1 The ID of the first user.
+   * @param userId2 The ID of the second user.
+   * @return true if messages exist, false otherwise.
+   */
+  public boolean hasMessagesBetweenUsers(long userId1, long userId2) {
+    SQLiteDatabase db = this.getReadableDatabase();
+    String selection =
+        "("
+            + COLUMN_MESSAGE_SENDER_ID
+            + " = ? AND "
+            + COLUMN_MESSAGE_RECEIVER_ID
+            + " = ?) OR "
+            + "("
+            + COLUMN_MESSAGE_SENDER_ID
+            + " = ? AND "
+            + COLUMN_MESSAGE_RECEIVER_ID
+            + " = ?)";
+    String[] selectionArgs = {
+      String.valueOf(userId1), String.valueOf(userId2),
+      String.valueOf(userId2), String.valueOf(userId1)
+    };
+    Cursor cursor = null;
+    try {
+      cursor =
+          db.query(
+              TABLE_CHAT_MESSAGES,
+              new String[] {COLUMN_MESSAGE_ID}, // Just need to check for existence
+              selection,
+              selectionArgs,
+              null,
+              null,
+              null,
+              "1"); // Limit 1 for efficiency
+      return cursor != null && cursor.getCount() > 0;
+    } catch (Exception e) {
+      Log.e("DatabaseHelper", "Error checking if messages exist: " + e.getMessage());
+      return false; // Assume no messages on error to be safe or handle differently
+    } finally {
+      if (cursor != null) {
+        cursor.close();
+      }
+    }
+  }
 }
