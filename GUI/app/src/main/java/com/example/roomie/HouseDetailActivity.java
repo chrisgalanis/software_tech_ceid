@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class HouseDetailActivity extends AppCompatActivity {
     @Override
@@ -52,16 +53,22 @@ public class HouseDetailActivity extends AppCompatActivity {
                 .circleCrop()
                 .into(ivOwnerAvatar);
 
-        btnViewProf .setOnClickListener(v ->
+        btnViewProf.setOnClickListener(v ->
                 Toast.makeText(this,
                         "View profile for " + house.ownerName,
                         Toast.LENGTH_SHORT).show()
         );
-        btnMatch     .setOnClickListener(v ->
+        btnMatch.setOnClickListener(v ->
                 Toast.makeText(this,
                         "Match with " + house.ownerName,
                         Toast.LENGTH_SHORT).show()
         );
         tvOwnerSub.setText(db.getUserEmailById(house.ownerId));
+
+        BottomNavigationHelper.setup(
+                (BottomNavigationView) findViewById(R.id.bottom_navigation),
+                this,
+                R.id.nav_home
+        );
     }
 }

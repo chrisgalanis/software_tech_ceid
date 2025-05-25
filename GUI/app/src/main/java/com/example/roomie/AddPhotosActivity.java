@@ -30,6 +30,8 @@ public class AddPhotosActivity extends AppCompatActivity {
     private long           userId;
     private DatabaseHelper dbHelper;
     private ActivityResultLauncher<Intent> pickPhotoLauncher;
+    private static final int REQ_PICK_PHOTO = 1001;
+
 
     private void handleImageSelection(Uri uri) {
         if (uri != null && currentSlot >= 0) {

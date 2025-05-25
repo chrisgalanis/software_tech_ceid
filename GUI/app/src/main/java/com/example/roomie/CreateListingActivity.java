@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +28,12 @@ public class CreateListingActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_listing);
+
+        BottomNavigationHelper.setup(
+                (BottomNavigationView) findViewById(R.id.bottom_navigation),
+                this,
+                R.id.nav_home
+        );
 
         etAddress     = findViewById(R.id.etAddress);
         etRent        = findViewById(R.id.etRent);
