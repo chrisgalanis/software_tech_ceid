@@ -60,9 +60,14 @@
         <activity
             android:name=".MessagesActivity"
             android:exported="false"/>
-        <activity android:name=".SearchHousesActivity"
+        <activity
+            android:name=".SearchHousesActivity"
             android:exported="false"/>
-        <activity android:name=".HouseDetailActivity"
+        <activity
+            android:name=".HouseDetailActivity"
+            android:exported="false"/>
+        <activity
+            android:name=".CreateListingActivity"
             android:exported="false"/>
 
         <meta-data

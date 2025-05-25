@@ -172,6 +172,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return id;
     }
 
+
+    public long insertUser(String email,
+                           String password,
+                           String firstName,
+                           String lastName,
+                           String gender,
+                           String birthday) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_USER_EMAIL,     email);
+        cv.put(COLUMN_USER_PASSWORD,  password);
+        cv.put(COLUMN_USER_FIRSTNAME, firstName);
+        cv.put(COLUMN_USER_LASTNAME,  lastName);
+        cv.put(COLUMN_USER_GENDER,    gender);
+        cv.put(COLUMN_USER_BIRTHDAY,  birthday);
+        return db.insert(TABLE_USERS, null, cv);
+    }
+
     /** Update both name, gender & birthday for this user in one go. */
     public void updateUserProfile(long userId,
                                   String first, String last,
@@ -590,6 +608,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // 4) Seed exactly one batch of houses for each of those IDs
         for (long ownerId : ownerIds) {
             seedMockHouses(ownerId);
+        }
+    }
+
+    public void seedMockUsers() {
+        // Only seed if table empty
+        if (getUserIdByEmail("mikmits@gmail.com") < 0) {
+            insertUser("mikmits@gmail.com", "pass123",
+                    "Mike", "Mitsainas", "M", "2004-09-13");
+            insertUser("kwsmav@gmail.com",   "qwerty",
+                    "Kwstas",   "Mavridis",    "M", "2004-04-05");
+            // …add more mock users as desired
         }
     }
 

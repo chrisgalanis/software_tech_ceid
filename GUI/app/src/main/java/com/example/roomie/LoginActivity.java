@@ -28,6 +28,8 @@ public class LoginActivity extends AppCompatActivity {
 
         // Initialize views
         dbHelper = new DatabaseHelper(this);
+        dbHelper.seedMockUsers();
+
         emailEditText = findViewById(R.id.emailEditText);
         passwordEditText = findViewById(R.id.passwordEditText);
         loginButton = findViewById(R.id.loginButton);
