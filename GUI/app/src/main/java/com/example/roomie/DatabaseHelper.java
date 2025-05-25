@@ -147,22 +147,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
       "CREATE TABLE "
           + TABLE_MATCHES
           + " ("
-          + COLUMN_MATCH_ID 
+          + COLUMN_MATCH_ID
           + " INTEGER NOT NULL, "
-          + COLUMN_USER_ID 
+          + COLUMN_USER_ID
           + " INTEGER NOT NULL, "
-          + COLUMN_MATCH_TIMESTAMP + " DATETIME DEFAULT CURRENT_TIMESTAMP, "
+          + COLUMN_MATCH_TIMESTAMP
+          + " DATETIME DEFAULT CURRENT_TIMESTAMP, "
           + "FOREIGN KEY("
-          + COLUMN_USER_ID 
+          + COLUMN_USER_ID
           + ") REFERENCES "
           + TABLE_USERS
           + "("
           + COLUMN_ID
           + ") ON DELETE CASCADE, "
           + "PRIMARY KEY ("
-          + COLUMN_MATCH_ID 
+          + COLUMN_MATCH_ID
           + ", "
-          + COLUMN_MATCH_ID 
+          + COLUMN_MATCH_ID
           + ")" // Composite Primary Key
           + ");";
 
@@ -375,6 +376,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /** Get all other users as recommendations */
     public List<User> getRecommendations(long currentUserId) {
 
+<<<<<<< HEAD
         List<User> list = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
         Cursor c = db.query(
@@ -782,4 +784,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         c.close();
         return u;
     }
+=======
+  // Insert & Create & Find Matches
+>>>>>>> 313cd41 (fix during rebase)
 }

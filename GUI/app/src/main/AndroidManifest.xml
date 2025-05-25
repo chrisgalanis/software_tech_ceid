@@ -65,11 +65,9 @@
         <activity android:name=".SearchHousesActivity"/>
         <activity
             android:name=".HouseDetailActivity"
-            android:exported="false"/>
-        <activity
-            android:name=".MessagesActivity"
-            android:exported="false"/>
-       <activity android:name=".MessagesActivity"
+      android:exported="false"/>
+
+      <activity android:name=".MessagesActivity"
               android:exported="true"> </activity>
 
       <activity android:name=".ChatActivity" />

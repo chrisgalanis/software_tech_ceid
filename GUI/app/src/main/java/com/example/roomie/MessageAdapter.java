@@ -13,6 +13,7 @@ import java.util.List;
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder> {
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     private List<MessageItem> messageList;
 
     public MessageAdapter(List<MessageItem> messageList) {
@@ -20,11 +21,16 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 =======
     private List<MessageItem> messageList; // This list is for the adapter
     private OnMessageItemClickListener listener;
+=======
+  private List<MessageItem> messageList; // This list is for the adapter
+  private OnMessageItemClickListener listener;
+>>>>>>> 313cd41 (fix during rebase)
 
-    public interface OnMessageItemClickListener {
-        void onMessageItemClick(MessageItem messageItem, int position);
-    }
+  public interface OnMessageItemClickListener {
+    void onMessageItemClick(MessageItem messageItem, int position);
+  }
 
+<<<<<<< HEAD
     public MessageAdapter(List<MessageItem> messageList, OnMessageItemClickListener listener) {
         this.messageList = messageList;
         this.listener = listener;
@@ -91,59 +97,85 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 =======
         holder.bind(currentItem, listener);
     }
+=======
+  public MessageAdapter(List<MessageItem> messageList, OnMessageItemClickListener listener) {
+    this.messageList = messageList;
+    this.listener = listener;
+  }
+
+  @NonNull
+  @Override
+  public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    // IMPORTANT: Make sure R.layout.item_message is the correct name of your XML layout file
+    // for a single row in your messages list.
+    View itemView =
+        LayoutInflater.from(parent.getContext()).inflate(R.layout.item_message, parent, false);
+    return new MessageViewHolder(itemView);
+  }
+
+  @Override
+  public void onBindViewHolder(@NonNull MessageViewHolder holder, int position) {
+    MessageItem currentItem = messageList.get(position);
+    holder.bind(currentItem, listener);
+  }
+>>>>>>> 313cd41 (fix during rebase)
 
   @Override
   public int getItemCount() {
     return messageList.size();
   }
 
-    // ViewHolder Inner Class
-    public static class MessageViewHolder extends RecyclerView.ViewHolder {
-        TextView textViewName;
-        TextView textViewLastMessage;
-        TextView textViewTimestamp;
-        ImageView imageViewProfile;
+  // ViewHolder Inner Class
+  public static class MessageViewHolder extends RecyclerView.ViewHolder {
+    TextView textViewName;
+    TextView textViewLastMessage;
+    TextView textViewTimestamp;
+    ImageView imageViewProfile;
 
-        public MessageViewHolder(@NonNull View itemView) {
-            super(itemView);
-            // IMPORTANT: The R.id.xxx names below MUST match the android:id="@+id/xxx"
-            // attributes in your R.layout.item_message XML file.
-            textViewName = itemView.findViewById(R.id.textViewMessageItemName);
-            textViewLastMessage = itemView.findViewById(R.id.textViewMessageItemLastMsg);
-            textViewTimestamp = itemView.findViewById(R.id.textViewMessageItemTimestamp);
-            imageViewProfile = itemView.findViewById(R.id.imageViewMessageItemProfile);
-        }
+    public MessageViewHolder(@NonNull View itemView) {
+      super(itemView);
+      // IMPORTANT: The R.id.xxx names below MUST match the android:id="@+id/xxx"
+      // attributes in your R.layout.item_message XML file.
+      textViewName = itemView.findViewById(R.id.textViewMessageItemName);
+      textViewLastMessage = itemView.findViewById(R.id.textViewMessageItemLastMsg);
+      textViewTimestamp = itemView.findViewById(R.id.textViewMessageItemTimestamp);
+      imageViewProfile = itemView.findViewById(R.id.imageViewMessageItemProfile);
+    }
 
-        public void bind(final MessageItem messageItem, final OnMessageItemClickListener listener) {
-            if (messageItem.getUserName() != null) {
-                textViewName.setText(messageItem.getUserName());
-            }
-            if (messageItem.getLastMessage() != null) {
-                textViewLastMessage.setText(messageItem.getLastMessage());
-            }
-            if (messageItem.getTimestamp() != null) {
-                textViewTimestamp.setText(messageItem.getTimestamp());
-            }
-            if (messageItem.getProfileImageRes() != 0) {
-                imageViewProfile.setImageResource(messageItem.getProfileImageRes());
-            } else {
-                // Optional: imageViewProfile.setImageResource(R.drawable.default_placeholder);
-            }
+    public void bind(final MessageItem messageItem, final OnMessageItemClickListener listener) {
+      if (messageItem.getUserName() != null) {
+        textViewName.setText(messageItem.getUserName());
+      }
+      if (messageItem.getLastMessage() != null) {
+        textViewLastMessage.setText(messageItem.getLastMessage());
+      }
+      if (messageItem.getTimestamp() != null) {
+        textViewTimestamp.setText(messageItem.getTimestamp());
+      }
+      if (messageItem.getProfileImageRes() != 0) {
+        imageViewProfile.setImageResource(messageItem.getProfileImageRes());
+      } else {
+        // Optional: imageViewProfile.setImageResource(R.drawable.default_placeholder);
+      }
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (listener != null) {
-                        int position = getAdapterPosition();
-                        if (position != RecyclerView.NO_POSITION) {
-                            // Use the 'messageItem' passed to this bind method.
-                            // This 'messageItem' is the specific item this ViewHolder is currently bound to.
-                            listener.onMessageItemClick(messageItem, position);
-                        }
-                    }
+      itemView.setOnClickListener(
+          new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+              if (listener != null) {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                  // Use the 'messageItem' passed to this bind method.
+                  // This 'messageItem' is the specific item this ViewHolder is currently bound to.
+                  listener.onMessageItemClick(messageItem, position);
                 }
-            });
-        }
+              }
+            }
+          });
     }
   }
+<<<<<<< HEAD
 >>>>>>> 3f39587 (messages-page done)
+=======
+}
+>>>>>>> 313cd41 (fix during rebase)
