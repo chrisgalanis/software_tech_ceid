@@ -68,10 +68,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_HOUSE_PHOTO_URI   = "uri";
 
 
+
     // likes table
-    public static final String TABLE_LIKES         = "likes";
-    public static final String COLUMN_LIKE_USER    = "userId";
-    public static final String COLUMN_LIKE_TARGET  = "targetId";
+    public static final String TABLE_LIKES = "likes";
+    public static final String COLUMN_LIKE_USER = "userId";
+    public static final String COLUMN_LIKE_TARGET = "targetId";
+    public static final String COLUMN_IS_LIKE = "isLike";
+
+    // Table  : matches
+    public static final String TABLE_MATCHES = "matches";
+    public static final String COLUMN_MATCH_ID = "match_id";
+    public static final String COLUMN_USER_ID = "user_id";
+    public static final String COLUMN_MATCH_TIMESTAMP = "match_timestamp";
 
     // CREATE statements
    private static final String SQL_CREATE_USERS =
@@ -88,6 +96,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     +   COLUMN_USER_BUDGET_TO  + " INTEGER DEFAULT 0, "
                     +   COLUMN_USER_CITY       + " TEXT"
                     +   ");";
+
 
 
     private static final String SQL_CREATE_PHOTOS =
@@ -172,11 +181,33 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     super(context, DATABASE_NAME, null, DATABASE_VERSION);
   }
 
-    @Override
-    public void onConfigure(SQLiteDatabase db) {
-        super.onConfigure(db);
-        db.setForeignKeyConstraintsEnabled(true);
-    }
+  @Override
+  public void onConfigure(SQLiteDatabase db) {
+    super.onConfigure(db);
+    db.setForeignKeyConstraintsEnabled(true);
+  }
+
+  @Override
+  public void onCreate(SQLiteDatabase db) {
+    db.execSQL(SQL_CREATE_USERS);
+    db.execSQL(SQL_CREATE_PHOTOS);
+    db.execSQL(SQL_CREATE_INTERESTS);
+    db.execSQL(SQL_CREATE_LIKES);
+    db.execSQL(SQL_CREATE_MATCHES);
+  }
+
+  @Override
+  public void onUpgrade(SQLiteDatabase db, int oldV, int newV) {
+    // drop in reverse order of dependencies
+
+    db.execSQL("DROP TABLE IF EXISTS " + TABLE_MATCHES);
+    db.execSQL("DROP TABLE IF EXISTS " + SQL_CREATE_LIKES);
+    db.execSQL("DROP TABLE IF EXISTS " + TABLE_INTERESTS);
+    db.execSQL("DROP TABLE IF EXISTS " + TABLE_PHOTOS);
+    db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
+
+    onCreate(db);
+  }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
@@ -373,34 +404,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    /** Get all other users as recommendations */
-    public List<User> getRecommendations(long currentUserId) {
-
-<<<<<<< HEAD
-        List<User> list = new ArrayList<>();
-        SQLiteDatabase db = getReadableDatabase();
-        Cursor c = db.query(
-                TABLE_USERS,
-                null,
-                COLUMN_ID + "!=?",
-                new String[]{ String.valueOf(currentUserId) },
-                null, null, null
-        );
-
-        // 4) Map to User objects
-        while (c.moveToNext()) {
-            User u = new User();
-            u.id        = c.getLong   (c.getColumnIndexOrThrow(COLUMN_ID));
-            u.firstName = c.getString (c.getColumnIndexOrThrow(COLUMN_USER_FIRSTNAME));
-            u.lastName  = c.getString (c.getColumnIndexOrThrow(COLUMN_USER_LASTNAME));
-            u.minBudget = c.getInt    (c.getColumnIndexOrThrow(COLUMN_USER_BUDGET_FROM));
-            u.maxBudget = c.getInt    (c.getColumnIndexOrThrow(COLUMN_USER_BUDGET_TO));
-            u.city      = c.getString (c.getColumnIndexOrThrow(COLUMN_USER_CITY));
-            list.add(u);
-        }
-        c.close();
-        return list;
-    }
   
     /** Insert a new house and return its ID */
     public long insertHouse(long ownerId,
@@ -784,7 +787,50 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         c.close();
         return u;
     }
-=======
-  // Insert & Create & Find Matches
->>>>>>> 313cd41 (fix during rebase)
+  /** Save budget & city for this user */
+  public void updateUserPreferences(long userId, int budget, String city) {
+    SQLiteDatabase db = getWritableDatabase();
+    ContentValues cv = new ContentValues();
+    cv.put(COLUMN_USER_BUDGET, budget);
+    cv.put(COLUMN_USER_CITY, city);
+    db.update(TABLE_USERS, cv, COLUMN_ID + "=?", new String[] {String.valueOf(userId)});
+    db.close();
+  }
+
+  /** Get all other users as recommendations */
+  public List<User> getRecommendations(long currentUserId) {
+    List<User> list = new ArrayList<>();
+    SQLiteDatabase db = getReadableDatabase();
+    Cursor c =
+        db.query(
+            TABLE_USERS,
+            null,
+            COLUMN_ID + "!=?",
+            new String[] {String.valueOf(currentUserId)},
+            null,
+            null,
+            null);
+    while (c.moveToNext()) {
+      User u = new User();
+      u.id = c.getLong(c.getColumnIndexOrThrow(COLUMN_ID));
+      u.firstName = c.getString(c.getColumnIndexOrThrow(COLUMN_USER_FIRSTNAME));
+      u.lastName = c.getString(c.getColumnIndexOrThrow(COLUMN_USER_LASTNAME));
+      u.budget = c.getInt(c.getColumnIndexOrThrow(COLUMN_USER_BUDGET));
+      u.city = c.getString(c.getColumnIndexOrThrow(COLUMN_USER_CITY));
+      list.add(u);
+    }
+    c.close();
+    return list;
+  }
+
+  /** Record a like (true) or dislike (false) */
+  public void markLike(long userId, long targetId, boolean isLike) {
+    SQLiteDatabase db = getWritableDatabase();
+    ContentValues cv = new ContentValues();
+    cv.put(COLUMN_LIKE_USER, userId);
+    cv.put(COLUMN_LIKE_TARGET, targetId);
+    cv.put(COLUMN_IS_LIKE, isLike ? 1 : 0);
+    db.insertWithOnConflict(TABLE_LIKES, null, cv, SQLiteDatabase.CONFLICT_REPLACE);
+    db.close();
+  }
 }
