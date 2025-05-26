@@ -56,6 +56,7 @@ public class SearchHousesActivity extends AppCompatActivity
     return Arrays.asList(
         new House(
             1,
+            1,
             "Lemesou 20, Patras",
             180,
             88,
@@ -66,6 +67,7 @@ public class SearchHousesActivity extends AppCompatActivity
             new LatLng(38.2466, 21.7345)),
         new House(
             2,
+            2,
             "Agiou Nikolaou 5, Patras",
             200,
             95,
@@ -75,6 +77,7 @@ public class SearchHousesActivity extends AppCompatActivity
             "avatarURL",
             new LatLng(38.2460, 21.7320)),
         new House(
+            3,
             3,
             "Sisinis 25, Patras",
             400,

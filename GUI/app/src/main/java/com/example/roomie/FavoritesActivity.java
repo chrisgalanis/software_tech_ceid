@@ -63,6 +63,7 @@ public class FavoritesActivity extends AppCompatActivity {
         Arrays.asList(
             new House(
                 1,
+                1,
                 "Athens Center",
                 160.0,
                 60.0,
@@ -72,6 +73,7 @@ public class FavoritesActivity extends AppCompatActivity {
                 "",
                 new LatLng(0, 0)),
             new House(
+                2,
                 2,
                 "Patras",
                 230.0,
