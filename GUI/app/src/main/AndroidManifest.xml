@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -67,7 +67,6 @@
         <activity
             android:name=".SearchRoommatesActivity"
             android:exported="false"/>
-
         <activity
             android:name=".RecommendationActivity"
             android:exported="false"/>
@@ -75,13 +74,16 @@
             android:name=".RegisterActivity"
             android:exported="false"/>
         <activity
-            android:name=".MessagesActivity"
-            android:exported="false"/>
-        <activity
-            android:name=".SearchHousesActivity"
-            android:exported="false"/>
-        <activity
             android:name=".HouseDetailActivity"
+            android:exported="false"/>
+        <activity
+            android:name=".CreateListingActivity"
+            android:exported="false"/>
+        <activity
+            android:name=".MessagesActivity"
+            android:exported="true"/>
+        <activity
+            android:name=".ChatActivity"
             android:exported="false"/>
 
         <!-- FileProvider for user photos -->

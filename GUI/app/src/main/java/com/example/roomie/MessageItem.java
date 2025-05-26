@@ -1,32 +1,40 @@
 package com.example.roomie;
 
 public class MessageItem {
-    private String name;
-    private String lastMessage;
-    private String time;
-    private int profileImageResource;
+  private long userId; // <<< ADD THIS: The actual ID from the users table
+  private String displayName; // Name to show in the list
+  private String lastMessage;
+  private String timestamp;
+  private int profileImageRes;
 
-    public MessageItem(String name, String lastMessage, String time, int profileImageResource) {
-        this.name = name;
-        this.lastMessage = lastMessage;
-        this.time = time;
-        this.profileImageResource = profileImageResource;
-    }
+  // Updated constructor
+  public MessageItem(
+      long userId, String displayName, String lastMessage, String timestamp, int profileImageRes) {
+    this.userId = userId;
+    this.displayName = displayName;
+    this.lastMessage = lastMessage;
+    this.timestamp = timestamp;
+    this.profileImageRes = profileImageRes;
+  }
 
-    // Add your getter methods here (getName(), getLastMessage(), getTime(), getProfileImageResource())
-    public String getName() {
-        return name;
-    }
+  // Getters
+  public long getUserId() { // <<< ADD THIS
+    return userId;
+  }
 
-    public String getLastMessage() {
-        return lastMessage;
-    }
+  public String getUserName() { // <<< RENAME from getUserName for clarity
+    return displayName;
+  }
 
-    public String getTime() {
-        return time;
-    }
+  public String getLastMessage() {
+    return lastMessage;
+  }
 
-    public int getProfileImageResource() {
-        return profileImageResource;
-    }
+  public String getTimestamp() {
+    return timestamp;
+  }
+
+  public int getProfileImageRes() {
+    return profileImageRes;
+  }
 }

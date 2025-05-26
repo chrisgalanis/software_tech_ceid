@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -39,6 +40,9 @@
                 android:hint="@string/hint_address"
                 android:inputType="textPostalAddress"
                 android:autofillHints="postalAddress"
+                android:drawableStart="@drawable/ic_person_search"
+                android:drawablePadding="8dp"
+                android:paddingStart="10dp"
                 android:layout_marginBottom="12dp"/>
 
             <!-- Price From / To -->
@@ -125,6 +129,29 @@
                 android:text="@string/search_button"/>
         </LinearLayout>
     </ScrollView>
+
+    <!-- 2) Map: shows all listings -->
+    <FrameLayout
+        android:id="@+id/map_container"
+        android:layout_width="match_parent"
+        android:layout_height="350dp"
+        android:layout_margin="8dp">
+        <fragment
+            android:id="@+id/map_fragment"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </FrameLayout>
+
+    <!-- 3) “+” button to create a new listing -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabAddListing"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="6dp"
+        android:layout_gravity="end"
+        app:srcCompat="@drawable/ic_add"
+        app:tint="@android:color/white"/>
 
     <!-- 2) Fixed bottom nav -->
     <include
