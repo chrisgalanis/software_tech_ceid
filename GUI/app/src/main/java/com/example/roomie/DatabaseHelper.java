@@ -348,20 +348,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getReadableDatabase();
         Cursor c = db.query(
                 TABLE_USERS,
-                null,
+                null,                                   // all columns
                 COLUMN_ID + "=?",
                 new String[]{ String.valueOf(id) },
                 null, null, null
         );
+
         User u = null;
         if (c.moveToFirst()) {
             u = new User();
-            u.id        = c.getLong(c.getColumnIndexOrThrow(COLUMN_ID));
-            u.firstName = c.getString(c.getColumnIndexOrThrow(COLUMN_USER_FIRSTNAME));
-            u.lastName  = c.getString(c.getColumnIndexOrThrow(COLUMN_USER_LASTNAME));
-            // you can fill in other fields on User if needed
+            u.id         = c.getLong   (c.getColumnIndexOrThrow(COLUMN_ID));
+            u.firstName  = c.getString (c.getColumnIndexOrThrow(COLUMN_USER_FIRSTNAME));
+            u.lastName   = c.getString (c.getColumnIndexOrThrow(COLUMN_USER_LASTNAME));
+            u.gender     = c.getString (c.getColumnIndexOrThrow(COLUMN_USER_GENDER));
+            u.birthday   = c.getString (c.getColumnIndexOrThrow(COLUMN_USER_BIRTHDAY));
+            u.city       = c.getString (c.getColumnIndexOrThrow(COLUMN_USER_CITY));
+            u.minBudget  = c.getInt    (c.getColumnIndexOrThrow(COLUMN_USER_BUDGET_FROM));
+            u.maxBudget  = c.getInt    (c.getColumnIndexOrThrow(COLUMN_USER_BUDGET_TO));
+            // If you later add a hasHouse column, you could do:
+            // u.hasHouse = c.getInt(c.getColumnIndexOrThrow(COLUMN_HAS_HOUSE)) == 1;
         }
         c.close();
         return u;
     }
+
 }

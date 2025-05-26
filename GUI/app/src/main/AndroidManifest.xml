@@ -36,6 +36,9 @@
         <activity
             android:name=".ProfileActivity"
             android:exported="false"/>
+        <activity
+            android:name=".OtherUserProfileActivity"
+            android:exported="false"/>
         <!-- Main app screen (if you ever navigate here) -->
         <activity
             android:name=".MainActivity"

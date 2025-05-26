@@ -84,6 +84,16 @@
                     android:src="@drawable/ic_favorite"
                     android:background="@null" />
             </LinearLayout>
+
+            <!-- NEW: View Profile button -->
+            <Button
+                android:id="@+id/btnViewProfile"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="View Profile" />
+
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
