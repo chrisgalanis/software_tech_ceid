@@ -8,7 +8,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
-public class ListingsAdapter extends RecyclerView.Adapter<ListingsAdapter.VH> {
+public class ListingsAdapter
+        extends RecyclerView.Adapter<ListingsAdapter.VH> {
 
   public interface OnItemClickListener {
     void onItemClick(House house);
@@ -17,16 +18,16 @@ public class ListingsAdapter extends RecyclerView.Adapter<ListingsAdapter.VH> {
   private final List<House> houses;
   private final OnItemClickListener listener;
 
-  public ListingsAdapter(List<House> houses, OnItemClickListener listener) {
-    this.houses = houses;
+  public ListingsAdapter(List<House> houses,
+                         OnItemClickListener listener) {
+    this.houses   = houses;
     this.listener = listener;
   }
 
-  @NonNull
-  @Override
+  @NonNull @Override
   public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-    View v =
-        LayoutInflater.from(parent.getContext()).inflate(R.layout.item_house_card, parent, false);
+    View v = LayoutInflater.from(parent.getContext())
+            .inflate(R.layout.item_house_card, parent, false);
     return new VH(v);
   }
 
@@ -34,9 +35,12 @@ public class ListingsAdapter extends RecyclerView.Adapter<ListingsAdapter.VH> {
   public void onBindViewHolder(@NonNull VH holder, int position) {
     House house = houses.get(position);
     holder.tvAddr.setText(house.address);
-    holder.tvRent.setText("€" + (int) house.rent + "/month");
+    holder.tvRent.setText("€" + (int)house.rent + "/month");
+    holder.tvOwner.setText(house.ownerName);
 
-    holder.itemView.setOnClickListener(v -> listener.onItemClick(house));
+    holder.itemView.setOnClickListener(v ->
+            listener.onItemClick(house)
+    );
   }
 
   @Override
@@ -45,12 +49,13 @@ public class ListingsAdapter extends RecyclerView.Adapter<ListingsAdapter.VH> {
   }
 
   static class VH extends RecyclerView.ViewHolder {
-    final TextView tvAddr, tvRent;
-
+    final TextView tvAddr, tvRent, tvOwner;
     VH(@NonNull View itemView) {
       super(itemView);
       tvAddr = itemView.findViewById(R.id.tvItemAddress);
       tvRent = itemView.findViewById(R.id.tvItemRent);
+      tvOwner = itemView.findViewById(R.id.tvItemOwner);
     }
   }
+
 }
