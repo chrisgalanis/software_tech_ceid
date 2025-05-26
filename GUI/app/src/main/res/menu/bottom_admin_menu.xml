@@ -5,7 +5,7 @@
         android:icon="@drawable/ic_home"
         android:title="Authenticate Houses"/>
     <item
-        android:id="@+id/nav_search"
+        android:id="@+id/nav_reports"
         android:icon="@drawable/ic_report"
         android:title="User Reports"/>
     <item

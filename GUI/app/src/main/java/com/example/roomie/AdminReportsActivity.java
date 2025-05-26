@@ -44,6 +44,12 @@ public class AdminReportsActivity extends AppCompatActivity {
         // set up adapter
         adapter = new ReportAdapter(this, pendingReports);
         recyclerView.setAdapter(adapter);
+
+        AdminNavigationHelper.setup(
+                findViewById(R.id.bottom_navigation),
+                this,
+                R.id.nav_reports
+        );
     }
 
     @Override
