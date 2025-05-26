@@ -30,7 +30,7 @@ public class HomeFilterActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_filter);
+        setContentView(R.layout.activity_filter_house);
 
         etAddress   = findViewById(R.id.etAddress);
         etPriceFrom = findViewById(R.id.etPriceFrom);

@@ -64,9 +64,9 @@
         <activity
             android:name=".MessagesActivity"
             android:exported="false"/>
-        <activity
-            android:name=".SearchHousesActivity"
-            android:exported="false"/>
+<!--        <activity-->
+<!--            android:name=".SearchHousesActivity"-->
+<!--            android:exported="false"/>-->
         <activity
             android:name=".HouseDetailActivity"
             android:exported="false"/>
