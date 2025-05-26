@@ -1,12 +1,15 @@
 package com.example.roomie;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -59,10 +62,9 @@ public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.ViewHolder
 
         // VIEW PROFILE
         holder.viewProfile.setOnClickListener(v -> {
-            Context c = v.getContext();
-            Intent intent = new Intent(c, OtherUserProfileActivity.class);
+            Intent intent = new Intent(ctx, OtherUserProfileActivity.class);
             intent.putExtra(OtherUserProfileActivity.EXTRA_USER_ID, r.reportedUserId);
-            c.startActivity(intent);
+            ctx.startActivity(intent);
         });
 
         // DISMISS
@@ -76,15 +78,52 @@ public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.ViewHolder
             }
         });
 
-        // WARN USER
+        // WARN USER (with input dialog)
         holder.warn.setOnClickListener(v -> {
             int pos = holder.getAdapterPosition();
-            if (pos != RecyclerView.NO_POSITION) {
-                dbHelper.warnUser(r.reportedUserId, r.id);
-                reports.remove(pos);
-                notifyItemRemoved(pos);
-                Toast.makeText(ctx, "User warned", Toast.LENGTH_SHORT).show();
-            }
+            if (pos == RecyclerView.NO_POSITION) return;
+
+            // show dialog to enter warning message
+            AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+            builder.setTitle("Warn User");
+
+            final EditText input = new EditText(ctx);
+            input.setHint("Enter warning message");
+            input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+            builder.setView(input);
+
+            builder.setPositiveButton("Send", (dialog, which) -> {
+                String warningMessage = input.getText().toString().trim();
+                if (warningMessage.isEmpty()) {
+                    Toast.makeText(ctx, "Warning text cannot be empty", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                // create and insert Warning
+                Warning warning = new Warning(
+                        0,                      // id (auto-generated)
+                        r.reportedUserId,       // target user
+                        warningMessage,         // message
+                        "PENDING",              // status
+                        null                    // timestamp (DB default)
+                );
+                long warningId = dbHelper.insertWarning(warning);
+                if (warningId > 0) {
+                    // optionally mark report handled
+                    dbHelper.dismissReport(r.id);
+
+                    // update UI
+                    reports.remove(pos);
+                    notifyItemRemoved(pos);
+
+                    Toast.makeText(ctx, "Warning sent (id=" + warningId + ")", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(ctx, "Failed to send warning", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
+            builder.show();
         });
     }
 
@@ -103,12 +142,12 @@ public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.ViewHolder
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
-            avatar       = itemView.findViewById(R.id.avatarImageView);
-            username     = itemView.findViewById(R.id.usernameTextView);
-            reportText   = itemView.findViewById(R.id.reportTextView);
-            viewProfile  = itemView.findViewById(R.id.viewProfileTextView);
-            dismiss      = itemView.findViewById(R.id.dismissButton);
-            warn         = itemView.findViewById(R.id.warnButton);
+            avatar      = itemView.findViewById(R.id.avatarImageView);
+            username    = itemView.findViewById(R.id.usernameTextView);
+            reportText  = itemView.findViewById(R.id.reportTextView);
+            viewProfile = itemView.findViewById(R.id.viewProfileTextView);
+            dismiss     = itemView.findViewById(R.id.dismissButton);
+            warn        = itemView.findViewById(R.id.warnButton);
         }
     }
 }

@@ -51,6 +51,9 @@
         <activity
             android:name=".AdminReportsActivity"
             android:exported="false"/>
+        <activity
+            android:name=".WarningsActivity"
+            android:exported="false"/>
 
         <activity
             android:name=".HomeFilterActivity"

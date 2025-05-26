@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    card:cardCornerRadius="10dp"
+    android:layout_marginVertical="8dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+        <!-- Warning text -->
+        <TextView
+            android:id="@+id/tvWarningText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Warning detail goes here"
+            android:textSize="14sp"/>
+
+        <!-- Timestamp -->
+        <TextView
+            android:id="@+id/tvWarningTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="2025-03-21 14:05"
+            android:textSize="12sp"
+            android:textColor="#666666"
+            android:layout_marginTop="4dp"/>
+
+        <!-- Acknowledge button -->
+        <Button
+            android:id="@+id/btnAcknowledge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:enabled="true"
+            android:text="Acknowledge" />
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

@@ -14,7 +14,7 @@ import java.util.List;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME    = "RoomieApp.db";
-    private static final int    DATABASE_VERSION = 9;   // bumped to include reports table
+    private static final int    DATABASE_VERSION = 12;   // bumped to include reports table
 
     // ─── USERS TABLE ─────────────────────────────────────────────────────────────
     public static final String TABLE_USERS           = "users";
@@ -53,6 +53,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_REPORT_TEXT    = "text";
     public static final String COLUMN_REPORT_STATUS  = "status";      // "PENDING", "DISMISSED", "WARNED"
 
+    // ─── WARNINGS TABLE ───────────────────────────────────────────────────────────
+    public static final String TABLE_WARNINGS        = "warnings";
+    public static final String COLUMN_WARNING_ID     = "_id";
+    public static final String COLUMN_WARNING_USER   = "user_id";
+    public static final String COLUMN_WARNING_TEXT   = "text";
+    public static final String COLUMN_WARNING_STATUS = "status";      // "PENDING" or "ACKNOWLEDGED"
+    public static final String COLUMN_WARNING_TIME   = "timestamp";
     // ─── CREATE TABLE STATEMENTS ─────────────────────────────────────────────────
 
     private static final String SQL_CREATE_USERS =
@@ -106,6 +113,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     + TABLE_USERS + "(" + COLUMN_ID + ") ON DELETE CASCADE"
                     + ");";
 
+    private static final String SQL_CREATE_WARNINGS =
+            "CREATE TABLE " + TABLE_WARNINGS + " ("
+                    + COLUMN_WARNING_ID   + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + COLUMN_WARNING_USER + " INTEGER, "
+                    + COLUMN_WARNING_TEXT + " TEXT, "
+                    + COLUMN_WARNING_STATUS+ " TEXT DEFAULT 'PENDING', "
+                    + COLUMN_WARNING_TIME + " DATETIME DEFAULT CURRENT_TIMESTAMP, "
+                    + "FOREIGN KEY(" + COLUMN_WARNING_USER + ") REFERENCES "
+                    + TABLE_USERS + "(" + COLUMN_ID + ") ON DELETE CASCADE"
+                    + ");";
+
+
+
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -123,6 +143,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(SQL_CREATE_INTERESTS);
         db.execSQL(SQL_CREATE_LIKES);
         db.execSQL(SQL_CREATE_REPORTS);
+        db.execSQL(SQL_CREATE_WARNINGS);
     }
 
     @Override
@@ -133,6 +154,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_INTERESTS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PHOTOS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_WARNINGS);
         onCreate(db);
     }
 
@@ -435,18 +457,68 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    /** Warn a user and mark report WARNED */
-    public void warnUser(long reportedUserId, long reportId) {
-        // (optional) increment a warning counter on the user record here
+    /**
+     * Warn a user and mark report WARNED
+     *
+     * @return
+     */
 
+
+    public long insertWarning(Warning warning) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues cv = new ContentValues();
-        cv.put(COLUMN_REPORT_STATUS, "WARNED");
+        cv.put(COLUMN_WARNING_USER,   warning.userId);
+        cv.put(COLUMN_WARNING_TEXT,   warning.text);
+        cv.put(COLUMN_WARNING_STATUS, warning.status);     // e.g. "PENDING"
+        // timestamp column has DEFAULT CURRENT_TIMESTAMP, so we don’t set it here
+        long id = db.insert(TABLE_WARNINGS, null, cv);
+        db.close();
+        return id;
+    }
+    public List<Warning> getWarningsForUser(long userId) {
+        List<Warning> list = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+
+        String[] cols = {
+                COLUMN_WARNING_ID,
+                COLUMN_WARNING_USER,
+                COLUMN_WARNING_TEXT,
+                COLUMN_WARNING_STATUS,
+                COLUMN_WARNING_TIME
+        };
+        String   sel  = COLUMN_WARNING_USER + "=?";
+        String[] args = { String.valueOf(userId) };
+
+        Cursor c = db.query(
+                TABLE_WARNINGS,
+                cols,
+                sel,
+                args,
+                null, null,
+                COLUMN_WARNING_TIME + " DESC"
+        );
+        while (c.moveToNext()) {
+            long   id    = c.getLong(c.getColumnIndexOrThrow(COLUMN_WARNING_ID));
+            String txt   = c.getString(c.getColumnIndexOrThrow(COLUMN_WARNING_TEXT));
+            String stat  = c.getString(c.getColumnIndexOrThrow(COLUMN_WARNING_STATUS));
+            String time  = c.getString(c.getColumnIndexOrThrow(COLUMN_WARNING_TIME));
+            list.add(new Warning(id, userId, txt, stat, time));
+        }
+        c.close();
+        db.close();
+        return list;
+    }
+
+    /** Mark a warning as acknowledged */
+    public void acknowledgeWarning(long warningId) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_WARNING_STATUS, "ACKNOWLEDGED");
         db.update(
-                TABLE_REPORTS,
+                TABLE_WARNINGS,
                 cv,
-                COLUMN_REPORT_ID + "=?",
-                new String[]{ String.valueOf(reportId) }
+                COLUMN_WARNING_ID + "=?",
+                new String[]{ String.valueOf(warningId) }
         );
         db.close();
     }
