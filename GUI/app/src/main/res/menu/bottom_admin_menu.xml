@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_home"
+        android:icon="@drawable/ic_home"
+        android:title="Authenticate Houses"/>
+    <item
+        android:id="@+id/nav_search"
+        android:icon="@drawable/ic_report"
+        android:title="User Reports"/>
+    <item
+        android:id="@+id/nav_messages"
+        android:icon="@drawable/ic_message"
+        android:title="Message Reports"/>
+
+</menu>

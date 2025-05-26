@@ -1,10 +1,12 @@
 package com.example.roomie;
 
-import android.content.Intent;
+import android.app.AlertDialog;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -15,9 +17,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
 import com.google.android.material.appbar.MaterialToolbar;
 
-import java.time.LocalDate;
-import java.time.Period;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class OtherUserProfileActivity extends AppCompatActivity {
@@ -29,13 +28,14 @@ public class OtherUserProfileActivity extends AppCompatActivity {
     private Button    btnViewHouse, btnReport;
     private DatabaseHelper dbHelper;
     private long      userId;
+    private long      currentUserId;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_other_user_profile);
 
-        // set up toolbar with back arrow
+        // toolbar with back arrow
         MaterialToolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
@@ -50,7 +50,7 @@ public class OtherUserProfileActivity extends AppCompatActivity {
         btnViewHouse      = findViewById(R.id.btnViewHouse);
         btnReport         = findViewById(R.id.btnReport);
 
-        // get passed userId
+        // read the user ID to display
         userId = getIntent().getLongExtra(EXTRA_USER_ID, -1);
         if (userId < 0) {
             Toast.makeText(this, "No user to display", Toast.LENGTH_SHORT).show();
@@ -64,7 +64,7 @@ public class OtherUserProfileActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // handle toolbar back button
+        // handle toolbar back click
         if (item.getItemId() == android.R.id.home) {
             onBackPressed();
             return true;
@@ -73,6 +73,7 @@ public class OtherUserProfileActivity extends AppCompatActivity {
     }
 
     private void loadProfile() {
+        // 1) Load profile image
         List<String> photos = dbHelper.getUserPhotos(userId);
         if (!photos.isEmpty()) {
             Uri uri = Uri.parse(photos.get(0));
@@ -96,12 +97,13 @@ public class OtherUserProfileActivity extends AppCompatActivity {
             if (age > 0) {
                 sb.append(", ").append(age);
             }
-            if (pronouns != null) {
+            if (pronouns != null && !pronouns.isEmpty()) {
                 sb.append(" • ").append(pronouns);
             }
             tvNamePronounsAge.setText(sb.toString());
 
-            tvBudgetCity.setText("Budget: €" + u.minBudget +"-"+u.maxBudget+ " • City: " + u.city);
+            tvBudgetCity.setText("Budget: €" + u.minBudget + "–" + u.maxBudget +
+                    " • City: " + u.city);
         }
 
         // 3) Interests
@@ -112,16 +114,56 @@ public class OtherUserProfileActivity extends AppCompatActivity {
                         : android.text.TextUtils.join(", ", ints)
         );
 
-        // 4) Buttons
+        // 4) View house button (stub)
         btnViewHouse.setOnClickListener(v -> {
-//            Intent i = new Intent(this, HouseDetailActivity.class);
-//            i.putExtra(HouseDetailActivity.EXTRA_OWNER_ID, userId);
-//            startActivity(i);
+            // TODO: start Activity to view this user’s house
+            // Intent i = new Intent(this, HouseDetailActivity.class);
+            // i.putExtra(HouseDetailActivity.EXTRA_OWNER_ID, userId);
+            // startActivity(i);
         });
 
-        btnReport.setOnClickListener(v -> {
-            // reporting logic here
-            Toast.makeText(this, "User reported", Toast.LENGTH_SHORT).show();
+        // 5) Report button: show input dialog
+        btnReport.setOnClickListener(v -> showReportDialog());
+    }
+
+    private void showReportDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Report User");
+
+        // multi-line input
+        final EditText input = new EditText(this);
+        input.setHint("Describe why you're reporting this user");
+        input.setInputType(InputType.TYPE_CLASS_TEXT |
+                InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+        builder.setView(input);
+
+        // Submit button
+        builder.setPositiveButton("Submit", (dialog, which) -> {
+            String reportText = input.getText().toString().trim();
+            if (reportText.isEmpty()) {
+                Toast.makeText(this,
+                        "Report text cannot be empty",
+                        Toast.LENGTH_SHORT).show();
+            } else {
+                long reportId = dbHelper.insertReport(userId, reportText);
+                if (reportId > 0) {
+                    Toast.makeText(this,
+                            "Report submitted",
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this,
+                            "Failed to submit report",
+                            Toast.LENGTH_SHORT).show();
+                }
+                dialog.dismiss();
+            }
         });
+
+        // Cancel button
+        builder.setNegativeButton("Cancel", (dialog, which) -> {
+            dialog.cancel();
+        });
+
+        builder.show();
     }
 }
