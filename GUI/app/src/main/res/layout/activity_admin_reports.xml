@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Screen title -->
+    <TextView
+        android:id="@+id/tvHome"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="User Reports"
+        android:textSize="24sp"
+        android:paddingTop="16dp"
+        android:paddingBottom="8dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Subtitle -->
+    <TextView
+        android:id="@+id/tvSubtitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="View Reported Users:"
+        android:textStyle="bold"
+        android:paddingStart="16dp"
+        android:paddingTop="8dp"
+        app:layout_constraintTop_toBottomOf="@id/tvHome"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- RecyclerView -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/reportsRecyclerView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintTop_toBottomOf="@id/tvSubtitle"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Bottom nav include -->
+    <include
+        android:id="@+id/bottom_navigation"
+        layout="@layout/layout_bottom_admin"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

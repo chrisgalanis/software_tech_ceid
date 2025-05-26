@@ -41,10 +41,10 @@ public class AdminLoginActivity extends AppCompatActivity {
 
             // TODO: replace this check with real admin authentication (DB, API, etc)
             if (user.equals("admin") && pass.equals("admin123")) {
-//                // on success, navigate to Admin dashboard/activity
-//                Intent intent = new Intent(AdminLoginActivity.this, AdminMainActivity.class);
-//                startActivity(intent);
-//                finish();
+                // on success, navigate to Admin dashboard/activity
+                Intent intent = new Intent(AdminLoginActivity.this, AdminReportsActivity.class);
+                startActivity(intent);
+                finish();
             } else {
                 Toast.makeText(this, "Invalid admin credentials", Toast.LENGTH_SHORT).show();
             }
