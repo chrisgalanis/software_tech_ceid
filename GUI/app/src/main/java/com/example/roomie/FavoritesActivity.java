@@ -65,17 +65,39 @@ public class FavoritesActivity extends AppCompatActivity {
 
 
     private void setupHouseLikes() {
-        // If you store house-likes in your DB, you’d do something similar here:
-        //   - add a 'houses' table (and/or a house_likes join table)
-        //   - DBHelper.getLikedHouses(currentUserId) → List<House>
-        //
-        // For now you can just fall back to your dummy list:
+        // Dummy “liked” houses
         List<House> houseLikes = Arrays.asList(
-                new House(1, "Athens Center", 160.0, 60.0, 2,
-                        Arrays.asList("url1"), "Chris P.", "", new LatLng(0, 0)),
-                new House(2, "Patras",        230.0, 70.0, 3,
-                        Arrays.asList("url2"), "Maria G.", "", new LatLng(0, 0))
+                new House(
+                        1L,              // house ID
+                        10L,             // owner ID
+                        "Athens Center, Kolonaki",  // address
+                        160.0,           // rent
+                        60.0,            // area (m²)
+                        2,               // floor
+                        Arrays.asList(
+                                "https://example.com/photos/athens1.jpg",
+                                "https://example.com/photos/athens2.jpg"
+                        ),               // photo URLs
+                        "Chris P.",      // owner name
+                        "https://example.com/avatars/chrisp.jpg", // owner avatar URL
+                        new LatLng(37.9755, 23.7409) // location
+                ),
+                new House(
+                        2L,
+                        11L,
+                        "5 Agiou Nikolaou St, Patras",
+                        230.0,
+                        70.0,
+                        3,
+                        Arrays.asList(
+                                "https://example.com/photos/patras1.jpg"
+                        ),
+                        "Maria G.",
+                        "https://example.com/avatars/mariag.jpg",
+                        new LatLng(38.2466, 21.7345)
+                )
         );
+
         RecyclerView recyclerHouses = findViewById(R.id.recyclerHouses);
         recyclerHouses.setLayoutManager(new LinearLayoutManager(this));
         recyclerHouses.setAdapter(new LikedHousesAdapter(this, houseLikes, house ->
@@ -84,5 +106,6 @@ public class FavoritesActivity extends AppCompatActivity {
                         Toast.LENGTH_SHORT).show()
         ));
     }
+
 }
 

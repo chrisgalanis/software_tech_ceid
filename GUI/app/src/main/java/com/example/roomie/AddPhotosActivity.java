@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.os.Environment;
 import android.view.View;
 import android.widget.*;
@@ -14,9 +15,10 @@ import androidx.core.content.FileProvider;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 
 public class AddPhotosActivity extends AppCompatActivity {
-    private static final int REQ_PICK_PHOTO = 100;
 
     private ImageView[]   slots        = new ImageView[6];
     private ImageView[]   placeholders = new ImageView[6];
@@ -27,6 +29,29 @@ public class AddPhotosActivity extends AppCompatActivity {
 
     private long           userId;
     private DatabaseHelper dbHelper;
+    private ActivityResultLauncher<Intent> pickPhotoLauncher;
+    private static final int REQ_PICK_PHOTO = 1001;
+
+
+    private void handleImageSelection(Uri uri) {
+        if (uri != null && currentSlot >= 0) {
+            // show it
+            slots[currentSlot].setImageURI(uri);
+            slots[currentSlot].setTag(uri);
+
+            // swap icons
+            placeholders[currentSlot].setVisibility(View.GONE);
+            removes[currentSlot].setVisibility(View.VISIBLE);
+
+            photosCount++;
+            currentSlot = -1;
+            btnContinue.setEnabled(photosCount >= 2);
+        }
+    }
+
+    private void launchImagePicker() {
+        pickPhotoLauncher.launch(new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI));
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -62,6 +87,14 @@ public class AddPhotosActivity extends AppCompatActivity {
             startActivity(new Intent(this, InterestsActivity.class));
             finish();
         });
+
+        pickPhotoLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                        handleImageSelection(result.getData().getData());
+                    }
+                });
     }
 
     /** Called when user taps a slot or its “+” */
@@ -75,6 +108,7 @@ public class AddPhotosActivity extends AppCompatActivity {
             }
         }
         if (currentSlot < 0) return;
+        launchImagePicker();
 
         // open gallery
         Intent pick = new Intent(Intent.ACTION_PICK);

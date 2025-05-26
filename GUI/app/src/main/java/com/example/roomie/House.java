@@ -5,6 +5,7 @@ import java.util.List;
 
 public class House {
     public final long    id;
+    public final long    ownerId;
     public final String  address;
     public final double  rent;
     public final double  area;
@@ -16,6 +17,7 @@ public class House {
     public final LatLng  location;
 
     public House(long id,
+                 long ownerId,
                  String address,
                  double rent,
                  double area,
@@ -25,6 +27,7 @@ public class House {
                  String ownerAvatarUrl,
                  LatLng location) {
         this.id             = id;
+        this.ownerId        = ownerId;
         this.address        = address;
         this.rent           = rent;
         this.area           = area;

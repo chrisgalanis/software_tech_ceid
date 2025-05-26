@@ -70,6 +70,9 @@
         <activity
             android:name=".HouseDetailActivity"
             android:exported="false"/>
+        <activity
+            android:name=".CreateListingActivity"
+            android:exported="false"/>
 
         <!-- FileProvider for user photos -->
         <provider

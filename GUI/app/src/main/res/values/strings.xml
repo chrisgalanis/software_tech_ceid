@@ -23,7 +23,7 @@
 
     <!-- Labels & hints -->
     <string name="filter_title">Type your filters</string>
-    <string name="hint_address">Street, Number, Area</string>
+    <string name="hint_address">City, Area</string>
     <string name="hint_price_from">€ From</string>
     <string name="hint_price_to">€ To</string>
     <string name="hint_area_from">m² From</string>

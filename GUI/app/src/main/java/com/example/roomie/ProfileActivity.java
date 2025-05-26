@@ -1,5 +1,6 @@
 package com.example.roomie;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -62,7 +63,10 @@ public class ProfileActivity extends AppCompatActivity {
         // click listeners (optional)
         // btnSettings.setOnClickListener(v -> startActivity(new Intent(this, SettingsActivity.class)));
         // btnEditProfile.setOnClickListener(v -> startActivity(new Intent(this, EditProfileActivity.class)));
-        // btnAddHouse.setOnClickListener(v -> startActivity(new Intent(this, AddHouseActivity.class)));
+        btnAddHouse.setOnClickListener(v -> {
+            Toast.makeText(this, "Add‐House clicked!", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, CreateListingActivity.class));
+        });
     }
 
     private void loadProfileData() {
