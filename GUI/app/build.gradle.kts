@@ -1,5 +1,15 @@
+// app/build.gradle
+
 plugins {
     alias(libs.plugins.android.application)
+    id("com.diffplug.spotless") version "6.25.0"
+}
+
+spotless {
+    java {
+        googleJavaFormat()
+        target("src/**/*.java")
+    }
 }
 
 android {
@@ -29,14 +39,25 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    // If you are using dataBinding or viewBinding, ensure they are enabled here
+    // buildFeatures {
+    //     viewBinding = true
+    //     // dataBinding = true // if you use it
+    // }
 }
 
 dependencies {
-    //implementation("com.google.android.material:material:1.9.0")
     implementation(libs.appcompat)
     implementation(libs.material)
-    implementation(libs.activity)
+    implementation(libs.activity) // Make sure you have defined 'activity' in your libs.versions.toml
+                                  // e.g., androidx-activity = { group = "androidx.activity", name = "activity-ktx", version = "1.9.0" }
+                                  // and then activity = { alias = "androidx-activity" }
+                                  // Or if it's just 'androidx.activity:activity', ensure the alias is correct.
     implementation(libs.constraintlayout)
+
+    // Add this line for CircleImageView:
+    implementation(libs.circleimageview)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
