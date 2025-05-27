@@ -15,7 +15,7 @@ import java.util.List;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME    = "RoomieApp.db";
-    private static final int    DATABASE_VERSION = 14;   // bumped to include reports table
+    private static final int    DATABASE_VERSION = 18;   // bumped to include reports table
 
     // users table
     public static final String TABLE_USERS           = "users";
@@ -31,6 +31,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_USER_BUDGET_FROM = "budget_from";
     public static final String COLUMN_USER_BUDGET_TO = "budget_to";
     public static final String COLUMN_USER_CITY = "city";
+
+
+
 
     // photos table
     public static final String TABLE_PHOTOS       = "user_photos";
@@ -48,13 +51,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String TABLE_HOUSES = "houses";
     public static final String COLUMN_HOUSE_ID = "_id";
     public static final String COLUMN_HOUSE_OWNER = "owner_id";
-    public static final String COLUMN_HOUSE_OWNER_NAME = "owner_name";
     public static final String COLUMN_HOUSE_ADDRESS = "address";
     public static final String COLUMN_HOUSE_RENT = "rent";
     public static final String COLUMN_HOUSE_AREA = "area";
     public static final String COLUMN_HOUSE_FLOOR = "floor";
     public static final String COLUMN_HOUSE_LAT = "latitude";
     public static final String COLUMN_HOUSE_LNG = "longitude";
+
+    //table : house_listings
+    public static final String TABLE_HOUSE_LISTINGS          = "house_listings";
+    public static final String COLUMN_LISTING_ID              = "_id";
+    public static final String COLUMN_LISTING_HOUSE_ID        = "house_id";
+    public static final String COLUMN_LISTING_OWNER_NAME      = "owner_name";
+    public static final String COLUMN_LISTING_OWNER_AVATAR_URL= "owner_avatar_url";
+    public static final String COLUMN_LISTING_HOUSE_AVATAR_URL= "house_avatar_url";
+
+    public static final String COLUMN_LISTING_IS_APPROVED = "is_approved";
+
 
     // table: house_photos
     public static final String TABLE_HOUSE_PHOTOS = "house_photos";
@@ -95,34 +108,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_WARNING_TEXT   = "text";
     public static final String COLUMN_WARNING_STATUS = "status";      // "PENDING" or "ACKNOWLEDGED"
     public static final String COLUMN_WARNING_TIME   = "timestamp";
-    // ─── CREATE TABLE STATEMENTS ─────────────────────────────────────────────────
 
+    // ─── CREATE TABLE STATEMENTS ─────────────────────────────────────────────────
     private static final String SQL_CREATE_USERS =
-            "CREATE TABLE "
-                    + TABLE_USERS
-                    + " ("
-                    + COLUMN_ID
-                    + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                    + COLUMN_USER_EMAIL
-                    + " TEXT UNIQUE, "
-                    + COLUMN_USER_PASSWORD
-                    + " TEXT, "
-                    + COLUMN_USER_FIRSTNAME
-                    + " TEXT, "
-                    + COLUMN_USER_LASTNAME
-                    + " TEXT, "
-                    + COLUMN_USER_GENDER
-                    + " TEXT, "
-                    + COLUMN_USER_BIRTHDAY
-                    + " TEXT, "
-                    + COLUMN_USER_AVATAR_URL
-                    + " TEXT, "
-                    + COLUMN_USER_BUDGET_FROM
-                    + " INTEGER DEFAULT 0, "
-                    + COLUMN_USER_BUDGET_TO
-                    + " INTEGER DEFAULT 0, "
-                    + COLUMN_USER_CITY
-                    + " TEXT"
+            "CREATE TABLE " + TABLE_USERS + " ("
+                    + COLUMN_ID                + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + COLUMN_USER_EMAIL        + " TEXT UNIQUE, "
+                    + COLUMN_USER_PASSWORD     + " TEXT, "
+                    + COLUMN_USER_FIRSTNAME    + " TEXT, "
+                    + COLUMN_USER_LASTNAME     + " TEXT, "
+                    + COLUMN_USER_GENDER       + " TEXT, "
+                    + COLUMN_USER_BIRTHDAY     + " TEXT, "
+                    + COLUMN_USER_CITY         + " TEXT, "
+                    + COLUMN_USER_BUDGET_FROM  + " INTEGER DEFAULT 0, "
+                    + COLUMN_USER_BUDGET_TO    + " INTEGER DEFAULT 0, "
+                    + COLUMN_USER_AVATAR_URL   + " TEXT"
                     + ");";
 
     private static final String SQL_CREATE_PHOTOS =
@@ -190,6 +190,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     + "("
                     + COLUMN_ID
                     + ") ON DELETE CASCADE"
+                    + ");";
+
+    private static final String SQL_CREATE_HOUSE_LISTINGS =
+            "CREATE TABLE " + TABLE_HOUSE_LISTINGS + " ("
+                    + COLUMN_LISTING_ID               + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + COLUMN_LISTING_HOUSE_ID         + " INTEGER UNIQUE, "
+                    + COLUMN_LISTING_OWNER_NAME       + " TEXT, "
+                    + COLUMN_LISTING_OWNER_AVATAR_URL + " TEXT, "
+                    + COLUMN_LISTING_HOUSE_AVATAR_URL + " TEXT, "
+                    + COLUMN_LISTING_IS_APPROVED      + " INTEGER DEFAULT 0, "
+                    + "FOREIGN KEY(" + COLUMN_LISTING_HOUSE_ID + ") REFERENCES "
+                    + TABLE_HOUSES + "(" + COLUMN_HOUSE_ID + ") ON DELETE CASCADE"
                     + ");";
 
     private static final String SQL_CREATE_HOUSE_PHOTOS =
@@ -337,11 +349,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(SQL_CREATE_CHAT_MESSAGES);
         db.execSQL(SQL_CREATE_REPORTS);
         db.execSQL(SQL_CREATE_WARNINGS);
+        db.execSQL(SQL_CREATE_HOUSE_LISTINGS);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldV, int newV) {
         // Drop tables in reverse-dependency order
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_HOUSE_LISTINGS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_CHAT_MESSAGES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_MATCHES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_REPORTS);
@@ -356,19 +370,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /*** ORIGINAL METHODS ***/
-
-    // Fetch user ID by email
     public long getUserIdByEmail(String email) {
         SQLiteDatabase db = getReadableDatabase();
-        Cursor c =
-                db.query(
-                        TABLE_USERS,
-                        new String[] {COLUMN_ID},
-                        COLUMN_USER_EMAIL + "=?",
-                        new String[] {email},
-                        null,
-                        null,
-                        null);
+        Cursor c = db.query(
+                TABLE_USERS,
+                new String[]{ COLUMN_ID },
+                COLUMN_USER_EMAIL + " = ?",
+                new String[]{ email },
+                null, null, null
+        );
+
         long id = -1;
         if (c.moveToFirst()) {
             id = c.getLong(c.getColumnIndexOrThrow(COLUMN_ID));
@@ -376,7 +387,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         c.close();
         return id;
     }
-
     // Check profile completeness
     public boolean isProfileComplete(long userId) {
         SQLiteDatabase db = getReadableDatabase();
@@ -523,24 +533,45 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     // Insert a new house and return its ID
-    public long insertHouse(
-            long ownerId,
-            String address,
-            double rent,
-            double area,
-            int floor,
-            double latitude,
-            double longitude) {
+    public long insertHouse(House house) {
         SQLiteDatabase db = getWritableDatabase();
-        ContentValues cv = new ContentValues();
-        cv.put(COLUMN_HOUSE_OWNER, ownerId);
-        cv.put(COLUMN_HOUSE_ADDRESS, address);
-        cv.put(COLUMN_HOUSE_RENT, rent);
-        cv.put(COLUMN_HOUSE_AREA, area);
-        cv.put(COLUMN_HOUSE_FLOOR, floor);
-        cv.put(COLUMN_HOUSE_LAT, latitude);
-        cv.put(COLUMN_HOUSE_LNG, longitude);
-        return db.insert(TABLE_HOUSES, null, cv);
+        long houseId = -1;
+
+        db.beginTransaction();
+        try {
+            // 1) insert into houses
+            ContentValues cvHouse = new ContentValues();
+            cvHouse.put(COLUMN_HOUSE_OWNER,     house.ownerId);
+            cvHouse.put(COLUMN_HOUSE_ADDRESS,   house.address);
+            cvHouse.put(COLUMN_HOUSE_RENT,      house.rent);
+            cvHouse.put(COLUMN_HOUSE_AREA,      house.area);
+            cvHouse.put(COLUMN_HOUSE_FLOOR,     house.floor);
+            cvHouse.put(COLUMN_HOUSE_LAT,       house.latitude);
+            cvHouse.put(COLUMN_HOUSE_LNG,       house.longitude);
+            houseId = db.insert(TABLE_HOUSES, null, cvHouse);
+
+            if (houseId == -1) {
+                // insertion failed
+                return -1;
+            }
+
+            // 2) insert each photo URL
+            if (house.photoUrls != null) {
+                for (String url : house.photoUrls) {
+                    if (url == null) continue;
+                    ContentValues cvPhoto = new ContentValues();
+                    cvPhoto.put(COLUMN_HOUSE_PHOTO_HOUSE, houseId);
+                    cvPhoto.put(COLUMN_HOUSE_PHOTO_URI,   url);
+                    db.insert(TABLE_HOUSE_PHOTOS, null, cvPhoto);
+                }
+            }
+
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+
+        return houseId;
     }
 
     // Insert photo URIs for a house
@@ -561,229 +592,218 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    // Fetch all houses
-    public List<House> getAllHouses() {
-        List<House> list = new ArrayList<>();
+    public List<String> getHousePhotos(long houseId) {
+        List<String> photos = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
-
-        String sql =
-                "SELECT h."
-                        + COLUMN_HOUSE_ID
-                        + ","
-                        + "h."
-                        + COLUMN_HOUSE_OWNER
-                        + ","
-                        + "h."
-                        + COLUMN_HOUSE_ADDRESS
-                        + ","
-                        + "h."
-                        + COLUMN_HOUSE_RENT
-                        + ","
-                        + "h."
-                        + COLUMN_HOUSE_AREA
-                        + ","
-                        + "h."
-                        + COLUMN_HOUSE_FLOOR
-                        + ","
-                        + "h."
-                        + COLUMN_HOUSE_LAT
-                        + ","
-                        + "h."
-                        + COLUMN_HOUSE_LNG
-                        + ","
-                        + "u."
-                        + COLUMN_USER_FIRSTNAME
-                        + ","
-                        + "u."
-                        + COLUMN_USER_LASTNAME
-                        + ","
-                        + "u."
-                        + COLUMN_USER_AVATAR_URL
-                        + " FROM "
-                        + TABLE_HOUSES
-                        + " h"
-                        + " LEFT JOIN "
-                        + TABLE_USERS
-                        + " u"
-                        + " ON h."
-                        + COLUMN_HOUSE_OWNER
-                        + " = u."
-                        + COLUMN_ID;
-
-        Cursor c = db.rawQuery(sql, null);
+        Cursor c = db.query(
+                TABLE_HOUSE_PHOTOS,
+                new String[]{ COLUMN_HOUSE_PHOTO_URI },
+                COLUMN_HOUSE_PHOTO_HOUSE + " = ?",
+                new String[]{ String.valueOf(houseId) },
+                null, null, null
+        );
         while (c.moveToNext()) {
-            long id = c.getLong(0);
-            long ownerId = c.getLong(1);
-            String addr = c.getString(2);
-            double rent = c.getDouble(3);
-            double area = c.getDouble(4);
-            int floor = c.getInt(5);
-            double lat = c.getDouble(6);
-            double lng = c.getDouble(7);
-            String firstName = c.getString(8);
-            String lastName = c.getString(9);
-            String avatarUrl = c.getString(10);
-
-            List<String> photos = new ArrayList<>();
-            Cursor pc =
-                    db.query(
-                            TABLE_HOUSE_PHOTOS,
-                            new String[] {COLUMN_HOUSE_PHOTO_URI},
-                            COLUMN_HOUSE_PHOTO_HOUSE + "=?",
-                            new String[] {String.valueOf(id)},
-                            null,
-                            null,
-                            null);
-            while (pc.moveToNext()) {
-                photos.add(pc.getString(pc.getColumnIndexOrThrow(COLUMN_HOUSE_PHOTO_URI)));
-            }
-            pc.close();
-
-            String ownerName =
-                    ((firstName != null ? firstName : "") + " " + (lastName != null ? lastName : "")).trim();
-
-            list.add(
-                    new House(
-                            id,
-                            ownerId,
-                            addr,
-                            rent,
-                            area,
-                            floor,
-                            photos,
-                            ownerName,
-                            avatarUrl,
-                            new LatLng(lat, lng)));
+            photos.add(
+                    c.getString(c.getColumnIndexOrThrow(COLUMN_HOUSE_PHOTO_URI))
+            );
         }
         c.close();
-        return list;
+        return photos;
     }
+
+    //get house id from user id
+    public long getHouseIdByUserId(long userId) {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor c = db.query(
+                TABLE_HOUSES,
+                new String[]{ COLUMN_HOUSE_ID },                   // only need the PK
+                COLUMN_HOUSE_OWNER + " = ?",                       // WHERE owner_id = ?
+                new String[]{ String.valueOf(userId) },
+                null, null, null
+        );
+        if (!c.moveToFirst()) {
+            c.close();
+            return -1;
+        }
+        long houseId = c.getLong(c.getColumnIndexOrThrow(COLUMN_HOUSE_ID));
+        c.close();
+
+        return houseId;
+    }
+
 
     // Fetch a single House by id
     public House getHouseById(long houseId) {
         SQLiteDatabase db = getReadableDatabase();
 
-        String sql =
-                "SELECT h."
-                        + COLUMN_HOUSE_ID
-                        + ","
-                        + "h."
-                        + COLUMN_HOUSE_OWNER
-                        + ","
-                        + "h."
-                        + COLUMN_HOUSE_ADDRESS
-                        + ","
-                        + "h."
-                        + COLUMN_HOUSE_RENT
-                        + ","
-                        + "h."
-                        + COLUMN_HOUSE_AREA
-                        + ","
-                        + "h."
-                        + COLUMN_HOUSE_FLOOR
-                        + ","
-                        + "h."
-                        + COLUMN_HOUSE_LAT
-                        + ","
-                        + "h."
-                        + COLUMN_HOUSE_LNG
-                        + ","
-                        + "u."
-                        + COLUMN_USER_FIRSTNAME
-                        + ","
-                        + "u."
-                        + COLUMN_USER_LASTNAME
-                        + ","
-                        + "u."
-                        + COLUMN_USER_AVATAR_URL
-                        + " FROM "
-                        + TABLE_HOUSES
-                        + " h"
-                        + " LEFT JOIN "
-                        + TABLE_USERS
-                        + " u"
-                        + " ON h."
-                        + COLUMN_HOUSE_OWNER
-                        + " = u."
-                        + COLUMN_ID
-                        + " WHERE h."
-                        + COLUMN_HOUSE_ID
-                        + "=?";
-
-        Cursor c = db.rawQuery(sql, new String[] {String.valueOf(houseId)});
+        // 1) Query the houses table
+        Cursor c = db.query(
+                TABLE_HOUSES,
+                new String[]{
+                        COLUMN_HOUSE_ID,
+                        COLUMN_HOUSE_OWNER,
+                        COLUMN_HOUSE_ADDRESS,
+                        COLUMN_HOUSE_RENT,
+                        COLUMN_HOUSE_AREA,
+                        COLUMN_HOUSE_FLOOR,
+                        COLUMN_HOUSE_LAT,
+                        COLUMN_HOUSE_LNG
+                },
+                COLUMN_HOUSE_ID + " = ?",
+                new String[]{ String.valueOf(houseId) },
+                null, null, null
+        );
         if (!c.moveToFirst()) {
             c.close();
             return null;
         }
 
-        long id = c.getLong(0);
-        long ownerId = c.getLong(1);
-        String addr = c.getString(2);
-        double rent = c.getDouble(3);
-        double area = c.getDouble(4);
-        int floor = c.getInt(5);
-        double lat = c.getDouble(6);
-        double lng = c.getDouble(7);
-        String firstName = c.getString(8);
-        String lastName = c.getString(9);
-        String avatarUrl = c.getString(10);
+        long   id        = c.getLong(c.getColumnIndexOrThrow(COLUMN_HOUSE_ID));
+        long   ownerId   = c.getLong(c.getColumnIndexOrThrow(COLUMN_HOUSE_OWNER));
+        String address   = c.getString(c.getColumnIndexOrThrow(COLUMN_HOUSE_ADDRESS));
+        double rent      = c.getDouble(c.getColumnIndexOrThrow(COLUMN_HOUSE_RENT));
+        double area      = c.getDouble(c.getColumnIndexOrThrow(COLUMN_HOUSE_AREA));
+        int    floor     = c.getInt(c.getColumnIndexOrThrow(COLUMN_HOUSE_FLOOR));
+        double latitude  = c.getDouble(c.getColumnIndexOrThrow(COLUMN_HOUSE_LAT));
+        double longitude = c.getDouble(c.getColumnIndexOrThrow(COLUMN_HOUSE_LNG));
         c.close();
 
-        List<String> photos = new ArrayList<>();
-        Cursor pc =
-                db.query(
-                        TABLE_HOUSE_PHOTOS,
-                        new String[] {COLUMN_HOUSE_PHOTO_URI},
-                        COLUMN_HOUSE_PHOTO_HOUSE + "=?",
-                        new String[] {String.valueOf(houseId)},
-                        null,
-                        null,
-                        null);
+        // 2) Load all photo URLs
+        List<String> photoUrls = new ArrayList<>();
+        Cursor pc = db.query(
+                TABLE_HOUSE_PHOTOS,
+                new String[]{ COLUMN_HOUSE_PHOTO_URI },
+                COLUMN_HOUSE_PHOTO_HOUSE + " = ?",
+                new String[]{ String.valueOf(houseId) },
+                null, null, null
+        );
         while (pc.moveToNext()) {
-            photos.add(pc.getString(pc.getColumnIndexOrThrow(COLUMN_HOUSE_PHOTO_URI)));
+            photoUrls.add(pc.getString(pc.getColumnIndexOrThrow(COLUMN_HOUSE_PHOTO_URI)));
         }
         pc.close();
 
-        String ownerName =
-                ((firstName != null ? firstName : "") + " " + (lastName != null ? lastName : "")).trim();
-
+        // 3) Build and return House
         return new House(
-                id, ownerId, addr, rent, area, floor, photos, ownerName, avatarUrl, new LatLng(lat, lng));
+                id,
+                ownerId,
+                address,
+                rent,
+                area,
+                floor,
+                latitude,
+                longitude,
+                photoUrls
+        );
     }
-
-    // Fetch a user’s email by their ID
-    public String getUserEmailById(long userId) {
+    // Fetch all house listings
+    public List<HouseListing> getAllHouseListings() {
+        List<HouseListing> listings = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
-        Cursor c =
-                db.query(
-                        TABLE_USERS,
-                        new String[] {COLUMN_USER_EMAIL},
-                        COLUMN_ID + "=?",
-                        new String[] {String.valueOf(userId)},
-                        null,
-                        null,
-                        null);
-        String email = "";
-        if (c.moveToFirst()) {
-            email = c.getString(c.getColumnIndexOrThrow(COLUMN_USER_EMAIL));
+
+        // 1) include is_approved in the SELECT
+        String sql =
+                "SELECT "
+                        + COLUMN_LISTING_HOUSE_ID            + ", "
+                        + COLUMN_LISTING_OWNER_NAME          + ", "
+                        + COLUMN_LISTING_OWNER_AVATAR_URL    + ", "
+                        + COLUMN_LISTING_HOUSE_AVATAR_URL    + ", "
+                        + COLUMN_LISTING_IS_APPROVED         // ← new column
+                        + " FROM " + TABLE_HOUSE_LISTINGS;
+        Cursor c = db.rawQuery(sql, null);
+
+        // 2) iterate and pull out all five columns
+        while (c.moveToNext()) {
+            long   houseId        = c.getLong(0);
+            String ownerName      = c.getString(1);
+            String ownerAvatarUrl = c.getString(2);
+            String houseAvatarUrl = c.getString(3);
+            boolean isApproved    = c.getInt(4) == 1;  // convert 0/1 → boolean
+
+            // 3) reuse getHouseById(...) for full House object
+            House house = getHouseById(houseId);
+            if (house != null) {
+                listings.add(new HouseListing(
+                        house,
+                        ownerName,
+                        ownerAvatarUrl,
+                        houseAvatarUrl,
+                        isApproved         // pass the new flag in
+                ));
+            }
         }
         c.close();
-        return email;
+
+        return listings;
     }
 
-
-
-    // Completely remove all houses + photos
-    public void clearAllHousesAndPhotos() {
+    /**
+     * Inserts a new house‐listing, automatically inserting the House first
+     * if needed so that the foreign‐key constraint always passes.
+     */
+    public long insertHouseListing(HouseListing listing) {
         SQLiteDatabase db = getWritableDatabase();
+        long listingId = -1;
+
         db.beginTransaction();
         try {
-            db.delete(TABLE_HOUSE_PHOTOS, null, null);
-            db.delete(TABLE_HOUSES, null, null);
+            // 1) Ensure the House exists in the houses table
+            if (listing.house.id <= 0) {
+                long newHouseId = insertHouse(listing.house);
+                if (newHouseId <= 0) {
+                    throw new android.database.SQLException(
+                            "Failed to insert House for listing"
+                    );
+                }
+                // update the in‐memory object so downstream code can see it
+                listing.house.id = newHouseId;
+            }
+
+            // 2) Now insert the listing row with a valid house_id
+            ContentValues cvList = new ContentValues();
+            cvList.put(COLUMN_LISTING_HOUSE_ID,          listing.house.id);
+            cvList.put(COLUMN_LISTING_OWNER_NAME,        listing.ownerName);
+            cvList.put(COLUMN_LISTING_OWNER_AVATAR_URL,  listing.ownerAvatarUrl);
+            cvList.put(COLUMN_LISTING_HOUSE_AVATAR_URL,  listing.houseAvatarUrl);
+            cvList.put(COLUMN_LISTING_IS_APPROVED,       listing.isApproved ? 1 : 0);
+
+            listingId = db.insert(
+                    TABLE_HOUSE_LISTINGS,
+                    null,
+                    cvList
+            );
+            if (listingId == -1) {
+                throw new android.database.SQLException(
+                        "Error inserting listing for house_id=" + listing.house.id
+                );
+            }
+
             db.setTransactionSuccessful();
+        } catch (Exception e) {
+            Log.e(
+                    "DatabaseHelper",
+                    "Error inserting house listing: " + e.getMessage()
+            );
         } finally {
             db.endTransaction();
         }
+
+        return listingId;
+    }
+    public boolean approveListing(HouseListing listing) {
+        if (listing == null || listing.house == null) return false;
+
+        long houseId = listing.house.id;
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_LISTING_IS_APPROVED, 1);
+        int rows = db.update(
+                TABLE_HOUSE_LISTINGS,
+                cv,
+                COLUMN_LISTING_HOUSE_ID + " = ?",
+                new String[]{ String.valueOf(houseId) }
+        );
+        db.close();
+        return rows > 0;
     }
 
     // Record a like or dislike
@@ -802,6 +822,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /** Remove a like: delete the row entirely */
+
+    public boolean setAvatarUrl(long userId, Uri avatarUri) {
+        if (avatarUri == null) return false;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_USER_AVATAR_URL, avatarUri.toString());
+        int rowsUpdated = db.update(
+                TABLE_USERS,
+                cv,
+                COLUMN_ID + " = ?",
+                new String[]{ String.valueOf(userId) }
+        );
+        db.close();
+        return rowsUpdated > 0;
+    }
+
     public void unlikeUser(long userId, long targetId) {
         SQLiteDatabase db = getWritableDatabase();
         db.delete(
@@ -851,6 +888,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             u.city      = c.getString(c.getColumnIndexOrThrow(COLUMN_USER_CITY));
             u.minBudget = c.getInt(c.getColumnIndexOrThrow(COLUMN_USER_BUDGET_FROM));
             u.maxBudget = c.getInt(c.getColumnIndexOrThrow(COLUMN_USER_BUDGET_TO));
+            u.avatarUrl = c.getString(c.getColumnIndexOrThrow(COLUMN_USER_AVATAR_URL));
         }
         c.close();
         return u;

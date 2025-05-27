@@ -15,6 +15,7 @@ import com.google.android.gms.maps.*;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class HomeFilterActivity
@@ -26,6 +27,8 @@ public class HomeFilterActivity
     private GoogleMap      mMap;
     private DatabaseHelper dbHelper = new DatabaseHelper(this);
     private List<House> allHouses;
+
+    private List<HouseListing> allHL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,16 +86,21 @@ public class HomeFilterActivity
         mMap.getUiSettings().setZoomControlsEnabled(true);
 
         // load *all* houses and drop markers
-        allHouses = dbHelper.getAllHouses();  // same as ListingsActivity :contentReference[oaicite:1]{index=1}
+        allHL= dbHelper.getAllHouseListings();
+        allHouses=new ArrayList<>();
+        for(HouseListing hl: allHL){
+            allHouses.add(hl.house);
+        }
+
         LatLngBounds.Builder bounds = new LatLngBounds.Builder();
 
         for (House h : allHouses) {
             Marker mk = mMap.addMarker(new MarkerOptions()
-                    .position(h.location)
+                    .position(h.getLocation())
                     .title(h.address)
                     .snippet("€"+ (int)h.rent +"/mo"));
             if (mk != null) mk.setTag(h.id);
-            bounds.include(h.location);
+            bounds.include(h.getLocation());
         }
 
         mMap.setOnMarkerClickListener(this);

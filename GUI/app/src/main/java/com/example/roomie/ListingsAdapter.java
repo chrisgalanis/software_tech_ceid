@@ -1,3 +1,4 @@
+// File: com/example/roomie/ListingsAdapter.java
 package com.example.roomie;
 
 import android.view.LayoutInflater;
@@ -12,15 +13,15 @@ public class ListingsAdapter
         extends RecyclerView.Adapter<ListingsAdapter.VH> {
 
   public interface OnItemClickListener {
-    void onItemClick(House house);
+    void onItemClick(HouseListing listing);
   }
 
-  private final List<House> houses;
+  private final List<HouseListing> listings;
   private final OnItemClickListener listener;
 
-  public ListingsAdapter(List<House> houses,
+  public ListingsAdapter(List<HouseListing> listings,
                          OnItemClickListener listener) {
-    this.houses   = houses;
+    this.listings = listings;
     this.listener = listener;
   }
 
@@ -33,29 +34,30 @@ public class ListingsAdapter
 
   @Override
   public void onBindViewHolder(@NonNull VH holder, int position) {
-    House house = houses.get(position);
-    holder.tvAddr.setText(house.address);
-    holder.tvRent.setText("€" + (int)house.rent + "/month");
-    holder.tvOwner.setText(house.ownerName);
+    HouseListing listing = listings.get(position);
+    // pull address & rent off the inner House
+    holder.tvAddr.setText(listing.house.address);
+    holder.tvRent.setText("€" + (int)listing.house.rent + "/month");
+    // show the listing-level ownerName
+    holder.tvOwner.setText(listing.ownerName);
 
     holder.itemView.setOnClickListener(v ->
-            listener.onItemClick(house)
+            listener.onItemClick(listing)
     );
   }
 
   @Override
   public int getItemCount() {
-    return houses.size();
+    return listings.size();
   }
 
   static class VH extends RecyclerView.ViewHolder {
     final TextView tvAddr, tvRent, tvOwner;
     VH(@NonNull View itemView) {
       super(itemView);
-      tvAddr = itemView.findViewById(R.id.tvItemAddress);
-      tvRent = itemView.findViewById(R.id.tvItemRent);
+      tvAddr  = itemView.findViewById(R.id.tvItemAddress);
+      tvRent  = itemView.findViewById(R.id.tvItemRent);
       tvOwner = itemView.findViewById(R.id.tvItemOwner);
     }
   }
-
 }

@@ -59,6 +59,8 @@ public class AddPhotosActivity extends AppCompatActivity {
             }
           }
           dbHelper.insertUserPhotos(userId, uris);
+          boolean success = dbHelper.setAvatarUrl(userId, uris.get(0));
+
           startActivity(new Intent(this, InterestsActivity.class));
           finish();
         });

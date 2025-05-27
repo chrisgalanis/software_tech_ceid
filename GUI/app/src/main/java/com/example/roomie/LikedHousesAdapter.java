@@ -1,3 +1,4 @@
+// File: com/example/roomie/LikedHousesAdapter.java
 package com.example.roomie;
 
 import android.content.Context;
@@ -12,49 +13,54 @@ import java.util.List;
 public class LikedHousesAdapter extends RecyclerView.Adapter<LikedHousesAdapter.ViewHolder> {
 
   public interface OnHouseClickListener {
-    void onHouseClick(House house);
+    void onHouseClick(HouseListing listing);
   }
 
   private Context context;
-  private List<House> houseList;
+  private List<HouseListing> listingList;
   private OnHouseClickListener listener;
 
-  public LikedHousesAdapter(Context context, List<House> houseList, OnHouseClickListener listener) {
-    this.context = context;
-    this.houseList = houseList;
-    this.listener = listener;
+  public LikedHousesAdapter(Context context,
+                            List<HouseListing> listingList,
+                            OnHouseClickListener listener) {
+    this.context     = context;
+    this.listingList = listingList;
+    this.listener    = listener;
   }
 
   @NonNull
   @Override
   public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-    View view = LayoutInflater.from(context).inflate(R.layout.item_house_card, parent, false);
+    View view = LayoutInflater
+            .from(context)
+            .inflate(R.layout.item_house_card, parent, false);
     return new ViewHolder(view);
   }
 
   @Override
   public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-    House house = houseList.get(position);
-    holder.houseTitle.setText("Live with " + house.ownerName);
-    holder.housePrice.setText("€" + house.rent + "/month");
+    HouseListing listing = listingList.get(position);
 
-    holder.itemView.setOnClickListener(
-        v -> {
-          if (listener != null) {
-            listener.onHouseClick(house);
-          }
-        });
+    // now pulling from HouseListing instead of raw House
+    holder.houseTitle.setText("Live with " + listing.ownerName);
+    holder.housePrice.setText("€" + listing.house.rent + "/month");
+
+    holder.itemView.setOnClickListener(v -> {
+      if (listener != null) {
+        listener.onHouseClick(listing);
+      }
+    });
   }
 
   @Override
   public int getItemCount() {
-    return houseList.size();
+    return listingList.size();
   }
 
-  public static class ViewHolder extends RecyclerView.ViewHolder {
+  static class ViewHolder extends RecyclerView.ViewHolder {
     TextView houseTitle, housePrice;
 
-    public ViewHolder(@NonNull View itemView) {
+    ViewHolder(@NonNull View itemView) {
       super(itemView);
       houseTitle = itemView.findViewById(R.id.tvItemAddress);
       housePrice = itemView.findViewById(R.id.tvItemRent);

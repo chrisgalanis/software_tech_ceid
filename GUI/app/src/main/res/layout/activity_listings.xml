@@ -6,33 +6,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- 1) Recycler fills available space -->
+    <!-- ─── Toolbar ────────────────────────────────────────────────────────────── -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        app:title="House Listings"
+        app:titleTextColor="@android:color/white"
+        app:navigationIcon="@drawable/ic_arrow_back" />
+
+    <!-- ─── Listings RecyclerView ─────────────────────────────────────────────── -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerHouses"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_weight="1" />
 
-    <!-- 2) Map container -->
-    <FrameLayout
-        android:id="@+id/map_container"
-        android:layout_width="match_parent"
-        android:layout_height="400dp"
-    android:layout_margin="8dp">
-    <fragment
-        android:id="@+id/map_fragment"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-</FrameLayout>
-
-    <!-- 3) Fixed bottom nav -->
-    <include
-        android:id="@+id/bottom_navigation"
-        layout="@layout/layout_bottom_navigation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
+    <!-- ─── “No results” view ─────────────────────────────────────────────────── -->
     <TextView
         android:id="@+id/tvEmpty"
         android:layout_width="match_parent"
@@ -40,6 +31,13 @@
         android:text="No houses found"
         android:gravity="center"
         android:visibility="gone"
-        android:layout_margin="16dp"/>
+        android:layout_margin="16dp" />
+
+    <!-- ─── Fixed bottom nav ──────────────────────────────────────────────────── -->
+    <include
+        android:id="@+id/bottom_navigation"
+        layout="@layout/layout_bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
 </LinearLayout>

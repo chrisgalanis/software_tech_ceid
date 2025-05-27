@@ -15,16 +15,17 @@ public class AuthenticateHouseAdapter
         extends RecyclerView.Adapter<AuthenticateHouseAdapter.ViewHolder> {
 
     public interface OnActionListener {
-        void onApprove(House house);
-        void onDisapprove(House house);
-        void onViewDetail(House house);
+        void onApprove(HouseListing listing);
+        void onDisapprove(HouseListing listing);
+        void onViewDetail(HouseListing listing);
     }
 
-    private final List<House> houses;
+    private final List<HouseListing> listings;
     private final OnActionListener listener;
 
-    public AuthenticateHouseAdapter(List<House> houses, OnActionListener listener) {
-        this.houses = houses;
+    public AuthenticateHouseAdapter(List<HouseListing> listings,
+                                    OnActionListener listener) {
+        this.listings = listings;
         this.listener = listener;
     }
 
@@ -38,15 +39,14 @@ public class AuthenticateHouseAdapter
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder h, int position) {
-        House house = houses.get(position);
-
+        HouseListing listing = listings.get(position);
         // Owner name
-        h.tvOwnerName.setText("Listing of " + house.ownerName);
+        h.tvOwnerName.setText("Listing of " + listing.ownerName);
 
-        // Listing image (first photo)
-        if (house.photoUrls != null && !house.photoUrls.isEmpty()) {
+        // Listing image (first photo from the House)
+        if (listing.house.photoUrls != null && !listing.house.photoUrls.isEmpty()) {
             Glide.with(h.itemView)
-                    .load(house.photoUrls.get(0))
+                    .load(listing.house.photoUrls.get(0))
                     .centerCrop()
                     .into(h.ivListingImage);
         } else {
@@ -55,24 +55,24 @@ public class AuthenticateHouseAdapter
 
         // Owner avatar
         Glide.with(h.itemView)
-                .load(house.ownerAvatarUrl)
+                .load(listing.ownerAvatarUrl)
                 .circleCrop()
                 .into(h.ivOwnerProfile);
 
-        h.btnApprove.setOnClickListener(v -> listener.onApprove(house));
-        h.btnDisapprove.setOnClickListener(v -> listener.onDisapprove(house));
-        h.btnView.setOnClickListener(v -> listener.onViewDetail(house));
+        h.btnApprove.setOnClickListener(v -> listener.onApprove(listing));
+        h.btnDisapprove.setOnClickListener(v -> listener.onDisapprove(listing));
+        h.btnView.setOnClickListener(v -> listener.onViewDetail(listing));
     }
 
     @Override
     public int getItemCount() {
-        return houses.size();
+        return listings.size();
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView ivListingImage, ivOwnerProfile;
-        TextView tvOwnerName;
-        Button btnApprove, btnDisapprove, btnView;
+        TextView  tvOwnerName;
+        Button    btnApprove, btnDisapprove, btnView;
 
         ViewHolder(View root) {
             super(root);
