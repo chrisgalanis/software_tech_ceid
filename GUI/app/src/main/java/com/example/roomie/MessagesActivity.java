@@ -38,7 +38,7 @@ public class MessagesActivity extends AppCompatActivity
     recyclerViewMessages.setLayoutManager(new LinearLayoutManager(this));
 
     messageList = new ArrayList<>();
-    populateDummyMessageList(); // <<< CALL NEW METHOD TO POPULATE
+    //populateDummyMessageList(); // <<< CALL NEW METHOD TO POPULATE
 
     messageAdapter = new MessageAdapter(messageList, this);
     recyclerViewMessages.setAdapter(messageAdapter);

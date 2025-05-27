@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    card:cardCornerRadius="12dp"
+    android:layout_margin="8dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="12dp">
+
+        <!-- Avatar -->
+        <ImageView
+            android:id="@+id/avatarImageView"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_profile_placeholder"/>
+
+        <!-- Username -->
+        <TextView
+            android:id="@+id/usernameTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/avatarImageView"
+            android:layout_marginStart="12dp"
+            android:text="Username"
+            android:textSize="16sp"
+            android:textStyle="bold"/>
+
+        <!-- “View Profile” -->
+        <TextView
+            android:id="@+id/viewProfileTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/usernameTextView"
+            android:layout_alignParentEnd="true"
+            android:text="VIEW PROFILE"
+            android:textAllCaps="true"
+            android:textSize="12sp"
+            android:textStyle="bold"/>
+
+        <!-- Report label -->
+        <TextView
+            android:id="@+id/reportLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/avatarImageView"
+            android:text="Report text:"
+            android:textStyle="italic"
+            android:layout_marginTop="8dp"/>
+
+        <!-- Report text -->
+        <TextView
+            android:id="@+id/reportTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/reportLabel"
+            android:layout_marginTop="4dp"
+            android:padding="8dp"
+            android:background="#EFEFEF"
+            android:text="Report detail goes here."/>
+
+        <!-- Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/reportTextView"
+            android:layout_marginTop="12dp"
+            android:orientation="horizontal"
+            android:gravity="end">
+
+            <Button
+                android:id="@+id/dismissButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="DISMISS"/>
+
+            <Button
+                android:id="@+id/warnButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="WARN USER"
+                android:layout_marginStart="16dp"/>
+
+        </LinearLayout>
+    </RelativeLayout>
+</androidx.cardview.widget.CardView>

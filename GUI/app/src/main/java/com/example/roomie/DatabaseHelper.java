@@ -14,14 +14,14 @@ import java.util.List;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    private static final String DATABASE_NAME = "RoomieApp.db";
-    private static final int DATABASE_VERSION = 10;
+    private static final String DATABASE_NAME    = "RoomieApp.db";
+    private static final int    DATABASE_VERSION = 14;   // bumped to include reports table
 
-    // Table: users
-    public static final String TABLE_USERS = "users";
-    public static final String COLUMN_ID = "_id";
-    public static final String COLUMN_USER_EMAIL = "email";
-    public static final String COLUMN_USER_PASSWORD = "password";
+    // users table
+    public static final String TABLE_USERS           = "users";
+    public static final String COLUMN_ID             = "_id";
+    public static final String COLUMN_USER_EMAIL     = "email";
+    public static final String COLUMN_USER_PASSWORD  = "password";
     public static final String COLUMN_USER_FIRSTNAME = "first_name";
     public static final String COLUMN_USER_LASTNAME = "last_name";
     public static final String COLUMN_USER_GENDER = "gender";
@@ -33,15 +33,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_USER_CITY = "city";
 
     // photos table
-    public static final String TABLE_PHOTOS = "user_photos";
-    public static final String COLUMN_PHOTO_ID = "_id";
-    public static final String COLUMN_PHOTO_USER = "user_id";
-    public static final String COLUMN_PHOTO_URI = "uri";
+    public static final String TABLE_PHOTOS       = "user_photos";
+    public static final String COLUMN_PHOTO_ID    = "_id";
+    public static final String COLUMN_PHOTO_USER  = "user_id";
+    public static final String COLUMN_PHOTO_URI   = "uri";
 
     // interests table
-    public static final String TABLE_INTERESTS = "user_interests";
-    public static final String COLUMN_INTEREST_ID = "_id";
-    public static final String COLUMN_INTEREST_USER = "user_id";
+    public static final String TABLE_INTERESTS        = "user_interests";
+    public static final String COLUMN_INTEREST_ID     = "_id";
+    public static final String COLUMN_INTEREST_USER   = "user_id";
     public static final String COLUMN_INTEREST_STRING = "interest";
 
     // Table: houses
@@ -66,7 +66,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String TABLE_LIKES = "likes";
     public static final String COLUMN_LIKE_USER = "userId";
     public static final String COLUMN_LIKE_TARGET = "targetId";
-    public static final String COLUMN_IS_LIKE = "isLike";
 
     // Table: matches
     public static final String TABLE_MATCHES = "matches";
@@ -82,7 +81,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_MESSAGE_TEXT = "message_text";
     public static final String COLUMN_MESSAGE_TIMESTAMP_MS = "timestamp_ms";
 
-    // CREATE statements
+    // ─── REPORTS TABLE ───────────────────────────────────────────────────────────
+    public static final String TABLE_REPORTS         = "reports";
+    public static final String COLUMN_REPORT_ID      = "_id";
+    public static final String COLUMN_REPORT_USER_ID = "reported_user_id";
+    public static final String COLUMN_REPORT_TEXT    = "text";
+    public static final String COLUMN_REPORT_STATUS  = "status";      // "PENDING", "DISMISSED", "WARNED"
+
+    // ─── WARNINGS TABLE ───────────────────────────────────────────────────────────
+    public static final String TABLE_WARNINGS        = "warnings";
+    public static final String COLUMN_WARNING_ID     = "_id";
+    public static final String COLUMN_WARNING_USER   = "user_id";
+    public static final String COLUMN_WARNING_TEXT   = "text";
+    public static final String COLUMN_WARNING_STATUS = "status";      // "PENDING" or "ACKNOWLEDGED"
+    public static final String COLUMN_WARNING_TIME   = "timestamp";
+    // ─── CREATE TABLE STATEMENTS ─────────────────────────────────────────────────
+
     private static final String SQL_CREATE_USERS =
             "CREATE TABLE "
                     + TABLE_USERS
@@ -278,6 +292,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     + ") ON DELETE CASCADE"
                     + ");";
 
+    private static final String SQL_CREATE_REPORTS =
+            "CREATE TABLE " + TABLE_REPORTS + " ("
+                    + COLUMN_REPORT_ID      + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + COLUMN_REPORT_USER_ID + " INTEGER, "
+                    + COLUMN_REPORT_TEXT    + " TEXT, "
+                    + COLUMN_REPORT_STATUS  + " TEXT DEFAULT 'PENDING', "
+                    + "FOREIGN KEY(" + COLUMN_REPORT_USER_ID + ") REFERENCES "
+                    + TABLE_USERS + "(" + COLUMN_ID + ") ON DELETE CASCADE"
+                    + ");";
+
+    private static final String SQL_CREATE_WARNINGS =
+            "CREATE TABLE " + TABLE_WARNINGS + " ("
+                    + COLUMN_WARNING_ID   + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + COLUMN_WARNING_USER + " INTEGER, "
+                    + COLUMN_WARNING_TEXT + " TEXT, "
+                    + COLUMN_WARNING_STATUS+ " TEXT DEFAULT 'PENDING', "
+                    + COLUMN_WARNING_TIME + " DATETIME DEFAULT CURRENT_TIMESTAMP, "
+                    + "FOREIGN KEY(" + COLUMN_WARNING_USER + ") REFERENCES "
+                    + TABLE_USERS + "(" + COLUMN_ID + ") ON DELETE CASCADE"
+                    + ");";
+
+
+
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -298,6 +335,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(SQL_CREATE_LIKES);
         db.execSQL(SQL_CREATE_MATCHES);
         db.execSQL(SQL_CREATE_CHAT_MESSAGES);
+        db.execSQL(SQL_CREATE_REPORTS);
+        db.execSQL(SQL_CREATE_WARNINGS);
     }
 
     @Override
@@ -305,14 +344,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // Drop tables in reverse-dependency order
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_CHAT_MESSAGES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_MATCHES);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_REPORTS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_LIKES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_HOUSE_PHOTOS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_HOUSES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_INTERESTS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PHOTOS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_WARNINGS);
         onCreate(db);
     }
+
+    /*** ORIGINAL METHODS ***/
 
     // Fetch user ID by email
     public long getUserIdByEmail(String email) {
@@ -399,11 +442,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         db.beginTransaction();
         try {
-            for (Uri uri : uris) {
+            for (Uri uri: uris) {
                 if (uri == null) continue;
                 ContentValues cv = new ContentValues();
                 cv.put(COLUMN_PHOTO_USER, userId);
-                cv.put(COLUMN_PHOTO_URI, uri.toString());
+                cv.put(COLUMN_PHOTO_URI,  uri.toString());
                 db.insert(TABLE_PHOTOS, null, cv);
             }
             db.setTransactionSuccessful();
@@ -415,15 +458,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public List<String> getUserPhotos(long userId) {
         List<String> list = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
-        Cursor c =
-                db.query(
-                        TABLE_PHOTOS,
-                        new String[] {COLUMN_PHOTO_URI},
-                        COLUMN_PHOTO_USER + "=?",
-                        new String[] {String.valueOf(userId)},
-                        null,
-                        null,
-                        null);
+        Cursor c = db.query(
+                TABLE_PHOTOS,
+                new String[]{ COLUMN_PHOTO_URI },
+                COLUMN_PHOTO_USER + "=?",
+                new String[]{ String.valueOf(userId) },
+                null, null, null
+        );
         while (c.moveToNext()) {
             list.add(c.getString(c.getColumnIndexOrThrow(COLUMN_PHOTO_URI)));
         }
@@ -436,9 +477,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         db.beginTransaction();
         try {
-            for (String interest : interests) {
+            for (String interest: interests) {
                 ContentValues cv = new ContentValues();
-                cv.put(COLUMN_INTEREST_USER, userId);
+                cv.put(COLUMN_INTEREST_USER,   userId);
                 cv.put(COLUMN_INTEREST_STRING, interest);
                 db.insert(TABLE_INTERESTS, null, cv);
             }
@@ -451,15 +492,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public List<String> getUserInterests(long userId) {
         List<String> list = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
-        Cursor c =
-                db.query(
-                        TABLE_INTERESTS,
-                        new String[] {COLUMN_INTEREST_STRING},
-                        COLUMN_INTEREST_USER + "=?",
-                        new String[] {String.valueOf(userId)},
-                        null,
-                        null,
-                        null);
+        Cursor c = db.query(
+                TABLE_INTERESTS,
+                new String[]{ COLUMN_INTEREST_STRING },
+                COLUMN_INTEREST_USER + "=?",
+                new String[]{ String.valueOf(userId) },
+                null, null, null
+        );
         while (c.moveToNext()) {
             list.add(c.getString(c.getColumnIndexOrThrow(COLUMN_INTEREST_STRING)));
         }
@@ -467,14 +506,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return list;
     }
 
-    // Save budget & city for this user
+    /** Save budget & city for this user */
     public void updateUserPreferences(long userId, int from, int to, String city) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_USER_BUDGET_FROM, from);
-        cv.put(COLUMN_USER_BUDGET_TO, to);
-        cv.put(COLUMN_USER_CITY, city);
-        db.update(TABLE_USERS, cv, COLUMN_ID + "=?", new String[] {String.valueOf(userId)});
+        cv.put(COLUMN_USER_BUDGET_TO,   to);
+        cv.put(COLUMN_USER_CITY,        city);
+        db.update(
+                TABLE_USERS,
+                cv,
+                COLUMN_ID + "=?",
+                new String[]{ String.valueOf(userId) }
+        );
         db.close();
     }
 
@@ -727,100 +771,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return email;
     }
 
-    // Insert mock houses
-    public void seedMockHouses(long ownerId) {
-        String[] addrs = {"Lemesou 20, Patras", "Agiou Nikolaou 5, Patras", "Sisinis 25, Patras"};
-        double[] rents = {180.0, 200.0, 400.0};
-        double[] areas = {88.0, 95.0, 109.0};
-        int[] floors = {3, 2, 4};
-        double[] lats = {38.2599, 38.2489, 38.2429};
-        double[] lngs = {21.7423, 21.7352, 21.7363};
-        String[][] photoUrls = {
-                {"https://example.com/img1.jpg", "https://example.com/img2.jpg"},
-                {"https://example.com/a1.jpg", "https://example.com/a2.jpg"},
-                {"https://example.com/b1.jpg", "https://example.com/b2.jpg"}
-        };
 
-        long houseId = -1;
-        int idx = (int) (ownerId % addrs.length);
-
-        houseId =
-                insertHouse(ownerId, addrs[idx], rents[idx], areas[idx], floors[idx], lats[idx], lngs[idx]);
-
-        List<Uri> uris = new ArrayList<>();
-        for (String url : photoUrls[idx]) {
-            uris.add(Uri.parse(url));
-        }
-        insertHousePhotos(houseId, uris);
-    }
-
-    public void seedMockDataIfEmpty() {
-        SQLiteDatabase db = getWritableDatabase();
-
-        long houseCount = DatabaseUtils.longForQuery(db, "SELECT COUNT(*) FROM " + TABLE_HOUSES, null);
-        if (houseCount > 0) {
-            return;
-        }
-
-        String[][] DEMO_USERS = {
-                {
-                        "kwsmav@gmail.com",
-                        "password123",
-                        "Kwstas",
-                        "Mavridis",
-                        "M",
-                        "2004-04-05",
-                        "https://i.pravatar.cc/150?u=kwstas"
-                },
-                {
-                        "raftheman@gmail.com",
-                        "hunter2",
-                        "Rafas",
-                        "Pieris",
-                        "M",
-                        "2003-11-03",
-                        "https://i.pravatar.cc/150?u=rafas"
-                },
-                {
-                        "mikemits@gmail.com",
-                        "mikepass",
-                        "Mike",
-                        "Mitsainas",
-                        "M",
-                        "2004-09-03",
-                        "https://i.pravatar.cc/150?u=mike"
-                }
-        };
-
-        List<Long> ownerIds = new ArrayList<>(DEMO_USERS.length);
-        for (String[] u : DEMO_USERS) {
-            String email = u[0];
-            long userId = getUserIdByEmail(email);
-            if (userId < 0) {
-                ContentValues cv = new ContentValues();
-                cv.put(COLUMN_USER_EMAIL, u[0]);
-                cv.put(COLUMN_USER_PASSWORD, u[1]);
-                cv.put(COLUMN_USER_FIRSTNAME, u[2]);
-                cv.put(COLUMN_USER_LASTNAME, u[3]);
-                cv.put(COLUMN_USER_GENDER, u[4]);
-                cv.put(COLUMN_USER_BIRTHDAY, u[5]);
-                cv.put(COLUMN_USER_AVATAR_URL, u[6]);
-                userId = db.insert(TABLE_USERS, null, cv);
-            }
-            ownerIds.add(userId);
-        }
-
-        for (long ownerId : ownerIds) {
-            seedMockHouses(ownerId);
-        }
-    }
-
-    public void seedMockUsers() {
-        if (getUserIdByEmail("mikmits@gmail.com") < 0) {
-            insertUser("mikmits@gmail.com", "pass123", "Mike", "Mitsainas", "M", "2004-09-13");
-            insertUser("kwsmav@gmail.com", "qwerty", "Kwstas", "Mavridis", "M", "2004-04-05");
-        }
-    }
 
     // Completely remove all houses + photos
     public void clearAllHousesAndPhotos() {
@@ -839,33 +790,37 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void likeUser(long userId, long targetId) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues cv = new ContentValues();
-        cv.put(COLUMN_LIKE_USER, userId);
+        cv.put(COLUMN_LIKE_USER,   userId);
         cv.put(COLUMN_LIKE_TARGET, targetId);
-        db.insertWithOnConflict(TABLE_LIKES, null, cv, SQLiteDatabase.CONFLICT_IGNORE);
+        db.insertWithOnConflict(
+                TABLE_LIKES,
+                null,
+                cv,
+                SQLiteDatabase.CONFLICT_IGNORE
+        );
         db.close();
     }
 
+    /** Remove a like: delete the row entirely */
     public void unlikeUser(long userId, long targetId) {
         SQLiteDatabase db = getWritableDatabase();
         db.delete(
                 TABLE_LIKES,
-                COLUMN_LIKE_USER + "=? AND " + COLUMN_LIKE_TARGET + "=?",
-                new String[] {String.valueOf(userId), String.valueOf(targetId)});
+                COLUMN_LIKE_USER   + "=? AND " + COLUMN_LIKE_TARGET + "=?",
+                new String[]{ String.valueOf(userId), String.valueOf(targetId) }
+        );
         db.close();
     }
-
     public List<Long> getUsersWhoLikedMe(long userId) {
         List<Long> list = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
-        Cursor c =
-                db.query(
-                        TABLE_LIKES,
-                        new String[] {COLUMN_LIKE_USER},
-                        COLUMN_LIKE_TARGET + "=?",
-                        new String[] {String.valueOf(userId)},
-                        null,
-                        null,
-                        null);
+        Cursor c = db.query(
+                TABLE_LIKES,
+                new String[]{ COLUMN_LIKE_USER },
+                COLUMN_LIKE_TARGET + "=?",
+                new String[]{ String.valueOf(userId) },
+                null, null, null
+        );
         while (c.moveToNext()) {
             list.add(c.getLong(c.getColumnIndexOrThrow(COLUMN_LIKE_USER)));
         }
@@ -873,24 +828,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return list;
     }
 
-    // Fetch a User object by its ID
+    /**
+     * Fetch a User object by its ID.
+     */
     public User getUserById(long id) {
         SQLiteDatabase db = getReadableDatabase();
-        Cursor c =
-                db.query(
-                        TABLE_USERS,
-                        null,
-                        COLUMN_ID + "=?",
-                        new String[] {String.valueOf(id)},
-                        null,
-                        null,
-                        null);
+        Cursor c = db.query(
+                TABLE_USERS,
+                null,
+                COLUMN_ID + "=?",
+                new String[]{ String.valueOf(id) },
+                null, null, null
+        );
         User u = null;
         if (c.moveToFirst()) {
             u = new User();
-            u.id = c.getLong(c.getColumnIndexOrThrow(COLUMN_ID));
+            u.id        = c.getLong(c.getColumnIndexOrThrow(COLUMN_ID));
             u.firstName = c.getString(c.getColumnIndexOrThrow(COLUMN_USER_FIRSTNAME));
-            u.lastName = c.getString(c.getColumnIndexOrThrow(COLUMN_USER_LASTNAME));
+            u.lastName  = c.getString(c.getColumnIndexOrThrow(COLUMN_USER_LASTNAME));
+            u.gender    = c.getString(c.getColumnIndexOrThrow(COLUMN_USER_GENDER));
+            u.birthday  = c.getString(c.getColumnIndexOrThrow(COLUMN_USER_BIRTHDAY));
+            u.city      = c.getString(c.getColumnIndexOrThrow(COLUMN_USER_CITY));
+            u.minBudget = c.getInt(c.getColumnIndexOrThrow(COLUMN_USER_BUDGET_FROM));
+            u.maxBudget = c.getInt(c.getColumnIndexOrThrow(COLUMN_USER_BUDGET_TO));
         }
         c.close();
         return u;
@@ -1191,6 +1151,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         null);
 
         while (c.moveToNext()) {
+
             User u = new User();
             u.id = c.getLong(c.getColumnIndexOrThrow(COLUMN_ID));
             u.firstName = c.getString(c.getColumnIndexOrThrow(COLUMN_USER_FIRSTNAME));
@@ -1202,5 +1163,143 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         c.close();
         return list;
+    }
+
+    // ─── REPORTS METHODS ──────────────────────────────────────────────────────────
+
+    /** Insert a new report for a user */
+    public long insertReport(long reportedUserId, String text) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_REPORT_USER_ID, reportedUserId);
+        cv.put(COLUMN_REPORT_TEXT,    text);
+        long id = db.insert(TABLE_REPORTS, null, cv);
+        db.close();
+        return id;
+    }
+
+    /** Fetch all PENDING reports */
+    public List<Report> getAllPendingReports() {
+        List<Report> list = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+
+        String[] cols = {
+                COLUMN_REPORT_ID,
+                COLUMN_REPORT_USER_ID,
+                COLUMN_REPORT_TEXT
+        };
+        String sel  = COLUMN_REPORT_STATUS + "=?";
+        String[] args= { "PENDING" };
+
+        Cursor c = db.query(
+                TABLE_REPORTS,
+                cols,
+                sel,
+                args,
+                null, null,
+                COLUMN_REPORT_ID + " DESC"
+        );
+        while (c.moveToNext()) {
+            long   rid  = c.getLong(c.getColumnIndexOrThrow(COLUMN_REPORT_ID));
+            long   uid  = c.getLong(c.getColumnIndexOrThrow(COLUMN_REPORT_USER_ID));
+            String txt = c.getString(c.getColumnIndexOrThrow(COLUMN_REPORT_TEXT));
+            list.add(new Report(rid, uid, "", "", txt));
+        }
+        c.close();
+        db.close();
+        return list;
+    }
+
+    /** Mark a report DISMISSED */
+    public void dismissReport(long reportId) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_REPORT_STATUS, "DISMISSED");
+        db.update(
+                TABLE_REPORTS,
+                cv,
+                COLUMN_REPORT_ID + "=?",
+                new String[]{ String.valueOf(reportId) }
+        );
+        db.close();
+    }
+
+    public void fullfillReport(long reportId) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_REPORT_STATUS, "fullfilled");
+        db.update(
+                TABLE_REPORTS,
+                cv,
+                COLUMN_REPORT_ID + "=?",
+                new String[]{ String.valueOf(reportId) }
+        );
+        db.close();
+    }
+
+    /**
+     * Warn a user and mark report WARNED
+     *
+     * @return
+     */
+
+
+    public long insertWarning(Warning warning) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_WARNING_USER,   warning.userId);
+        cv.put(COLUMN_WARNING_TEXT,   warning.text);
+        cv.put(COLUMN_WARNING_STATUS, warning.status);     // e.g. "PENDING"
+        // timestamp column has DEFAULT CURRENT_TIMESTAMP, so we don’t set it here
+        long id = db.insert(TABLE_WARNINGS, null, cv);
+        db.close();
+        return id;
+    }
+    public List<Warning> getWarningsForUser(long userId) {
+        List<Warning> list = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+
+        String[] cols = {
+                COLUMN_WARNING_ID,
+                COLUMN_WARNING_USER,
+                COLUMN_WARNING_TEXT,
+                COLUMN_WARNING_STATUS,
+                COLUMN_WARNING_TIME
+        };
+        String   sel  = COLUMN_WARNING_USER + "=?";
+        String[] args = { String.valueOf(userId) };
+
+        Cursor c = db.query(
+                TABLE_WARNINGS,
+                cols,
+                sel,
+                args,
+                null, null,
+                COLUMN_WARNING_TIME + " DESC"
+        );
+        while (c.moveToNext()) {
+            long   id    = c.getLong(c.getColumnIndexOrThrow(COLUMN_WARNING_ID));
+            String txt   = c.getString(c.getColumnIndexOrThrow(COLUMN_WARNING_TEXT));
+            String stat  = c.getString(c.getColumnIndexOrThrow(COLUMN_WARNING_STATUS));
+            String time  = c.getString(c.getColumnIndexOrThrow(COLUMN_WARNING_TIME));
+            list.add(new Warning(id, userId, txt, stat, time));
+        }
+        c.close();
+        db.close();
+        return list;
+    }
+
+    /** Mark a warning as acknowledged */
+    public void acknowledgeWarning(long warningId) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_WARNING_STATUS, "ACKNOWLEDGED");
+        db.update(
+                TABLE_WARNINGS,
+                cv,
+                COLUMN_WARNING_ID + "=?",
+                new String[]{ String.valueOf(warningId) }
+        );
+        db.close();
     }
 }
