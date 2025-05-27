@@ -110,7 +110,7 @@ public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.ViewHolder
                 long warningId = dbHelper.insertWarning(warning);
                 if (warningId > 0) {
                     // optionally mark report handled
-                    dbHelper.dismissReport(r.id);
+                    dbHelper.fullfillReport(r.id);
 
                     // update UI
                     reports.remove(pos);

@@ -1,6 +1,7 @@
 package com.example.roomie;
 
 import android.os.Bundle;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -22,6 +23,12 @@ public class WarningsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_warnings);
+        currentUserId = SessionManager.get().getUserId();
+        if (currentUserId < 0) {
+            Toast.makeText(this, "No user logged in", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
 
         // toolbar
         Toolbar tb = findViewById(R.id.toolbar);
@@ -36,7 +43,6 @@ public class WarningsActivity extends AppCompatActivity {
                 R.id.nav_feed
         );
 
-        currentUserId = SessionManager.get().getUserId();
         dbHelper      = new DatabaseHelper(this);
 
         rv = findViewById(R.id.warningsRecyclerView);

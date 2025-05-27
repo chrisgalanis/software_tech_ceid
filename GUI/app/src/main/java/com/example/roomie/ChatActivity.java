@@ -140,6 +140,7 @@ public class ChatActivity extends AppCompatActivity {
 
     // Set Click Listeners
     ivBackButton.setOnClickListener(v -> onBackPressed());
+    //REPORT BUTTON
     ivInfoButton.setOnClickListener(
         v ->
             Toast.makeText(
@@ -148,14 +149,14 @@ public class ChatActivity extends AppCompatActivity {
                         + (chatPartnerNameForDisplay != null ? chatPartnerNameForDisplay : "User"),
                     Toast.LENGTH_SHORT)
                 .show());
-    btnViewProfile.setOnClickListener(
-        v ->
-            Toast.makeText(
-                    ChatActivity.this,
-                    "View Profile for "
-                        + (chatPartnerNameForDisplay != null ? chatPartnerNameForDisplay : "User"),
-                    Toast.LENGTH_SHORT)
-                .show());
+    //VIEW PROFILE BUTTON
+    btnViewProfile.setOnClickListener(v -> {
+
+        Intent i = new Intent(this, OtherUserProfileActivity.class);
+        i.putExtra(OtherUserProfileActivity.EXTRA_USER_ID, chatPartnerId);
+        startActivity(i);
+
+    });
     ivSend.setOnClickListener(v -> sendMessage());
   }
 

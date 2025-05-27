@@ -14,4 +14,7 @@ public class Report {
         this.avatarUrl    = avatarUrl;
         this.text         = text;
     }
+
+
+
 }

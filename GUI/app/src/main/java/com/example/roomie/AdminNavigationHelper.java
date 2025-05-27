@@ -27,7 +27,7 @@ public class AdminNavigationHelper {
 
             Intent intent;
             if (id == R.id.nav_home) {
-                intent = new Intent(activity, HomeFilterActivity.class);
+                intent = new Intent(activity, AuthenticateListingsActivity.class);
             }
             else if (id == R.id.nav_reports) {
                 intent = new Intent(activity, AdminReportsActivity.class);

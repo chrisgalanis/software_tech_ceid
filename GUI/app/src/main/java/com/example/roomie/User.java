@@ -52,7 +52,7 @@ public class User {
      */
     public static int calculateAge(@Nullable String birthday) {
         if (birthday == null) return -1;
-        String[] parts = birthday.split("-");
+        String[] parts = birthday.split("/");
         if (parts.length < 3) return -1;
 
         int year, month, day;

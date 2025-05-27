@@ -54,7 +54,9 @@
         <activity
             android:name=".WarningsActivity"
             android:exported="false"/>
-
+        <activity
+            android:name=".AuthenticateListingsActivity"
+            android:exported="false"/>
         <activity
             android:name=".HomeFilterActivity"
             android:exported="false"/>

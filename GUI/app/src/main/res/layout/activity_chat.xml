@@ -104,77 +104,73 @@
         app:layout_constraintBottom_toTopOf="@id/messageInputLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        tools:listitem="@layout/item_chat_message_sent"/> <LinearLayout
+        tools:listitem="@layout/item_chat_message_sent"/>
+
+    <LinearLayout
         android:id="@+id/messageInputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="8dp"
+        android:layout_marginBottom="16dp"
         android:background="@android:color/white"
         android:gravity="center_vertical"
-        app:layout_constraintBottom_toTopOf="@id/bottomNavigationView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        android:orientation="horizontal"
+        android:padding="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent">
 
         <ImageView
             android:id="@+id/ivEmoji"
             android:layout_width="36dp"
             android:layout_height="36dp"
-            android:src="@drawable/ic_emoji"
-            android:padding="4dp"
             android:contentDescription="Emoji"
-            app:tint="@color/icon_tint_gray"/>
+            android:padding="4dp"
+            android:src="@drawable/ic_emoji"
+            app:tint="@color/icon_tint_gray" />
 
         <EditText
             android:id="@+id/etMessage"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
             android:layout_weight="1"
+            android:background="@drawable/edit_text_background"
             android:hint="Message.."
             android:inputType="textMultiLine"
-            android:textColor="@android:color/black"
             android:maxLines="5"
-            android:background="@drawable/edit_text_background"
             android:padding="12dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"/>
+            android:textColor="@android:color/black" />
 
         <ImageView
             android:id="@+id/ivMic"
             android:layout_width="36dp"
             android:layout_height="36dp"
-            android:src="@drawable/ic_mic"
-            android:padding="4dp"
-            android:contentDescription="Record Voice"
             android:layout_marginEnd="4dp"
-            app:tint="@color/icon_tint_gray"/>
+            android:contentDescription="Record Voice"
+            android:padding="4dp"
+            android:src="@drawable/ic_mic"
+            app:tint="@color/icon_tint_gray" />
 
         <ImageView
             android:id="@+id/ivAttach"
             android:layout_width="36dp"
             android:layout_height="36dp"
-            android:src="@drawable/ic_gallery"
-            android:padding="4dp"
-            android:contentDescription="Attach File"
             android:layout_marginEnd="8dp"
-            app:tint="@color/icon_tint_gray"/>
+            android:contentDescription="Attach File"
+            android:padding="4dp"
+            android:src="@drawable/ic_gallery"
+            app:tint="@color/icon_tint_gray" />
 
         <ImageView
             android:id="@+id/ivSend"
             android:layout_width="36dp"
             android:layout_height="36dp"
-            android:src="@drawable/ic_send"
-            android:padding="4dp"
             android:contentDescription="Send"
-            app:tint="@color/icon_tint_gray"/>
+            android:padding="4dp"
+            android:src="@drawable/ic_send"
+            app:tint="@color/icon_tint_gray" />
     </LinearLayout>
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNavigationView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="?android:attr/windowBackground"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

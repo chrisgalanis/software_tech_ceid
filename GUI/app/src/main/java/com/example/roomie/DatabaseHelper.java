@@ -15,7 +15,7 @@ import java.util.List;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME    = "RoomieApp.db";
-    private static final int    DATABASE_VERSION = 12;   // bumped to include reports table
+    private static final int    DATABASE_VERSION = 14;   // bumped to include reports table
 
     // users table
     public static final String TABLE_USERS           = "users";
@@ -773,101 +773,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
 
-    // Insert mock houses
-    public void seedMockHouses(long ownerId) {
-        String[] addrs = {"Lemesou 20, Patras", "Agiou Nikolaou 5, Patras", "Sisinis 25, Patras"};
-        double[] rents = {180.0, 200.0, 400.0};
-        double[] areas = {88.0, 95.0, 109.0};
-        int[] floors = {3, 2, 4};
-        double[] lats = {38.2599, 38.2489, 38.2429};
-        double[] lngs = {21.7423, 21.7352, 21.7363};
-        String[][] photoUrls = {
-                {"https://example.com/img1.jpg", "https://example.com/img2.jpg"},
-                {"https://example.com/a1.jpg", "https://example.com/a2.jpg"},
-                {"https://example.com/b1.jpg", "https://example.com/b2.jpg"}
-        };
-
-        long houseId = -1;
-        int idx = (int) (ownerId % addrs.length);
-
-        houseId =
-                insertHouse(ownerId, addrs[idx], rents[idx], areas[idx], floors[idx], lats[idx], lngs[idx]);
-
-        List<Uri> uris = new ArrayList<>();
-        for (String url : photoUrls[idx]) {
-            uris.add(Uri.parse(url));
-        }
-        insertHousePhotos(houseId, uris);
-    }
-
-    public void seedMockDataIfEmpty() {
-        SQLiteDatabase db = getWritableDatabase();
-
-        long houseCount = DatabaseUtils.longForQuery(db, "SELECT COUNT(*) FROM " + TABLE_HOUSES, null);
-        if (houseCount > 0) {
-            return;
-        }
-
-        String[][] DEMO_USERS = {
-                {
-                        "kwsmav@gmail.com",
-                        "password123",
-                        "Kwstas",
-                        "Mavridis",
-                        "M",
-                        "2004-04-05",
-                        "https://i.pravatar.cc/150?u=kwstas"
-                },
-                {
-                        "raftheman@gmail.com",
-                        "hunter2",
-                        "Rafas",
-                        "Pieris",
-                        "M",
-                        "2003-11-03",
-                        "https://i.pravatar.cc/150?u=rafas"
-                },
-                {
-                        "mikemits@gmail.com",
-                        "mikepass",
-                        "Mike",
-                        "Mitsainas",
-                        "M",
-                        "2004-09-03",
-                        "https://i.pravatar.cc/150?u=mike"
-                }
-        };
-
-        List<Long> ownerIds = new ArrayList<>(DEMO_USERS.length);
-        for (String[] u : DEMO_USERS) {
-            String email = u[0];
-            long userId = getUserIdByEmail(email);
-            if (userId < 0) {
-                ContentValues cv = new ContentValues();
-                cv.put(COLUMN_USER_EMAIL, u[0]);
-                cv.put(COLUMN_USER_PASSWORD, u[1]);
-                cv.put(COLUMN_USER_FIRSTNAME, u[2]);
-                cv.put(COLUMN_USER_LASTNAME, u[3]);
-                cv.put(COLUMN_USER_GENDER, u[4]);
-                cv.put(COLUMN_USER_BIRTHDAY, u[5]);
-                cv.put(COLUMN_USER_AVATAR_URL, u[6]);
-                userId = db.insert(TABLE_USERS, null, cv);
-            }
-            ownerIds.add(userId);
-        }
-
-        for (long ownerId : ownerIds) {
-            seedMockHouses(ownerId);
-        }
-    }
-
-    public void seedMockUsers() {
-        if (getUserIdByEmail("mikmits@gmail.com") < 0) {
-            insertUser("mikmits@gmail.com", "pass123", "Mike", "Mitsainas", "M", "2004-09-13");
-            insertUser("kwsmav@gmail.com", "qwerty", "Kwstas", "Mavridis", "M", "2004-04-05");
-        }
-    }
-
     // Completely remove all houses + photos
     public void clearAllHousesAndPhotos() {
         SQLiteDatabase db = getWritableDatabase();
@@ -1246,6 +1151,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         null);
 
         while (c.moveToNext()) {
+
             User u = new User();
             u.id = c.getLong(c.getColumnIndexOrThrow(COLUMN_ID));
             u.firstName = c.getString(c.getColumnIndexOrThrow(COLUMN_USER_FIRSTNAME));
@@ -1309,6 +1215,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_REPORT_STATUS, "DISMISSED");
+        db.update(
+                TABLE_REPORTS,
+                cv,
+                COLUMN_REPORT_ID + "=?",
+                new String[]{ String.valueOf(reportId) }
+        );
+        db.close();
+    }
+
+    public void fullfillReport(long reportId) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_REPORT_STATUS, "fullfilled");
         db.update(
                 TABLE_REPORTS,
                 cv,

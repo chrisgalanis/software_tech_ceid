@@ -85,6 +85,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+
         // GO TO user registration
         View.OnClickListener goToRegister = v -> {
             startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
