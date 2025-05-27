@@ -33,13 +33,8 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        // make sure SessionManager.init(...) was called in LoginActivity or Application
+        // make sure SessionManager.init() was called in LoginActivity
         currentUserId = SessionManager.get().getUserId();
-        if (currentUserId < 0) {
-            Toast.makeText(this, "No user logged in", Toast.LENGTH_SHORT).show();
-            finish();
-            return;
-        }
 
         // bind views
         ivProfilePic   = findViewById(R.id.ivProfilePic);
@@ -60,30 +55,18 @@ public class ProfileActivity extends AppCompatActivity {
                 R.id.nav_feed
         );
 
-    // click listeners (optional)
+    // notifications button
      btnSettings.setOnClickListener(v -> startActivity(new Intent(this, WarningsActivity.class)));
-    // btnEditProfile.setOnClickListener(v -> startActivity(new Intent(this, EditProfileActivity.class)));
-    btnAddHouse.setOnClickListener(v -> {
-      Toast.makeText(this, "Add‐House clicked!", Toast.LENGTH_SHORT).show();
-      startActivity(new Intent(this, CreateListingActivity.class));
-    });
+
+     //edit profile page
+    // btnEditProfile.setOnClickListener(v -> startActivity(new Intent(this, EditProfileActivity.class)))
+
+    //create listing button
+    btnAddHouse.setOnClickListener(v ->startActivity(new Intent(this, CreateListingActivity.class)));
   }
 
     private void loadProfileData() {
-        // photos
-        List<String> photos = dbHelper.getUserPhotos(currentUserId);
-        if (!photos.isEmpty()) {
-            Uri uri = Uri.parse(photos.get(0));
-            Glide.with(this)
-                    .load(uri)
-                    .placeholder(R.drawable.ic_profile_placeholder)
-                    .error(R.drawable.ic_profile_placeholder)
-                    .into(ivProfilePic);
-        } else {
-            ivProfilePic.setImageResource(R.drawable.ic_profile_placeholder);
-        }
 
-        // name + age
         User u = dbHelper.getUserById(currentUserId);
 
         if (u!=null) {
@@ -91,6 +74,13 @@ public class ProfileActivity extends AppCompatActivity {
             String last     = u.lastName;
             int age         = u.getAge();
             tvNameAge.setText(String.format("%s %s, %d", first, last, age));
+            // profile pic
+            Uri uri =  Uri.parse(u.avatarUrl);
+            Glide.with(this)
+                    .load(uri)
+                    .placeholder(R.drawable.ic_profile_placeholder)
+                    .error(R.drawable.ic_profile_placeholder)
+                    .into(ivProfilePic);
         }
     }
 

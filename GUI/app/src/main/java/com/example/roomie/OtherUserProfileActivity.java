@@ -1,6 +1,7 @@
 package com.example.roomie;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputType;
@@ -90,20 +91,16 @@ public class OtherUserProfileActivity extends AppCompatActivity {
         User u = dbHelper.getUserById(userId);
         if (u != null) {
             String pronouns = u.pronounsForGender(u.gender);
-            int age = u.calculateAge(u.birthday);
+            int age = u.getAge();
 
             StringBuilder sb = new StringBuilder();
             sb.append(u.firstName).append(" ").append(u.lastName);
-            if (age > 0) {
-                sb.append(", ").append(age);
-            }
-            if (pronouns != null && !pronouns.isEmpty()) {
-                sb.append(" • ").append(pronouns);
-            }
+            sb.append(",").append(age);
+            sb.append(" • ").append(pronouns);
+
             tvNamePronounsAge.setText(sb.toString());
 
-            tvBudgetCity.setText("Budget: €" + u.minBudget + "–" + u.maxBudget +
-                    " • City: " + u.city);
+            tvBudgetCity.setText("Budget: €" + u.minBudget + "–" + u.maxBudget +" • City: " + u.city);
         }
 
         // 3) Interests
@@ -116,13 +113,15 @@ public class OtherUserProfileActivity extends AppCompatActivity {
 
         // 4) View house button (stub)
         btnViewHouse.setOnClickListener(v -> {
-            // TODO: start Activity to view this user’s house
-            // Intent i = new Intent(this, HouseDetailActivity.class);
-            // i.putExtra(HouseDetailActivity.EXTRA_OWNER_ID, userId);
-            // startActivity(i);
+            long houseId = dbHelper.getHouseIdByUserId(userId);
+            if (houseId != -1) {
+                startActivity(new Intent(this, HouseDetailActivity.class)
+                        .putExtra("EXTRA_HOUSE_ID", houseId));
+            } else {
+                Toast.makeText(this,"This user doesn’t have a house listing",Toast.LENGTH_SHORT).show();
+            }
         });
-
-        // 5) Report button: show input dialog
+        // Report button: show input dialog
         btnReport.setOnClickListener(v -> showReportDialog());
     }
 

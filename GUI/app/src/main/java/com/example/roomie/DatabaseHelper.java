@@ -592,6 +592,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    //get house id from user id
+    public long getHouseIdByUserId(long userId) {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor c = db.query(
+                TABLE_HOUSES,
+                new String[]{ COLUMN_HOUSE_ID },                   // only need the PK
+                COLUMN_HOUSE_OWNER + " = ?",                       // WHERE owner_id = ?
+                new String[]{ String.valueOf(userId) },
+                null, null, null
+        );
+        if (!c.moveToFirst()) {
+            c.close();
+            return -1;
+        }
+        long houseId = c.getLong(c.getColumnIndexOrThrow(COLUMN_HOUSE_ID));
+        c.close();
+
+        return houseId;
+    }
 
 
     // Fetch a single House by id

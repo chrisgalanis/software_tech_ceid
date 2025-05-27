@@ -1,5 +1,6 @@
 package com.example.roomie;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
@@ -55,11 +56,11 @@ public class FavoritesActivity extends AppCompatActivity {
             new LikedHousesAdapter(
                     this,
                     listings,
-                    listing -> Toast.makeText(
-                            this,
-                            "This action would show the house of " + listing.ownerName,
-                            Toast.LENGTH_SHORT
-                    ).show()
+                    listing -> {
+                      // now click gives you full listing
+                      startActivity(new Intent(this, HouseDetailActivity.class)
+                              .putExtra("EXTRA_HOUSE_ID", listing.house.id));
+                    }
             )
     );
   }
