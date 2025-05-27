@@ -35,21 +35,6 @@ public class House {
     this.photoUrls = photoUrls;
   }
 
-  @Override
-  public String toString() {
-    return "House{" +
-            "id=" + id +
-            ", ownerId=" + ownerId +
-            ", address='" + address + '\'' +
-            ", rent=" + rent +
-            ", area=" + area +
-            ", floor=" + floor +
-            ", latitude=" + latitude +
-            ", longitude=" + longitude +
-            ", photoUrls=" + photoUrls +
-            '}';
-  }
-
   public LatLng getLocation() {
     return new LatLng(latitude, longitude);
   }
