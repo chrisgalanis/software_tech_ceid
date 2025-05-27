@@ -1,3 +1,4 @@
+// File: com/example/roomie/CreateListingActivity.java
 package com.example.roomie;
 
 import android.app.Activity;
@@ -11,6 +12,7 @@ import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +37,8 @@ public class CreateListingActivity extends AppCompatActivity
                 R.id.nav_home
         );
 
+        DatabaseHelper db = new DatabaseHelper(this);
+
         etAddress     = findViewById(R.id.etAddress);
         etRent        = findViewById(R.id.etRent);
         etArea        = findViewById(R.id.etArea);
@@ -42,7 +46,6 @@ public class CreateListingActivity extends AppCompatActivity
         btnPickImages = findViewById(R.id.btnPickImages);
         btnSubmit     = findViewById(R.id.btnSubmit);
 
-        // Map setup
         SupportMapFragment mapFrag = (SupportMapFragment)
                 getSupportFragmentManager().findFragmentById(R.id.map_fragment);
         mapFrag.getMapAsync(this);
@@ -75,19 +78,42 @@ public class CreateListingActivity extends AppCompatActivity
             double area = Double.parseDouble(areaStr);
             int floor  = Integer.parseInt(floorStr);
 
+            // 1) Gather photo URLs as strings
+            List<String> photoUrls = new ArrayList<>();
+            for (Uri uri : selectedUris) {
+                photoUrls.add(uri.toString());
+            }
+
+            // 2) Create House object
             long ownerId = SessionManager.get().getUserId();
-            DatabaseHelper db = new DatabaseHelper(this);
-            long hid = db.insertHouse(
+            House house = new House(
+                    0,                // id will be set by the DB
                     ownerId,
                     address,
                     rent,
                     area,
                     floor,
                     chosenLocation.latitude,
-                    chosenLocation.longitude
+                    chosenLocation.longitude,
+                    photoUrls
             );
-            db.insertHousePhotos(hid, selectedUris);
 
+            // 3) Build your HouseListing (pull name/avatar from session)
+
+            User u = db.getUserById(ownerId);
+            String ownerName       = u.firstName +" "+u.lastName;
+            String ownerAvatarUrl  = u.avatarUrl;
+            String houseAvatarUrl  = photoUrls.get(0);
+
+            HouseListing listing = new HouseListing(
+                    house,
+                    ownerName,
+                    ownerAvatarUrl,
+                    houseAvatarUrl,
+                    true
+            );
+
+            db.insertHouseListing(listing);
             Toast.makeText(this, "Listing created!", Toast.LENGTH_SHORT).show();
             finish();
         });
@@ -96,7 +122,6 @@ public class CreateListingActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
-
         map.getUiSettings().setZoomControlsEnabled(true);
         map.getUiSettings().setZoomGesturesEnabled(true);
 

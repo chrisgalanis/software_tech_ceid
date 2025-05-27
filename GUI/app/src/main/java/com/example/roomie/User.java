@@ -3,18 +3,19 @@ package com.example.roomie;
 import androidx.annotation.Nullable;
 
 import java.util.Calendar;
-
+import java.util.List;
 
 public class User {
     public long    id;
     public String  firstName;
     public String  lastName;
-    public String  gender;     // e.g. "male", "female", "other"
-    public String  birthday;   // ISO format "yyyy-MM-dd"
+    public String  gender;       // e.g. "male", "female", "other"
+    public String  birthday;     // ISO format "yyyy-MM-dd"
     public boolean hasHouse;
     public String  city;
     public int     minBudget;
     public int     maxBudget;
+    public String  avatarUrl;    // URL to user's avatar image
 
     public User() { }
 
@@ -26,7 +27,8 @@ public class User {
                 boolean hasHouse,
                 String city,
                 int minBudget,
-                int maxBudget) {
+                int maxBudget,
+                String avatarUrl) {
         this.id         = id;
         this.firstName  = firstName;
         this.lastName   = lastName;
@@ -36,6 +38,7 @@ public class User {
         this.city       = city;
         this.minBudget  = minBudget;
         this.maxBudget  = maxBudget;
+        this.avatarUrl  = avatarUrl;
     }
 
     /**
@@ -95,7 +98,8 @@ public class User {
                 " house? " + hasHouse +
                 " city: " + city +
                 " [min:€" + minBudget +
-                " max:€" + maxBudget + "]";
+                " max:€" + maxBudget + "]" +
+                " avatarUrl: " + avatarUrl;
     }
 
     public String pronounsForGender(String g) {
@@ -107,4 +111,5 @@ public class User {
             default:       return "they/them";
         }
     }
+
 }
