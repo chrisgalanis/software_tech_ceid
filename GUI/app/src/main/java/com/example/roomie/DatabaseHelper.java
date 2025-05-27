@@ -592,6 +592,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    public List<String> getHousePhotos(long houseId) {
+        List<String> photos = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor c = db.query(
+                TABLE_HOUSE_PHOTOS,
+                new String[]{ COLUMN_HOUSE_PHOTO_URI },
+                COLUMN_HOUSE_PHOTO_HOUSE + " = ?",
+                new String[]{ String.valueOf(houseId) },
+                null, null, null
+        );
+        while (c.moveToNext()) {
+            photos.add(
+                    c.getString(c.getColumnIndexOrThrow(COLUMN_HOUSE_PHOTO_URI))
+            );
+        }
+        c.close();
+        return photos;
+    }
+
     //get house id from user id
     public long getHouseIdByUserId(long userId) {
         SQLiteDatabase db = getReadableDatabase();

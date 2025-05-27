@@ -8,6 +8,8 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.bumptech.glide.Glide;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.util.List;
+
 
 public class HouseDetailActivity extends AppCompatActivity {
   private long currentUserId;
@@ -40,15 +42,14 @@ public class HouseDetailActivity extends AppCompatActivity {
 
     // Fetch from SQLite
     DatabaseHelper db = new DatabaseHelper(this);
+
     House house = db.getHouseById(houseId);
-    if (house == null) {
-      finish();
-      return;
-    }
     User owner=db.getUserById(house.ownerId);
-    // Populate UI
-    viewPager.setAdapter(new ImageSliderAdapter(house.photoUrls));
+      List<String> uris = db.getHousePhotos(houseId);
+      viewPager.setAdapter(
+              new ImageSliderAdapter(this, uris));
     tvAddress.setText(house.address);
+
     tvPrice.setText("€" + (int) house.rent + "/month");
     tvArea.setText(house.area + " m²");
     tvFloor.setText((house.floor == 0 ? "Ground" : house.floor + "th") + " Floor");

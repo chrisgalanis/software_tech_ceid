@@ -1,48 +1,66 @@
-// com/example/roomie/ImageSliderAdapter.java
 package com.example.roomie;
 
-import android.view.*;
+
+import android.content.Context;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
+
+import java.util.Collections;
 import java.util.List;
 
-public class ImageSliderAdapter extends RecyclerView.Adapter<ImageSliderAdapter.VH> {
+public class ImageSliderAdapter
+        extends RecyclerView.Adapter<ImageSliderAdapter.ViewHolder> {
 
-  private final List<String> urls;
+  private final Context context;
+  private final List<String> imageUris;
 
-  public ImageSliderAdapter(List<String> urls) {
-    this.urls = urls;
+  public ImageSliderAdapter(Context context, List<String> imageUris) {
+    this.context   = context;
+    this.imageUris = imageUris != null ? imageUris : Collections.emptyList();
   }
 
   @NonNull
   @Override
-  public VH onCreateViewHolder(@NonNull ViewGroup p, int v) {
-    ImageView iv = new ImageView(p.getContext());
+  public ViewHolder onCreateViewHolder(
+          @NonNull ViewGroup parent, int viewType) {
+    ImageView iv = new ImageView(context);
     iv.setLayoutParams(
-        new ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            new ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+            )
+    );
     iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
-    return new VH(iv);
+    return new ViewHolder(iv);
   }
 
   @Override
-  public void onBindViewHolder(@NonNull VH h, int pos) {
-    Glide.with(h.iv).load(urls.get(pos)).into(h.iv);
+  public void onBindViewHolder(
+          @NonNull ViewHolder holder, int position) {
+    String uri = imageUris.get(position);
+    Glide.with(context)
+            .load(uri)
+            .placeholder(R.drawable.ic_profile_placeholder)
+            .into(holder.imageView);
   }
 
   @Override
   public int getItemCount() {
-    return urls.size();
+    return imageUris.size();
   }
 
-  static class VH extends RecyclerView.ViewHolder {
-    final ImageView iv;
+  static class ViewHolder extends RecyclerView.ViewHolder {
+    final ImageView imageView;
 
-    VH(@NonNull View v) {
-      super(v);
-      iv = (ImageView) v;
+    ViewHolder(@NonNull View itemView) {
+      super(itemView);
+      imageView = (ImageView) itemView;
     }
   }
 }
