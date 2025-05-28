@@ -80,10 +80,9 @@ public class MessageReportAdapter
                     int pos2 = holder.getAdapterPosition();
                     reports.remove(pos2);
                     notifyItemRemoved(pos2);
-                    Toast.makeText(ctx, "Sender warned", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(ctx, "Failed to send warning", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ctx, "Warning Sent", Toast.LENGTH_SHORT).show();
                 }
+             dbHelper.deleteChatMessage(mr.message.messageId);
         });
     }
 

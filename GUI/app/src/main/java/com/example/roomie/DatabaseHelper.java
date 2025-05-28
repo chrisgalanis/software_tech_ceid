@@ -1575,4 +1575,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         c.close();
         return list;
     }
+
+
+    public boolean deleteChatMessage(long messageId) {
+        SQLiteDatabase db = getWritableDatabase();
+        int rows = db.delete(
+                TABLE_CHAT_MESSAGES,
+                COLUMN_MESSAGE_ID + " = ?",
+                new String[]{ String.valueOf(messageId) }
+        );
+        db.close();
+        return rows > 0;
+    }
+
 }
