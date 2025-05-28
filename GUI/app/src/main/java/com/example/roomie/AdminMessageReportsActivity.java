@@ -17,7 +17,7 @@ public class AdminMessageReportsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_admin_reports);
+        setContentView(R.layout.activity_admin_message_reports);
 
         // set up toolbar
         MaterialToolbar toolbar = findViewById(R.id.toolbar);

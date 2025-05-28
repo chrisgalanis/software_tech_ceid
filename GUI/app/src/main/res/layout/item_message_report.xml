@@ -41,6 +41,7 @@
             <Button
                 android:id="@+id/btnDismissMsgReport"
                 android:layout_width="wrap_content"
+                android:backgroundTint="@color/button_disabled"
                 android:layout_height="wrap_content"
                 android:text="Dismiss"/>
 
@@ -48,6 +49,7 @@
                 android:id="@+id/btnWarnMsgUser"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:backgroundTint="#E91E1E"
                 android:layout_marginStart="8dp"
                 android:text="Delete"/>
         </LinearLayout>
