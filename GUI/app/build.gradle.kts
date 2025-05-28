@@ -1,5 +1,3 @@
-// app/build.gradle
-
 plugins {
     alias(libs.plugins.android.application)
     id("com.diffplug.spotless") version "6.25.0"
@@ -35,43 +33,36 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    // If you are using dataBinding or viewBinding, ensure they are enabled here
-    // buildFeatures {
-    //     viewBinding = true
-    //     // dataBinding = true // if you use it
-    // }
+
+    //enable Robolectric to see Android resources on the JVM
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+    }
 }
 
 dependencies {
     implementation(libs.appcompat)
     implementation(libs.material)
-    implementation(libs.activity) // Make sure you have defined 'activity' in your libs.versions.toml
-                                  // e.g., androidx-activity = { group = "androidx.activity", name = "activity-ktx", version = "1.9.0" }
-                                  // and then activity = { alias = "androidx-activity" }
-                                  // Or if it's just 'androidx.activity:activity', ensure the alias is correct.
+    implementation(libs.activity)
     implementation(libs.constraintlayout)
-
-    // Add this line for CircleImageView:
     implementation(libs.circleimageview)
 
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.ext.junit)
-    androidTestImplementation(libs.espresso.core)
-
     implementation("com.google.android.material:material:1.9.0")
-
     implementation("com.google.android.gms:play-services-maps:18.1.0")
-
-    // FlexboxLayout for tag‐wrapping
     implementation("com.google.android.flexbox:flexbox:3.0.0")
-
-    // Glide for image loading
     implementation("com.github.bumptech.glide:glide:4.15.1")
     annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")
-    implementation("com.google.android.gms:play-services-maps:18.1.0")
 
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.robolectric:robolectric:4.10.2")
+    testImplementation("androidx.test:core:1.5.0")
+    testImplementation("androidx.test.ext:junit:1.1.5")
+
+    androidTestImplementation(libs.ext.junit)
+    androidTestImplementation(libs.espresso.core)
 }
