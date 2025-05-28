@@ -20,20 +20,17 @@ public class LikedHousesAdapter extends RecyclerView.Adapter<LikedHousesAdapter.
   private List<HouseListing> listingList;
   private OnHouseClickListener listener;
 
-  public LikedHousesAdapter(Context context,
-                            List<HouseListing> listingList,
-                            OnHouseClickListener listener) {
-    this.context     = context;
+  public LikedHousesAdapter(
+      Context context, List<HouseListing> listingList, OnHouseClickListener listener) {
+    this.context = context;
     this.listingList = listingList;
-    this.listener    = listener;
+    this.listener = listener;
   }
 
   @NonNull
   @Override
   public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-    View view = LayoutInflater
-            .from(context)
-            .inflate(R.layout.item_house_card, parent, false);
+    View view = LayoutInflater.from(context).inflate(R.layout.item_house_card, parent, false);
     return new ViewHolder(view);
   }
 
@@ -45,11 +42,12 @@ public class LikedHousesAdapter extends RecyclerView.Adapter<LikedHousesAdapter.
     holder.houseTitle.setText("Live with " + listing.ownerName);
     holder.housePrice.setText("€" + listing.house.rent + "/month");
 
-    holder.itemView.setOnClickListener(v -> {
-      if (listener != null) {
-        listener.onHouseClick(listing);
-      }
-    });
+    holder.itemView.setOnClickListener(
+        v -> {
+          if (listener != null) {
+            listener.onHouseClick(listing);
+          }
+        });
   }
 
   @Override

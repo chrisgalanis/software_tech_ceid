@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import com.bumptech.glide.Glide; // Example for Glide
+// For more
 import de.hdodenhof.circleimageview.CircleImageView; // If using
 import java.util.List;
 
@@ -26,8 +28,6 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
   @Override
   public int getItemViewType(int position) {
     ChatMessage message = messageList.get(position);
-    // TODO: Determine if the message was sent by the current user
-    // For this example, we use a boolean flag in ChatMessage model
     if (message.isSentByCurrentUser()) {
       return VIEW_TYPE_SENT;
     } else {
@@ -99,11 +99,19 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     void bind(ChatMessage message) {
       tvMessageText.setText(message.getMessageText());
       tvMessageTimestamp.setText(message.getTimestamp());
-      if (message.getSenderProfileImageRes() != 0) {
-        ivSenderProfile.setImageResource(message.getSenderProfileImageRes());
+
+      String avatarUrl = message.getSenderAvatarUrl();
+      if (avatarUrl != null && !avatarUrl.isEmpty()) {
+        // ** USE IMAGE LOADING LIBRARY HERE **
+        // Example using Glide:
+        Glide.with(itemView.getContext())
+            .load(avatarUrl)
+            .placeholder(R.drawable.roomie_logo) // Optional: a placeholder while loading
+            .error(R.drawable.roomie_logo) // Optional: an image to show if loading fails
+            .into(ivSenderProfile);
       } else {
-        // Set a default placeholder if no image is available
-        ivSenderProfile.setImageResource(R.drawable.roomie_logo); // Add a default placeholder
+        // Set a default placeholder if no image URL is available
+        ivSenderProfile.setImageResource(R.drawable.roomie_logo);
       }
     }
   }
