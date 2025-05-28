@@ -1,15 +1,19 @@
-package com.example.roomie; // Replace with your package name
+package com.example.roomie;
 
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import com.bumptech.glide.Glide; // Example for Glide
-// For more
-import de.hdodenhof.circleimageview.CircleImageView; // If using
+
+import com.bumptech.glide.Glide;
+
 import java.util.List;
 
 public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -28,24 +32,18 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
   @Override
   public int getItemViewType(int position) {
     ChatMessage message = messageList.get(position);
-    if (message.isSentByCurrentUser()) {
-      return VIEW_TYPE_SENT;
-    } else {
-      return VIEW_TYPE_RECEIVED;
-    }
+    return message.isSentByCurrentUser() ? VIEW_TYPE_SENT : VIEW_TYPE_RECEIVED;
   }
 
   @NonNull
   @Override
   public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
     if (viewType == VIEW_TYPE_SENT) {
-      View view =
-          LayoutInflater.from(parent.getContext())
+      View view = LayoutInflater.from(parent.getContext())
               .inflate(R.layout.item_chat_message_sent, parent, false);
       return new SentMessageViewHolder(view);
-    } else { // VIEW_TYPE_RECEIVED
-      View view =
-          LayoutInflater.from(parent.getContext())
+    } else {
+      View view = LayoutInflater.from(parent.getContext())
               .inflate(R.layout.item_chat_message_received, parent, false);
       return new ReceivedMessageViewHolder(view);
     }
@@ -84,35 +82,52 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
   }
 
   // ViewHolder for Received Messages
-  static class ReceivedMessageViewHolder extends RecyclerView.ViewHolder {
-    CircleImageView ivSenderProfile;
-    TextView tvMessageText;
-    TextView tvMessageTimestamp;
+    static class ReceivedMessageViewHolder extends RecyclerView.ViewHolder {
+      ImageView ivSenderProfile;
+      TextView tvMessageText;
+      TextView tvMessageTimestamp;
+      Button btnReport;
+      View messageContent;
 
-    ReceivedMessageViewHolder(@NonNull View itemView) {
-      super(itemView);
-      ivSenderProfile = itemView.findViewById(R.id.ivSenderProfile);
-      tvMessageText = itemView.findViewById(R.id.tvMessageText);
-      tvMessageTimestamp = itemView.findViewById(R.id.tvMessageTimestamp);
-    }
+      ReceivedMessageViewHolder(@NonNull View itemView) {
+        super(itemView);
+        ivSenderProfile = itemView.findViewById(R.id.ivSenderProfile);
+        tvMessageText = itemView.findViewById(R.id.tvMessageText);
+        tvMessageTimestamp = itemView.findViewById(R.id.tvMessageTimestamp);
+        btnReport = itemView.findViewById(R.id.btnReport);
+        messageContent = itemView.findViewById(R.id.messageContent);
+      }
 
-    void bind(ChatMessage message) {
-      tvMessageText.setText(message.getMessageText());
-      tvMessageTimestamp.setText(message.getTimestamp());
+      void bind(ChatMessage message) {
+        tvMessageText.setText(message.getMessageText());
+        tvMessageTimestamp.setText(message.getTimestamp());
 
-      String avatarUrl = message.getSenderAvatarUrl();
-      if (avatarUrl != null && !avatarUrl.isEmpty()) {
-        // ** USE IMAGE LOADING LIBRARY HERE **
-        // Example using Glide:
-        Glide.with(itemView.getContext())
-            .load(avatarUrl)
-            .placeholder(R.drawable.roomie_logo) // Optional: a placeholder while loading
-            .error(R.drawable.roomie_logo) // Optional: an image to show if loading fails
-            .into(ivSenderProfile);
-      } else {
-        // Set a default placeholder if no image URL is available
-        ivSenderProfile.setImageResource(R.drawable.roomie_logo);
+        String avatarUrl = message.getSenderAvatarUrl();
+        if (avatarUrl != null && !avatarUrl.isEmpty()) {
+          Glide.with(itemView.getContext())
+                  .load(avatarUrl)
+                  .placeholder(R.drawable.roomie_logo)
+                  .error(R.drawable.roomie_logo)
+                  .into(ivSenderProfile);
+        } else {
+          ivSenderProfile.setImageResource(R.drawable.roomie_logo);
+        }
+
+        btnReport.setVisibility(View.GONE); // always hide first
+
+        // Toggle visibility when the message content is clicked
+        messageContent.setOnClickListener(v -> {
+          btnReport.setVisibility(
+                  btnReport.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE
+          );
+        });
+
+        btnReport.setOnClickListener(v -> {
+          Toast.makeText(itemView.getContext(),
+                  "Report clicked for: " + message.getMessageText(),
+                  Toast.LENGTH_SHORT).show();
+        });
       }
     }
-  }
+
 }

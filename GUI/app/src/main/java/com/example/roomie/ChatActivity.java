@@ -96,7 +96,6 @@ public class ChatActivity extends AppCompatActivity {
     ivBackButton = findViewById(R.id.ivBackButton);
     ivToolbarProfile = findViewById(R.id.ivToolbarProfile);
     tvToolbarTitle = findViewById(R.id.tvToolbarTitle);
-    ivInfoButton = findViewById(R.id.ivInfoButton);
     ivCenterProfile = findViewById(R.id.ivCenterProfile);
     btnViewProfile = findViewById(R.id.btnViewProfile);
     rvChatMessages = findViewById(R.id.rvChatMessages);
@@ -155,14 +154,6 @@ public class ChatActivity extends AppCompatActivity {
     // Set Click Listeners
     // ... (your existing click listeners) ...
     ivBackButton.setOnClickListener(v -> onBackPressed());
-    ivInfoButton.setOnClickListener(
-        v ->
-            Toast.makeText(
-                    ChatActivity.this,
-                    "Info for "
-                        + (chatPartnerNameForDisplay != null ? chatPartnerNameForDisplay : "User"),
-                    Toast.LENGTH_SHORT)
-                .show());
     btnViewProfile.setOnClickListener(
         v -> {
           Intent i = new Intent(this, OtherUserProfileActivity.class);
