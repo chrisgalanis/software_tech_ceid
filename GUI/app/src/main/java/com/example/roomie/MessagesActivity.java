@@ -119,7 +119,7 @@ public class MessagesActivity extends AppCompatActivity
     Intent intent = new Intent(MessagesActivity.this, ChatActivity.class);
     intent.putExtra("CHAT_PARTNER_ID", clickedMessageItem.getUserId());
     intent.putExtra("CHAT_PARTNER_NAME", clickedMessageItem.getDisplayName());
-    intent.putExtra("PROFILE_IMAGE_RES", clickedMessageItem.getProfileAvatarUrl());
+    intent.putExtra("CHAT_PARTNER_AVATAR_URL", clickedMessageItem.getProfileAvatarUrl());
 
     startActivity(intent);
   }
