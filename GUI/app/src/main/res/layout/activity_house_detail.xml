@@ -7,6 +7,32 @@
     android:layout_height="match_parent">
 
     <!-- 1) Scrollable detail content -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white">
+
+        <!-- App logo at top -->
+        <ImageView
+            android:id="@+id/ivLogo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp"
+            android:layout_gravity="center"
+            android:src="@drawable/roomie_logo"
+            android:contentDescription="@string/app_name" />
+
+        <!-- toolbar with back arrow -->
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:navigationIcon="@drawable/ic_arrow_back"
+            app:title="House"
+            app:titleTextColor="@color/black" />
+
+    </com.google.android.material.appbar.AppBarLayout>
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -122,10 +148,4 @@
         </LinearLayout>
     </ScrollView>
 
-    <!-- 2) Fixed bottom navigation -->
-    <include
-        android:id="@+id/bottom_navigation"
-        layout="@layout/layout_bottom_navigation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
 </LinearLayout>

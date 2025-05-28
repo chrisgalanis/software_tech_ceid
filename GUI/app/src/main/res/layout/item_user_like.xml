@@ -25,16 +25,28 @@
         android:textSize="16sp"
         android:textStyle="bold" />
 
+    <!-- New View Profile button -->
+    <Button
+        android:id="@+id/btnViewProfile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="View Profile"
+        android:textColor="@android:color/holo_blue_light"
+        android:textSize="14sp"
+        android:layout_marginEnd="8dp"
+        android:background="?android:selectableItemBackgroundBorderless"
+        android:padding="8dp" />
+
     <ImageButton
         android:id="@+id/btnAccept"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@android:drawable/ic_menu_add"
         android:background="?android:selectableItemBackgroundBorderless"
+        android:clickable="true"
         android:contentDescription="Accept"
         android:focusable="false"
         android:focusableInTouchMode="false"
-        android:clickable="true" />
+        android:src="@android:drawable/ic_menu_add" />
 
     <ImageButton
         android:id="@+id/btnReject"

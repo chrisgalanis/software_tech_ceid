@@ -15,16 +15,16 @@
         android:layout_marginTop="16dp"/>
 
     <!-- Instruction text -->
+
+    <!-- 1) City search field -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Type your filters"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:layout_gravity="center"
-        android:layout_marginTop="24dp"/>
+        android:layout_marginTop="12dp"
+        android:text="@string/filter_title"
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
-    <!-- 1) City search field -->
     <EditText
         android:id="@+id/etCitySearch"
         android:layout_width="match_parent"
@@ -86,6 +86,13 @@
         android:layout_gravity="end"
         android:layout_margin="16dp"/>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Search for roommates"
+        android:textSize="20sp"
+        android:layout_gravity="center"
+        android:layout_marginTop="24dp"/>
     <!-- Spacer pushes nav bar to the bottom -->
     <View
         android:layout_width="match_parent"

@@ -2,10 +2,12 @@ package com.example.roomie;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 import com.bumptech.glide.Glide;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.List;
@@ -19,6 +21,11 @@ public class HouseDetailActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_house_detail);
 
+      MaterialToolbar toolbar = findViewById(R.id.toolbar);
+      setSupportActionBar(toolbar);
+      if (getSupportActionBar() != null) {
+          getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+      }
 
    currentUserId = SessionManager.get().getUserId();
 
@@ -75,7 +82,14 @@ public class HouseDetailActivity extends AppCompatActivity {
         }
     );
 
-    BottomNavigationHelper.setup(
-        (BottomNavigationView) findViewById(R.id.bottom_navigation), this, R.id.nav_home);
   }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // handle toolbar back click
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }
