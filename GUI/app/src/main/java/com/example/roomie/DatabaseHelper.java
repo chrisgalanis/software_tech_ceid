@@ -7,6 +7,7 @@ import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
+import android.text.format.DateFormat;
 import android.util.Log;
 import com.google.android.gms.maps.model.LatLng;
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ import java.util.List;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME    = "RoomieApp.db";
-    private static final int    DATABASE_VERSION = 21;   // bumped to include reports table
+    private static final int    DATABASE_VERSION = 22;   // bumped to include reports table
 
     // users table
     public static final String TABLE_USERS           = "users";
@@ -109,6 +110,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_WARNING_TEXT   = "text";
     public static final String COLUMN_WARNING_STATUS = "status";      // "PENDING" or "ACKNOWLEDGED"
     public static final String COLUMN_WARNING_TIME   = "timestamp";
+
+
+
+    // Message‐reports table
+    public static final String TABLE_MESSAGE_REPORTS           = "message_reports";
+    public static final String COLUMN_MSGREP_ID                = "_id";
+    public static final String COLUMN_MSGREP_MESSAGE_ID        = "message_id";
+    public static final String COLUMN_MSGREP_TEXT              = "text";
+    public static final String COLUMN_MSGREP_STATUS            = "status";
+
 
     // ─── CREATE TABLE STATEMENTS ─────────────────────────────────────────────────
     private static final String SQL_CREATE_USERS =
@@ -337,7 +348,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     + TABLE_USERS + "(" + COLUMN_ID + ") ON DELETE CASCADE"
                     + ");";
 
-
+    private static final String SQL_CREATE_MESSAGE_REPORTS =
+            "CREATE TABLE " + TABLE_MESSAGE_REPORTS + " ("
+                    + COLUMN_MSGREP_ID         + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + COLUMN_MSGREP_MESSAGE_ID + " INTEGER NOT NULL, "
+                    + COLUMN_MSGREP_TEXT       + " TEXT NOT NULL, "
+                    + COLUMN_MSGREP_STATUS     + " TEXT DEFAULT 'PENDING', "
+                    + "FOREIGN KEY(" + COLUMN_MSGREP_MESSAGE_ID + ") REFERENCES "
+                    + TABLE_CHAT_MESSAGES + "(" + COLUMN_MESSAGE_ID + ") ON DELETE CASCADE"
+                    + ");";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -362,11 +381,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(SQL_CREATE_REPORTS);
         db.execSQL(SQL_CREATE_WARNINGS);
         db.execSQL(SQL_CREATE_HOUSE_LISTINGS);
+        db.execSQL(SQL_CREATE_MESSAGE_REPORTS);
+
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldV, int newV) {
         // Drop tables in reverse-dependency order
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_MESSAGE_REPORTS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_HOUSE_LISTINGS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_CHAT_MESSAGES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_MATCHES);
@@ -1088,6 +1110,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
       cursor = db.query(TABLE_CHAT_MESSAGES, null, selection, selectionArgs, null, null, orderBy);
       if (cursor != null && cursor.moveToFirst()) {
         do {
+            long messageId=cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_MESSAGE_ID));
           long senderIdFromDb =
               cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_MESSAGE_SENDER_ID));
           long receiverIdFromDb = // Stays as long, used for ChatMessage constructor
@@ -1106,9 +1129,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
           if (isSentByCurrentUser) {
             avatarUrlForThisMessage = currentUserAvatarUrl;
             message =
-                new ChatMessage(
-                    String.valueOf(senderIdFromDb), // currentUserId as string
-                    String.valueOf(receiverIdFromDb), // chatPartnerId as string
+                new ChatMessage(messageId,
+                    senderIdFromDb, // currentUserId as string
+                    receiverIdFromDb, // chatPartnerId as string
                     messageText,
                     timeString,
                     true, // isSentByCurrentUser
@@ -1118,8 +1141,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             avatarUrlForThisMessage = chatPartnerAvatarUrl;
             message =
                 new ChatMessage(
-                    String.valueOf(senderIdFromDb), // chatPartnerId as string
-                    String.valueOf(receiverIdFromDb), // currentUserId as string
+                        messageId,
+                    senderIdFromDb, // chatPartnerId as string
+                    receiverIdFromDb, // currentUserId as string
                     messageText,
                     timeString,
                     false, // isSentByCurrentUser
@@ -1164,6 +1188,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
           db.query(TABLE_CHAT_MESSAGES, null, selection, selectionArgs, null, null, orderBy, limit);
 
       if (cursor != null && cursor.moveToFirst()) {
+          long messageId=   cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_MESSAGE_ID));
         String messageText = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_MESSAGE_TEXT));
         long timestampMs =
             cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_MESSAGE_TIMESTAMP_MS));
@@ -1176,8 +1201,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         latestMessage =
             new ChatMessage(
-                String.valueOf(partnerId),
-                String.valueOf(currentUserId),
+                    messageId,
+                partnerId,
+                currentUserId,
                 messageText,
                 timeString,
                 false, // isSentByCurrentUser is false (message is from partner)
@@ -1200,7 +1226,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
               + " to user "
               + currentUserId
               + ": '"
-              + latestMessage.getMessageText()
+              + latestMessage.messageText
               + "'");
     } else {
       Log.d(
@@ -1463,4 +1489,103 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         );
         db.close();
     }
+
+    public long insertMessageReport(long messageId, String text) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_MSGREP_MESSAGE_ID, messageId);
+        cv.put(COLUMN_MSGREP_TEXT,       text);
+        // status will default to 'PENDING'
+        long id = db.insert(TABLE_MESSAGE_REPORTS, null, cv);
+        db.close();
+        return id;
+    }
+
+    public boolean deleteMessageReport(long reportId) {
+        SQLiteDatabase db = getWritableDatabase();
+        int rows = db.delete(
+                TABLE_MESSAGE_REPORTS,
+                COLUMN_MSGREP_ID + " = ?",
+                new String[]{ String.valueOf(reportId) }
+        );
+        db.close();
+        return rows > 0;
+    }
+    public ChatMessage getChatMessageById(long messageId) {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor c = db.query(
+                TABLE_CHAT_MESSAGES,
+                new String[]{
+                        COLUMN_MESSAGE_ID,
+                        COLUMN_MESSAGE_SENDER_ID,
+                        COLUMN_MESSAGE_RECEIVER_ID,
+                        COLUMN_MESSAGE_TEXT,
+                        COLUMN_MESSAGE_TIMESTAMP_MS
+                },
+                COLUMN_MESSAGE_ID + " = ?",
+                new String[]{ String.valueOf(messageId) },
+                null, null, null
+        );
+
+        ChatMessage message = null;
+        if (c.moveToFirst()) {
+            long senderId    = c.getLong(c.getColumnIndexOrThrow(COLUMN_MESSAGE_SENDER_ID));
+            long receiverId  = c.getLong(c.getColumnIndexOrThrow(COLUMN_MESSAGE_RECEIVER_ID));
+            String text      = c.getString(c.getColumnIndexOrThrow(COLUMN_MESSAGE_TEXT));
+            long tsMillis    = c.getLong(c.getColumnIndexOrThrow(COLUMN_MESSAGE_TIMESTAMP_MS));
+            String timeString = DateFormat.format("HH:mm", tsMillis).toString();
+
+            // Look up sender avatar URL (may be null)
+            User senderUser = getUserById(senderId);
+            String avatarUrl = (senderUser != null) ? senderUser.avatarUrl : null;
+
+            // We can't know "current user" here, so set isSentByCurrentUser = false
+            message = new ChatMessage(
+                    messageId,
+                    senderId,
+                    receiverId,
+                    text,
+                    timeString,
+                    false,        // or adjust if your logic knows the current user ID
+                    avatarUrl
+            );
+        }
+        c.close();
+        return message;
+    }
+    public List<MessageReport> getAllPendingMessageReports() {
+        List<MessageReport> list = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor c = db.query(
+                TABLE_MESSAGE_REPORTS,
+                new String[]{ COLUMN_MSGREP_ID, COLUMN_MSGREP_MESSAGE_ID, COLUMN_MSGREP_TEXT, COLUMN_MSGREP_STATUS },
+                COLUMN_MSGREP_STATUS + "=?",
+                new String[]{ "PENDING" },
+                null, null,
+                COLUMN_MSGREP_ID + " DESC"
+        );
+        while (c.moveToNext()) {
+            list.add(new MessageReport(
+                    c.getLong(0),
+                    getChatMessageById(c.getLong(1)),
+                    c.getString(2),
+                    c.getString(3)
+            ));
+        }
+        c.close();
+        return list;
+    }
+
+
+    public boolean deleteChatMessage(long messageId) {
+        SQLiteDatabase db = getWritableDatabase();
+        int rows = db.delete(
+                TABLE_CHAT_MESSAGES,
+                COLUMN_MESSAGE_ID + " = ?",
+                new String[]{ String.valueOf(messageId) }
+        );
+        db.close();
+        return rows > 0;
+    }
+
 }

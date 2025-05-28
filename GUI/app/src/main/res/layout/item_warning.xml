@@ -38,6 +38,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:enabled="true"
+            android:backgroundTint="#4CAF50"
             android:text="Acknowledge" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>

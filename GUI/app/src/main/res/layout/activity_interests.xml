@@ -20,14 +20,14 @@
             android:id="@+id/cb90sKid"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="90s Kid"
+            android:text="Books"
             android:layout_marginTop="16dp"/>
 
         <CheckBox
             android:id="@+id/cbHarryPotter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Harry Potter"/>
+            android:text="Star Wars"/>
 
         <CheckBox
             android:id="@+id/cbHomeWorkout"
@@ -39,28 +39,66 @@
             android:id="@+id/cbHockey"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Hockey"/>
+            android:text="Dancing"/>
 
-        <LinearLayout
-            android:layout_marginTop="24dp"
-            android:orientation="horizontal"
+        <!-- New interests -->
+        <CheckBox
+            android:id="@+id/cbCooking"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cooking"/>
+
+        <CheckBox
+            android:id="@+id/cbTravel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Travel"/>
+
+        <CheckBox
+            android:id="@+id/cbMusic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Music"/>
+
+        <CheckBox
+            android:id="@+id/cbGaming"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Gaming"/>
+
+        <CheckBox
+            android:id="@+id/cbReading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Reading"/>
+
+        <CheckBox
+            android:id="@+id/cbTechnology"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Technology"/>
+
+        <CheckBox
+            android:id="@+id/cbArt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Art"/>
+
+        <CheckBox
+            android:id="@+id/cbMovies"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Movies"/>
+
+        <!-- Only the Continue button now -->
+        <Button
+            android:id="@+id/btnContinueStep2"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:backgroundTint="@android:color/holo_blue_light"
+            android:textColor="#FFFFFFFF"
+            android:layout_marginTop="24dp"
+            android:text="Continue"/>
 
-            <Button
-                android:id="@+id/btnSkip"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="Skip"/>
-
-            <Button
-                android:id="@+id/btnContinueStep2"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="Continue"/>
-
-        </LinearLayout>
     </LinearLayout>
 </ScrollView>

@@ -30,7 +30,7 @@ public class AdminNavigationHelper {
           } else if (id == R.id.nav_reports) {
             intent = new Intent(activity, AdminReportsActivity.class);
           } else if (id == R.id.nav_messages) {
-            intent = new Intent(activity, AdminReportsActivity.class);
+            intent = new Intent(activity, AdminMessageReportsActivity.class);
           } else {
             return false;
           }

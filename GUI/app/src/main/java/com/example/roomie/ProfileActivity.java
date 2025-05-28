@@ -27,7 +27,7 @@ public class ProfileActivity extends AppCompatActivity {
     currentUserId = SessionManager.get().getUserId();
 
     // bind views
-    ivProfilePic = findViewById(R.id.ivProfilePic);
+    ivProfilePic = findViewById(R.id.ivProfile);
     tvNameAge = findViewById(R.id.tvNameAge);
     btnSettings = findViewById(R.id.btnSettings);
     btnEditProfile = findViewById(R.id.btnEditProfile);
