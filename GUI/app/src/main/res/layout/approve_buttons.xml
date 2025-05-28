@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:gravity="end"
+    android:weightSum="2"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <Button
+        android:id="@+id/btnDisapprove"
+        android:layout_weight="1"
+        android:layout_marginEnd="8dp"
+        android:text="DISAPPROVE"
+        android:backgroundTint="@android:color/holo_blue_light"
+        android:textColor="#FFFFFFFF"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/btnApprove"
+        android:layout_weight="1"
+        android:text="APPROVE"
+        android:backgroundTint="@android:color/holo_blue_light"
+        android:textColor="#FFFFFFFF"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"/>
+</LinearLayout>

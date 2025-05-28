@@ -6,7 +6,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import java.util.ArrayList;
 import java.util.List;
 
 public class FavoritesActivity extends AppCompatActivity {
@@ -26,7 +25,11 @@ public class FavoritesActivity extends AppCompatActivity {
     }
     db = new DatabaseHelper(this);
 
-    BottomNavigationHelper.setup(findViewById(R.id.bottom_navigation), this, R.id.nav_favorites);
+    BottomNavigationHelper.setup(
+            findViewById(R.id.bottom_navigation),
+            this,
+            R.id.nav_favorites
+    );
 
     setupUserLikes();
     setupHouseLikes();
@@ -34,7 +37,7 @@ public class FavoritesActivity extends AppCompatActivity {
 
   private void setupUserLikes() {
     List<Long> likerIds = db.getUsersWhoLikedMe(currentUserId);
-    List<User> likers = new ArrayList<>();
+    List<User> likers = new java.util.ArrayList<>();
     for (long id : likerIds) {
       User u = db.getUserById(id);
       if (u != null) likers.add(u);
@@ -42,25 +45,33 @@ public class FavoritesActivity extends AppCompatActivity {
 
     RecyclerView recyclerUsers = findViewById(R.id.recyclerUsers);
     recyclerUsers.setLayoutManager(new LinearLayoutManager(this));
-    recyclerUsers.setAdapter(new UserLikesAdapter(this, likers, db, currentUserId));
+    recyclerUsers.setAdapter(
+            new UserLikesAdapter(this, likers, db, currentUserId)
+    );
   }
 
   private void setupHouseLikes() {
-    // 1) get all listings
-    List<HouseListing> listings = db.getAllHouseListings();
+    // Load only houses this user has liked
+    List<HouseListing> likedListings =
+            db.getAllHouseListings();
 
-    // 2) bind directly to adapter
     RecyclerView recyclerHouses = findViewById(R.id.recyclerHouses);
     recyclerHouses.setLayoutManager(new LinearLayoutManager(this));
     recyclerHouses.setAdapter(
-        new LikedHousesAdapter(
-            this,
-            listings,
-            listing -> {
-              // now click gives you full listing
-              startActivity(
-                  new Intent(this, HouseDetailActivity.class)
-                      .putExtra("EXTRA_HOUSE_ID", listing.house.id));
-            }));
+            new AuthenticateHouseAdapter(
+                    this,
+                    db,
+                    likedListings,
+                    listing -> {
+                      // View detail only, no approve/disapprove
+                      startActivity(
+                              new Intent(this, HouseDetailActivity.class)
+                                      .putExtra("EXTRA_HOUSE_ID", listing.house.id)
+                      );
+                    },
+                    null,
+                    null
+            )
+    );
   }
 }

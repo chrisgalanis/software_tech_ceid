@@ -6,6 +6,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- App logo at the very top -->
+    <ImageView
+        android:id="@+id/ivAppLogo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/roomie_logo"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp" />
     <!-- 1) Scrollable form with accessible description -->
     <ScrollView
         android:id="@+id/scroll_filters"
@@ -45,7 +54,7 @@
                 android:paddingStart="10dp"
                 android:layout_marginBottom="12dp"/>
 
-            <!-- Price From / To -->
+            <!-- Price From / To row -->
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
@@ -77,83 +86,47 @@
                     android:autofillHints="none"/>
             </LinearLayout>
 
-            <!-- Area From / To -->
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp">
-
-                <EditText
-                    android:id="@+id/etAreaFrom"
-                    android:layout_width="0dp"
-                    android:layout_height="48dp"
-                    android:minHeight="48dp"
-                    android:layout_weight="1"
-                    android:hint="@string/hint_area_from"
-                    android:inputType="numberDecimal"
-                    android:autofillHints="none"/>
-
-                <View
-                    android:layout_width="8dp"
-                    android:layout_height="match_parent"/>
-
-                <EditText
-                    android:id="@+id/etAreaTo"
-                    android:layout_width="0dp"
-                    android:layout_height="48dp"
-                    android:minHeight="48dp"
-                    android:layout_weight="1"
-                    android:hint="@string/hint_area_to"
-                    android:inputType="numberDecimal"
-                    android:autofillHints="none"/>
-            </LinearLayout>
-
-            <!-- Floor selector -->
-            <Spinner
-                android:id="@+id/spinnerFloor"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:minHeight="48dp"
-                android:entries="@array/floor_array"
-                android:layout_marginBottom="12dp"/>
-
             <!-- Search button -->
             <Button
                 android:id="@+id/btnSearch"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:backgroundTint="#03A9F4"
-                android:textColor="#000000"
                 android:minHeight="48dp"
-                android:text="@string/search_button"/>
+                android:text="Search for house listings"
+                android:textColor="#FFFFFF"
+                android:layout_marginBottom="12dp"/>
+
         </LinearLayout>
     </ScrollView>
 
-    <!-- 2) Map: shows all listings -->
+    <!-- 2) Map: shows all listings + FAB overlay -->
     <FrameLayout
         android:id="@+id/map_container"
         android:layout_width="match_parent"
         android:layout_height="350dp"
         android:layout_margin="8dp">
+
         <fragment
             android:id="@+id/map_fragment"
             android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent" />
+
     </FrameLayout>
 
-    <!-- 3) “+” button to create a new listing -->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabAddListing"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="6dp"
-        android:layout_gravity="end"
-        app:srcCompat="@drawable/ic_add"
-        app:tint="@android:color/white"/>
+    <!-- 3) Create Listing button below map -->
+    <Button
+        android:id="@+id/btnCreateListing"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:backgroundTint="#03A9F4"
+        android:minHeight="48dp"
+        android:text="Create Listing"
+        android:textColor="#FFFFFF"
+        android:layout_margin="16dp"/>
 
-    <!-- 2) Fixed bottom nav -->
+    <!-- 4) Fixed bottom navigation -->
     <include
         android:id="@+id/bottom_navigation"
         layout="@layout/layout_bottom_navigation"

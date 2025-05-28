@@ -104,11 +104,12 @@
 
                 <Button
                     android:id="@+id/btnViewHouse"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:drawableStart="@drawable/ic_home"
+                    android:backgroundTint="@android:color/holo_blue_light"
+                    android:textColor="#FFFFFFFF"
                     android:text="View House" />
 
                 <Space
@@ -117,11 +118,12 @@
 
                 <Button
                     android:id="@+id/btnReport"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:drawableStart="@drawable/ic_report"
+                    android:backgroundTint="@android:color/holo_blue_light"
+                    android:textColor="#FFFFFFFF"
                     android:text="Report User" />
 
             </LinearLayout>
