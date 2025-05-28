@@ -17,7 +17,8 @@
             android:id="@+id/ivListingImage"
             android:layout_width="match_parent"
             android:layout_height="180dp"
-            android:scaleType="centerCrop"/>
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_profile_placeholder" />
 
         <LinearLayout
             android:orientation="horizontal"
@@ -37,42 +38,29 @@
 
             <TextView
                 android:id="@+id/tvOwnerName"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
                 android:text="Listing of User Name"
-                android:textSize="16sp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:textSize="16sp" />
 
             <Button
                 android:id="@+id/btnView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-
-                android:text="View" />
+                android:layout_marginStart="16dp"
+                android:text="View"
+                android:backgroundTint="@android:color/holo_blue_light"
+                android:textColor="@color/white" />
         </LinearLayout>
 
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_marginTop="12dp"
+        <ViewStub
+            android:id="@+id/stubApproveButtons"
+            android:inflatedId="@+id/approveButtons"
+            android:layout="@layout/approve_buttons"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="end"
-            android:weightSum="2">
-
-            <Button
-                android:id="@+id/btnDisapprove"
-                android:layout_weight="1"
-                android:layout_marginEnd="8dp"
-                android:text="DISAPPROVE"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"/>
-
-            <Button
-                android:id="@+id/btnApprove"
-                android:layout_weight="1"
-                android:text="APPROVE"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"/>
-        </LinearLayout>
+            android:layout_marginTop="12dp" />
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>

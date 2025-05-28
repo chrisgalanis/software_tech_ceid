@@ -11,9 +11,9 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        app:title="House Listings"
         app:titleTextColor="@android:color/white"
+        android:background="@android:color/holo_blue_light"
+        app:title="House Listings"
         app:navigationIcon="@drawable/ic_arrow_back" />
 
     <!-- ─── Listings RecyclerView ─────────────────────────────────────────────── -->

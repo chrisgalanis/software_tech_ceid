@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import com.bumptech.glide.Glide;
 import java.util.List;
 
 public class UserLikesAdapter extends RecyclerView.Adapter<UserLikesAdapter.ViewHolder> {
@@ -40,6 +41,13 @@ public class UserLikesAdapter extends RecyclerView.Adapter<UserLikesAdapter.View
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         User user = userList.get(position);
         holder.userName.setText(user.firstName + " " + user.lastName);
+
+        // Load profile image with Glide
+        Glide.with(context)
+                .load(user.avatarUrl)
+                .placeholder(R.drawable.ic_profile_placeholder)
+                .circleCrop()
+                .into(holder.userImage);
 
         // View Profile button functionality
         holder.btnViewProfile.setOnClickListener(v -> {
@@ -81,7 +89,7 @@ public class UserLikesAdapter extends RecyclerView.Adapter<UserLikesAdapter.View
         ImageView userImage;
         TextView userName;
         ImageButton btnAccept, btnReject;
-        Button btnViewProfile;    // <-- added
+        Button btnViewProfile;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -89,7 +97,7 @@ public class UserLikesAdapter extends RecyclerView.Adapter<UserLikesAdapter.View
             userName         = itemView.findViewById(R.id.userName);
             btnAccept        = itemView.findViewById(R.id.btnAccept);
             btnReject        = itemView.findViewById(R.id.btnReject);
-            btnViewProfile   = itemView.findViewById(R.id.btnViewProfile);  // <-- bind
+            btnViewProfile   = itemView.findViewById(R.id.btnViewProfile);
         }
     }
 }

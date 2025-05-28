@@ -6,12 +6,10 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import java.util.ArrayList;
 import java.util.List;
 
-public class AuthenticateListingsActivity extends AppCompatActivity
-        implements AuthenticateHouseAdapter.OnActionListener {
+public class AuthenticateListingsActivity extends AppCompatActivity {
 
     private RecyclerView rvListings;
     private AuthenticateHouseAdapter adapter;
@@ -29,12 +27,62 @@ public class AuthenticateListingsActivity extends AppCompatActivity
         // RecyclerView + adapter
         rvListings = findViewById(R.id.rvListings);
         rvListings.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new AuthenticateHouseAdapter(listingList, this);
+
+        // Initialize adapter with View + Approve/Disapprove callbacks
+        adapter = new AuthenticateHouseAdapter(
+                this,
+                dbHelper,
+                listingList,
+                listing -> {
+                    // View detail
+                    Intent i = new Intent(this, HouseDetailActivity.class);
+                    i.putExtra("EXTRA_HOUSE_ID", listing.house.id);
+                    startActivity(i);
+                },
+                listing -> {
+                    // Approve action
+                    boolean ok = dbHelper.approveListing(listing);
+                    if (ok) {
+                        int pos = listingList.indexOf(listing);
+                        if (pos >= 0) {
+                            listingList.remove(pos);
+                            adapter.notifyItemRemoved(pos);
+                        }
+                        Toast.makeText(
+                                this,
+                                "Approved listing at " + listing.house.address,
+                                Toast.LENGTH_SHORT
+                        ).show();
+                    } else {
+                        Toast.makeText(this, "Failed to approve listing.", Toast.LENGTH_SHORT).show();
+                    }
+                },
+                listing -> {
+                    // Disapprove action
+                    boolean ok = dbHelper.disapproveListing(listing);
+                    if (ok) {
+                        int pos = listingList.indexOf(listing);
+                        if (pos >= 0) {
+                            listingList.remove(pos);
+                            adapter.notifyItemRemoved(pos);
+                        }
+                    }
+                    Toast.makeText(
+                            this,
+                            "Disapproved listing at " + listing.house.address,
+                            Toast.LENGTH_SHORT
+                    ).show();
+
+                    Warning warning = new Warning(0, listing.house.ownerId, "Your House listing has been disapproved by the system admin", "PENDING", null);
+                    dbHelper.insertWarning(warning);
+                });
+
         rvListings.setAdapter(adapter);
 
-        // load from the DB
+        // Load initial listings
         loadListings();
 
+        // Bottom navigation setup
         AdminNavigationHelper.setup(
                 findViewById(R.id.bottom_navigation),
                 this,
@@ -44,49 +92,7 @@ public class AuthenticateListingsActivity extends AppCompatActivity
 
     private void loadListings() {
         listingList.clear();
-        // pull all listings (house + metadata)
         listingList.addAll(dbHelper.getAllHouseListings());
         adapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public void onApprove(HouseListing listing) {
-        boolean ok = dbHelper.approveListing(listing);
-        if (ok) {
-            // remove from the pending list and refresh
-            int pos = listingList.indexOf(listing);
-            if (pos >= 0) {
-                listingList.remove(pos);
-                adapter.notifyItemRemoved(pos);
-            }
-            Toast.makeText(
-                    this,
-                    "Approved listing at " + listing.house.address,
-                    Toast.LENGTH_SHORT
-            ).show();
-        } else {
-            Toast.makeText(this, "Failed to approve listing.", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @Override
-    public void onDisapprove(HouseListing listing) {
-        // e.g. mark as disapproved in DB, then remove
-        // dbHelper.markListingDisapproved(listing.house.id);
-        listingList.remove(listing);
-        adapter.notifyDataSetChanged();
-
-        Toast.makeText(
-                this,
-                "Disapproved listing at " + listing.house.address,
-                Toast.LENGTH_SHORT
-        ).show();
-    }
-
-    @Override
-    public void onViewDetail(HouseListing listing) {
-        Intent i = new Intent(this, HouseDetailActivity.class);
-        i.putExtra("EXTRA_HOUSE_ID", listing.house.id);
-        startActivity(i);
     }
 }

@@ -806,6 +806,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return rows > 0;
     }
 
+    public boolean disapproveListing(HouseListing listing) {
+        if (listing == null || listing.house == null) return false;
+        long houseId = listing.house.id;
+        SQLiteDatabase db = this.getWritableDatabase();
+        int rows = db.delete(
+                TABLE_HOUSE_LISTINGS,
+                COLUMN_LISTING_HOUSE_ID + " = ?",
+                new String[]{ String.valueOf(houseId) }
+        );
+        db.close();
+        return rows > 0;
+    }
+
     // Record a like or dislike
     public void likeUser(long userId, long targetId) {
         SQLiteDatabase db = getWritableDatabase();

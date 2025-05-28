@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         app:title="Your Warnings"
         app:titleTextColor="@android:color/white"
-        android:background="@color/teal_700"
+        android:background="@android:color/holo_blue_light"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
