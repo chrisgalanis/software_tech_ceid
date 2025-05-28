@@ -77,7 +77,7 @@
                 android:id="@+id/dismissButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:backgroundTint="@android:color/holo_blue_light"
+                android:backgroundTint="@color/button_disabled"
                 android:textColor="#FFFFFFFF"
                 android:text="DISMISS"/>
 
@@ -86,7 +86,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="WARN USER"
-                android:backgroundTint="@android:color/holo_blue_light"
+                android:backgroundTint="#FFC107"
                 android:textColor="#FFFFFFFF"
                 android:layout_marginStart="16dp"/>
 

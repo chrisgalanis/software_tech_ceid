@@ -52,9 +52,7 @@ public class User {
     return name.isEmpty() ? "User" : name; // Fallback if no names
   }
 
-  /**
-   * @return age in years calculated from birthday, or -1 if parsing fails.
-   */
+
   public int getAge() {
     return calculateAge(birthday);
   }
@@ -99,29 +97,6 @@ public class User {
     }
 
     return age;
-  }
-
-  @Override
-  public String toString() {
-    return firstName
-        + " "
-        + lastName
-        + " (age "
-        + getAge()
-        + ")"
-        + " gender: "
-        + gender
-        + " house? "
-        + hasHouse
-        + " city: "
-        + city
-        + " [min:€"
-        + minBudget
-        + " max:€"
-        + maxBudget
-        + "]"
-        + " avatarUrl: "
-        + avatarUrl;
   }
 
   public String pronounsForGender(String g) {
