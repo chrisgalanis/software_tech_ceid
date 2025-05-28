@@ -7,9 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 import com.bumptech.glide.Glide;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
 import java.util.List;
-
 
 public class HouseDetailActivity extends AppCompatActivity {
   private long currentUserId;
@@ -19,8 +17,7 @@ public class HouseDetailActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_house_detail);
 
-
-   currentUserId = SessionManager.get().getUserId();
+    currentUserId = SessionManager.get().getUserId();
 
     // Bind views
     ViewPager2 viewPager = findViewById(R.id.viewPagerImages);
@@ -44,10 +41,9 @@ public class HouseDetailActivity extends AppCompatActivity {
     DatabaseHelper db = new DatabaseHelper(this);
 
     House house = db.getHouseById(houseId);
-    User owner=db.getUserById(house.ownerId);
-      List<String> uris = db.getHousePhotos(houseId);
-      viewPager.setAdapter(
-              new ImageSliderAdapter(this, uris));
+    User owner = db.getUserById(house.ownerId);
+    List<String> uris = db.getHousePhotos(houseId);
+    viewPager.setAdapter(new ImageSliderAdapter(this, uris));
     tvAddress.setText(house.address);
 
     tvPrice.setText("€" + (int) house.rent + "/month");
@@ -57,23 +53,24 @@ public class HouseDetailActivity extends AppCompatActivity {
     tvOwnerSub.setText(owner.lastName);
     Glide.with(this).load(owner.avatarUrl).circleCrop().into(ivOwnerAvatar);
 
-    //VIEW PROFILE BUTTON
+    // VIEW PROFILE BUTTON
     btnViewProf.setOnClickListener(
-        v ->{
+        v -> {
           Intent i = new Intent(this, OtherUserProfileActivity.class);
           i.putExtra(OtherUserProfileActivity.EXTRA_USER_ID, house.ownerId);
           startActivity(i);
-        }
-    );
+        });
 
-
-    //MATCH WITH OWNER
+    // MATCH WITH OWNER
     btnMatch.setOnClickListener(
-        v ->{
+        v -> {
           db.likeUser(currentUserId, house.ownerId);
-          Toast.makeText(this, "Sent match request to "+owner.firstName+" "+owner.lastName, Toast.LENGTH_SHORT).show();
-        }
-    );
+          Toast.makeText(
+                  this,
+                  "Sent match request to " + owner.firstName + " " + owner.lastName,
+                  Toast.LENGTH_SHORT)
+              .show();
+        });
 
     BottomNavigationHelper.setup(
         (BottomNavigationView) findViewById(R.id.bottom_navigation), this, R.id.nav_home);

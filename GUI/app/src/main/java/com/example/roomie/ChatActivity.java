@@ -11,18 +11,19 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import com.bumptech.glide.Glide; // <<< --- IMPORT GLIDE ---
 import de.hdodenhof.circleimageview.CircleImageView;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ChatActivity extends AppCompatActivity {
 
-  // Fields for ChatActivity
   private DatabaseHelper dbHelper;
-  private long currentUserId = -1; // ID of the logged-in user
-  private long chatPartnerId = -1; // <<< Actual ID of the chat partner from Intent
-  private String chatPartnerNameForDisplay; // For display in toolbar, etc.
-  private int chatPartnerProfileImageRes;
+  private long currentUserId = -1;
+  private long chatPartnerId = -1;
+  private String chatPartnerNameForDisplay;
+  private String chatPartnerAvatarUrlString; // <<< To store the URL from Intent
+  private int chatPartnerProfileImageResFallback; // <<< For fallback drawable resource
 
   private ImageView ivBackButton;
   private CircleImageView ivToolbarProfile;
@@ -47,9 +48,7 @@ public class ChatActivity extends AppCompatActivity {
 
     dbHelper = new DatabaseHelper(this);
 
-    // Get current user's ID (e.g., from SessionManager)
-    currentUserId =
-        SessionManager.get().getUserId(); // Ensure SessionManager is accessible and works
+    currentUserId = SessionManager.get().getUserId();
     if (currentUserId == -1) {
       Log.e("ChatActivity", "Critical Error: currentUserId is -1. Cannot proceed.");
       Toast.makeText(this, "Login error. Please restart.", Toast.LENGTH_LONG).show();
@@ -57,13 +56,15 @@ public class ChatActivity extends AppCompatActivity {
       return;
     }
 
-    // --- RECEIVE AND PROCESS INTENT DATA HERE ---
     Intent intent = getIntent();
     if (intent != null) {
-      // <<< CORRECTED: Get the long ID and the display name directly
       chatPartnerId = intent.getLongExtra("CHAT_PARTNER_ID", -1L);
       chatPartnerNameForDisplay = intent.getStringExtra("CHAT_PARTNER_NAME");
-      chatPartnerProfileImageRes = intent.getIntExtra("PROFILE_IMAGE_RES", R.drawable.roomie_logo);
+      // Get the STRING URL for the partner's avatar from the intent
+      chatPartnerAvatarUrlString = intent.getStringExtra("CHAT_PARTNER_AVATAR_URL");
+      // Get the INT FALLBACK resource ID from the intent
+      chatPartnerProfileImageResFallback =
+          intent.getIntExtra("PROFILE_IMAGE_RES_FALLBACK", R.drawable.roomie_logo);
 
       Log.d(
           "ChatActivity",
@@ -71,28 +72,19 @@ public class ChatActivity extends AppCompatActivity {
               + chatPartnerId
               + ", CHAT_PARTNER_NAME="
               + chatPartnerNameForDisplay
-              + ", PROFILE_IMAGE_RES="
-              + chatPartnerProfileImageRes);
+              + ", CHAT_PARTNER_AVATAR_URL="
+              + chatPartnerAvatarUrlString
+              + ", PROFILE_IMAGE_RES_FALLBACK="
+              + chatPartnerProfileImageResFallback);
 
       if (chatPartnerId == -1L) {
-        Log.e(
-            "ChatActivity",
-            "onCreate: CHAT_PARTNER_ID not received correctly from intent or is invalid.");
+        Log.e("ChatActivity", "onCreate: CHAT_PARTNER_ID not received or invalid.");
         Toast.makeText(this, "Error: Could not load chat partner details.", Toast.LENGTH_LONG)
             .show();
         finish();
         return;
       }
-      if (chatPartnerNameForDisplay == null) {
-        // Fallback or error if name is crucial for display and not received
-        Log.w("ChatActivity", "onCreate: CHAT_PARTNER_NAME is null. Using a default or ID.");
-        // You might fetch the name from DB using chatPartnerId if needed here,
-        // or ensure MessagesActivity always sends it. For now, we'll proceed.
-        // User partnerUser = dbHelper.getUserById(chatPartnerId);
-        // if (partnerUser != null) chatPartnerNameForDisplay = partnerUser.firstName;
-        // else chatPartnerNameForDisplay = "Chat Partner";
-      }
-
+      // chatPartnerNameForDisplay null check is fine as is
     } else {
       Log.e("ChatActivity", "onCreate: Intent was null!");
       Toast.makeText(this, "Error: Could not load chat details.", Toast.LENGTH_LONG).show();
@@ -100,7 +92,7 @@ public class ChatActivity extends AppCompatActivity {
       return;
     }
 
-    // Initialize your views from R.layout.activity_chat
+    // Initialize views
     ivBackButton = findViewById(R.id.ivBackButton);
     ivToolbarProfile = findViewById(R.id.ivToolbarProfile);
     tvToolbarTitle = findViewById(R.id.tvToolbarTitle);
@@ -114,21 +106,43 @@ public class ChatActivity extends AppCompatActivity {
     ivAttach = findViewById(R.id.ivAttach);
     ivSend = findViewById(R.id.ivSend);
 
-    // --- Use the received data to set up UI ---
+    // Set up UI
     if (tvToolbarTitle != null && chatPartnerNameForDisplay != null) {
       tvToolbarTitle.setText(chatPartnerNameForDisplay);
     } else if (tvToolbarTitle != null) {
-      tvToolbarTitle.setText("Chat"); // Fallback title
+      tvToolbarTitle.setText("Chat"); // Fallback
     }
 
-    if (ivToolbarProfile != null && chatPartnerProfileImageRes != 0) {
-      ivToolbarProfile.setImageResource(chatPartnerProfileImageRes);
-    }
-    if (ivCenterProfile != null && chatPartnerProfileImageRes != 0) {
-      ivCenterProfile.setImageResource(chatPartnerProfileImageRes);
+    // --- CORRECTED: Load CHAT PARTNER's avatar into Toolbar and Center profile views ---
+    if (ivToolbarProfile != null) {
+      if (chatPartnerAvatarUrlString != null && !chatPartnerAvatarUrlString.isEmpty()) {
+        Glide.with(this) // Context is 'this' (ChatActivity)
+            .load(chatPartnerAvatarUrlString) // Load partner's URL
+            .placeholder(chatPartnerProfileImageResFallback)
+            .error(chatPartnerProfileImageResFallback)
+            .into(ivToolbarProfile);
+      } else if (chatPartnerProfileImageResFallback != 0) {
+        ivToolbarProfile.setImageResource(chatPartnerProfileImageResFallback);
+      } else {
+        ivToolbarProfile.setImageResource(R.drawable.roomie_logo); // Ultimate fallback
+      }
     }
 
-    // Setup RecyclerView for chat messages
+    if (ivCenterProfile != null) {
+      if (chatPartnerAvatarUrlString != null && !chatPartnerAvatarUrlString.isEmpty()) {
+        Glide.with(this) // Context is 'this' (ChatActivity)
+            .load(chatPartnerAvatarUrlString) // Load partner's URL
+            .placeholder(chatPartnerProfileImageResFallback)
+            .error(chatPartnerProfileImageResFallback)
+            .into(ivCenterProfile);
+      } else if (chatPartnerProfileImageResFallback != 0) {
+        ivCenterProfile.setImageResource(chatPartnerProfileImageResFallback);
+      } else {
+        ivCenterProfile.setImageResource(R.drawable.roomie_logo); // Ultimate fallback
+      }
+    }
+
+    // Setup RecyclerView
     messageList = new ArrayList<>();
     chatMessageAdapter = new ChatMessageAdapter(this, messageList);
     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
@@ -139,8 +153,8 @@ public class ChatActivity extends AppCompatActivity {
     loadMessagesFromDb();
 
     // Set Click Listeners
+    // ... (your existing click listeners) ...
     ivBackButton.setOnClickListener(v -> onBackPressed());
-    //REPORT BUTTON
     ivInfoButton.setOnClickListener(
         v ->
             Toast.makeText(
@@ -149,41 +163,44 @@ public class ChatActivity extends AppCompatActivity {
                         + (chatPartnerNameForDisplay != null ? chatPartnerNameForDisplay : "User"),
                     Toast.LENGTH_SHORT)
                 .show());
-    //VIEW PROFILE BUTTON
-    btnViewProfile.setOnClickListener(v -> {
-
-        Intent i = new Intent(this, OtherUserProfileActivity.class);
-        i.putExtra(OtherUserProfileActivity.EXTRA_USER_ID, chatPartnerId);
-        startActivity(i);
-
-    });
+    btnViewProfile.setOnClickListener(
+        v -> {
+          Intent i = new Intent(this, OtherUserProfileActivity.class);
+          i.putExtra(OtherUserProfileActivity.EXTRA_USER_ID, chatPartnerId);
+          startActivity(i);
+        });
     ivSend.setOnClickListener(v -> sendMessage());
   }
 
   private void loadMessagesFromDb() {
+
     if (currentUserId == -1 || chatPartnerId == -1) {
+
       Log.e(
           "ChatActivity",
           "Cannot load messages: Invalid user IDs. currentUserId="
               + currentUserId
               + ", chatPartnerId="
               + chatPartnerId);
+
       Toast.makeText(this, "Error loading messages.", Toast.LENGTH_SHORT).show();
+
       return;
     }
-    Log.d(
-        "ChatActivity",
-        "Loading messages from DB for user " + currentUserId + " and partner " + chatPartnerId);
+
     List<ChatMessage> dbMessages =
-        dbHelper.getChatMessagesBetweenUsers(
-            currentUserId, chatPartnerId, chatPartnerProfileImageRes);
+        dbHelper.getChatMessagesBetweenUsers(currentUserId, chatPartnerId);
+
     messageList.clear();
+
     messageList.addAll(dbMessages);
+
     chatMessageAdapter.notifyDataSetChanged();
+
     if (!messageList.isEmpty()) {
+
       rvChatMessages.scrollToPosition(messageList.size() - 1);
     }
-    Log.d("ChatActivity", "Loaded " + messageList.size() + " messages from DB.");
   }
 
   private void sendMessage() {
@@ -194,20 +211,27 @@ public class ChatActivity extends AppCompatActivity {
             .show();
         return;
       }
-
       long timestampMs = System.currentTimeMillis();
       long newRowId =
           dbHelper.addChatMessage(currentUserId, chatPartnerId, messageText, timestampMs);
 
       if (newRowId != -1) {
         String timeString = android.text.format.DateFormat.format("HH:mm", timestampMs).toString();
+
+        User currentUserForAvatar = dbHelper.getUserById(currentUserId);
+        String currentUserAvatarUrl =
+            (currentUserForAvatar != null && currentUserForAvatar.avatarUrl != null)
+                ? currentUserForAvatar.avatarUrl
+                : null;
+
         ChatMessage newMessage =
             new ChatMessage(
                 String.valueOf(currentUserId),
                 String.valueOf(chatPartnerId),
                 messageText,
                 timeString,
-                true // isSentByCurrentUser
+                true, // isSentByCurrentUser
+                currentUserAvatarUrl // Pass current user's avatar URL for their sent messages
                 );
         messageList.add(newMessage);
         chatMessageAdapter.notifyItemInserted(messageList.size() - 1);

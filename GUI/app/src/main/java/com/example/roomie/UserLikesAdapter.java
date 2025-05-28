@@ -40,16 +40,17 @@ public class UserLikesAdapter extends RecyclerView.Adapter<UserLikesAdapter.View
     holder.userName.setText(user.firstName + " " + user.lastName);
 
     holder.btnAccept.setOnClickListener(
-        v ->{
-          db.createMatch(user.id,currentUserId);
+        v -> {
+          db.createMatch(user.id, currentUserId);
           db.unlikeUser(user.id, currentUserId);
           userList.remove(position);
           notifyItemRemoved(position);
           Toast.makeText(
-                          context, "Matched with " + user.firstName + " from your likes", Toast.LENGTH_SHORT)
-                  .show();
-        }
-    );
+                  context,
+                  "Matched with " + user.firstName + " from your likes",
+                  Toast.LENGTH_SHORT)
+              .show();
+        });
 
     holder.btnReject.setOnClickListener(
         v -> {

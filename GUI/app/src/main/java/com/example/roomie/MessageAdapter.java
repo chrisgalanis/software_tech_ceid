@@ -7,6 +7,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import com.bumptech.glide.Glide; // Make sure you have this import for Glide
+// import com.bumptech.glide.request.RequestOptions; // Optional for more Glide options
 import java.util.List;
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder> {
@@ -14,12 +16,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
   private List<MessageItem> messageList;
   private OnMessageItemClickListener listener;
 
-  // --- 1. Interface for click events ---
   public interface OnMessageItemClickListener {
     void onMessageItemClick(MessageItem messageItem, int position);
   }
 
-  // --- 2. Constructor that accepts the listener ---
   public MessageAdapter(List<MessageItem> messageList, OnMessageItemClickListener listener) {
     this.messageList = messageList;
     this.listener = listener;
@@ -28,21 +28,14 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
   @NonNull
   @Override
   public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-    // Inflate your item layout XML here (e.g., R.layout.item_message_preview)
     View itemView =
-        LayoutInflater.from(parent.getContext())
-            .inflate(
-                R.layout.item_message,
-                parent,
-                false); // <<<<<<< ENSURE R.layout.item_message IS YOUR CORRECT LAYOUT FILE FOR EACH
-    // ROW
+        LayoutInflater.from(parent.getContext()).inflate(R.layout.item_message, parent, false);
     return new MessageViewHolder(itemView);
   }
 
   @Override
   public void onBindViewHolder(@NonNull MessageViewHolder holder, int position) {
     MessageItem currentItem = messageList.get(position);
-    // --- 3. Call the ViewHolder's bind method ---
     holder.bind(currentItem, listener);
   }
 
@@ -51,50 +44,61 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     return messageList.size();
   }
 
-  // --- 4. ViewHolder Class ---
   public static class MessageViewHolder extends RecyclerView.ViewHolder {
-    // Declare views for your item layout (e.g., item_message.xml)
     public TextView textViewName;
     public TextView textViewLastMessage;
     public TextView textViewTimestamp;
-    public ImageView imageViewProfile;
+    public ImageView imageViewProfile; // This is the ImageView for MessageItem
 
     public MessageViewHolder(@NonNull View itemView) {
       super(itemView);
-      // Initialize views - REPLACE R.id.xxx WITH YOUR ACTUAL IDs
-      textViewName = itemView.findViewById(R.id.textViewMessageItemName); // <<<< YOUR ID
-      textViewLastMessage = itemView.findViewById(R.id.textViewMessageItemLastMsg); // <<<< YOUR ID
-      textViewTimestamp = itemView.findViewById(R.id.textViewMessageItemTimestamp); // <<<< YOUR ID
-      imageViewProfile = itemView.findViewById(R.id.imageViewMessageItemProfile); // <<<< YOUR ID
+      textViewName = itemView.findViewById(R.id.textViewMessageItemName);
+      textViewLastMessage = itemView.findViewById(R.id.textViewMessageItemLastMsg);
+      textViewTimestamp = itemView.findViewById(R.id.textViewMessageItemTimestamp);
+      imageViewProfile = itemView.findViewById(R.id.imageViewMessageItemProfile);
     }
 
-    // --- 5. Bind method in ViewHolder ---
     public void bind(final MessageItem messageItem, final OnMessageItemClickListener listener) {
-      // Set data to views
-      if (messageItem.getUserName() != null) {
-        textViewName.setText(messageItem.getUserName());
-      }
-      if (messageItem.getLastMessage() != null) {
-        textViewLastMessage.setText(messageItem.getLastMessage());
-      }
-      if (messageItem.getTimestamp() != null) {
-        textViewTimestamp.setText(messageItem.getTimestamp());
-      }
-      if (messageItem.getProfileImageRes() != 0) {
-        imageViewProfile.setImageResource(messageItem.getProfileImageRes());
+      // Use getDisplayName() from MessageItem
+      if (messageItem.getDisplayName() != null) {
+        textViewName.setText(messageItem.getDisplayName());
       } else {
-        // Maybe set a default placeholder if no image
-        // imageViewProfile.setImageResource(R.drawable.default_avatar);
+        textViewName.setText(""); // Or some default
       }
 
-      // --- 6. Set OnClickListener INSIDE ViewHolder's bind method (or constructor) ---
+      if (messageItem.getLastMessage() != null) {
+        textViewLastMessage.setText(messageItem.getLastMessage());
+      } else {
+        textViewLastMessage.setText("");
+      }
+
+      if (messageItem.getTimestamp() != null) {
+        textViewTimestamp.setText(messageItem.getTimestamp());
+      } else {
+        textViewTimestamp.setText("");
+      }
+
+      // Use getProfileAvatarUrl() from MessageItem
+      String avatarUrl = messageItem.getProfileAvatarUrl();
+      if (avatarUrl != null && !avatarUrl.isEmpty()) {
+        Glide.with(itemView.getContext())
+            .load(avatarUrl)
+            .placeholder(R.drawable.roomie_logo) // Your placeholder
+            .error(R.drawable.roomie_logo) // Your error placeholder
+            // .apply(RequestOptions.circleCropTransform()) // If imageViewProfile is not a
+            // CircleImageView and you want it cropped
+            .into(imageViewProfile); // <<< CORRECTED: Use imageViewProfile
+      } else {
+        imageViewProfile.setImageResource(R.drawable.roomie_logo); // Default if no URL
+      }
+
       itemView.setOnClickListener(
           new View.OnClickListener() {
             @Override
             public void onClick(View v) {
               if (listener != null) {
-                int position = getAdapterPosition(); // Get current position
-                if (position != RecyclerView.NO_POSITION) { // Check if position is valid
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
                   listener.onMessageItemClick(messageItem, position);
                 }
               }
