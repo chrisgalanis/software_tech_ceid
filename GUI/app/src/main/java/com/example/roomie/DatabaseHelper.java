@@ -15,7 +15,7 @@ import java.util.List;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME    = "RoomieApp.db";
-    private static final int    DATABASE_VERSION = 18;   // bumped to include reports table
+    private static final int    DATABASE_VERSION = 21;   // bumped to include reports table
 
     // users table
     public static final String TABLE_USERS           = "users";
