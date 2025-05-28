@@ -7,6 +7,7 @@ public class MessageItem {
   private String timestamp;
   private String profileAvatarUrl; // <<< CHANGED from int profileImageRes to String
 
+
   // Updated constructor
   public MessageItem(
       long userId,

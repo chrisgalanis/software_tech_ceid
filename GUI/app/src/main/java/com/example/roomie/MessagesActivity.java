@@ -81,8 +81,8 @@ public class MessagesActivity extends AppCompatActivity
                   currentUserId, partnerUser.id); // Call without profileImageRes
 
           if (latestMsgObject != null) {
-            lastMessagePreview = latestMsgObject.getMessageText();
-            timestampPreview = latestMsgObject.getTimestamp();
+            lastMessagePreview = latestMsgObject.messageText;
+            timestampPreview = latestMsgObject.timestamp;
           }
 
           String avatarUrlForListItem =

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    card:cardCornerRadius="8dp"
+    card:cardElevation="2dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+        <!-- Preview of the offending message -->
+        <TextView
+            android:id="@+id/tvMsgPreview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="“This is the bad message…”"
+            android:textStyle="italic"
+            android:paddingBottom="8dp"/>
+
+        <!-- Report reason -->
+        <TextView
+            android:id="@+id/tvReportReason"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Inappropriate content"
+            android:paddingBottom="12dp"/>
+
+        <!-- Actions row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="end">
+
+            <Button
+                android:id="@+id/btnDismissMsgReport"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dismiss"/>
+
+            <Button
+                android:id="@+id/btnWarnMsgUser"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="Delete"/>
+        </LinearLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

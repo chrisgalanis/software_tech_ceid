@@ -18,44 +18,60 @@ import java.util.List;
 
 public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-  private static final int VIEW_TYPE_SENT = 1;
+  private static final int VIEW_TYPE_SENT     = 1;
   private static final int VIEW_TYPE_RECEIVED = 2;
 
-  private Context context;
-  private List<ChatMessage> messageList;
+  private final Context context;
+  private final List<ChatMessage> messageList;
+  private final DatabaseHelper dbHelper;
 
   public ChatMessageAdapter(Context context, List<ChatMessage> messageList) {
-    this.context = context;
+    this.context     = context;
     this.messageList = messageList;
+    this.dbHelper    = new DatabaseHelper(context);
   }
 
   @Override
   public int getItemViewType(int position) {
-    ChatMessage message = messageList.get(position);
-    return message.isSentByCurrentUser() ? VIEW_TYPE_SENT : VIEW_TYPE_RECEIVED;
+    return messageList.get(position).isSentByCurrentUser
+            ? VIEW_TYPE_SENT
+            : VIEW_TYPE_RECEIVED;
   }
 
   @NonNull
   @Override
-  public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+  public RecyclerView.ViewHolder onCreateViewHolder(
+          @NonNull ViewGroup parent,
+          int viewType
+  ) {
+    LayoutInflater inflater = LayoutInflater.from(parent.getContext());
     if (viewType == VIEW_TYPE_SENT) {
-      View view = LayoutInflater.from(parent.getContext())
-              .inflate(R.layout.item_chat_message_sent, parent, false);
+      View view = inflater.inflate(
+              R.layout.item_chat_message_sent,
+              parent,
+              false
+      );
       return new SentMessageViewHolder(view);
     } else {
-      View view = LayoutInflater.from(parent.getContext())
-              .inflate(R.layout.item_chat_message_received, parent, false);
+      View view = inflater.inflate(
+              R.layout.item_chat_message_received,
+              parent,
+              false
+      );
       return new ReceivedMessageViewHolder(view);
     }
   }
 
   @Override
-  public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-    ChatMessage message = messageList.get(position);
-    if (holder.getItemViewType() == VIEW_TYPE_SENT) {
-      ((SentMessageViewHolder) holder).bind(message);
+  public void onBindViewHolder(
+          @NonNull RecyclerView.ViewHolder holder,
+          int position
+  ) {
+    ChatMessage msg = messageList.get(position);
+    if (holder instanceof SentMessageViewHolder) {
+      ((SentMessageViewHolder) holder).bind(msg);
     } else {
-      ((ReceivedMessageViewHolder) holder).bind(message);
+      ((ReceivedMessageViewHolder) holder).bind(msg);
     }
   }
 
@@ -64,70 +80,80 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     return messageList.size();
   }
 
-  // ViewHolder for Sent Messages
+  // ─── Sent ViewHolder ─────────────────────────────────────────────────────
+
   static class SentMessageViewHolder extends RecyclerView.ViewHolder {
-    TextView tvMessageText;
-    TextView tvMessageTimestamp;
+    TextView tvMessageText, tvMessageTimestamp;
 
     SentMessageViewHolder(@NonNull View itemView) {
       super(itemView);
-      tvMessageText = itemView.findViewById(R.id.tvMessageText);
+      tvMessageText      = itemView.findViewById(R.id.tvMessageText);
       tvMessageTimestamp = itemView.findViewById(R.id.tvMessageTimestamp);
     }
 
     void bind(ChatMessage message) {
-      tvMessageText.setText(message.getMessageText());
-      tvMessageTimestamp.setText(message.getTimestamp());
+      tvMessageText.setText(message.messageText);
+      tvMessageTimestamp.setText(message.timestamp);
     }
   }
 
-  // ViewHolder for Received Messages
-    static class ReceivedMessageViewHolder extends RecyclerView.ViewHolder {
-      ImageView ivSenderProfile;
-      TextView tvMessageText;
-      TextView tvMessageTimestamp;
-      Button btnReport;
-      View messageContent;
+  // ─── Received ViewHolder ─────────────────────────────────────────────────
 
-      ReceivedMessageViewHolder(@NonNull View itemView) {
-        super(itemView);
-        ivSenderProfile = itemView.findViewById(R.id.ivSenderProfile);
-        tvMessageText = itemView.findViewById(R.id.tvMessageText);
-        tvMessageTimestamp = itemView.findViewById(R.id.tvMessageTimestamp);
-        btnReport = itemView.findViewById(R.id.btnReport);
-        messageContent = itemView.findViewById(R.id.messageContent);
-      }
+  // Note: non-static so it can access ChatMessageAdapter.this.dbHelper
+  class ReceivedMessageViewHolder extends RecyclerView.ViewHolder {
+    ImageView ivSenderProfile;
+    TextView  tvMessageText, tvMessageTimestamp;
+    Button    btnReport;
+    View      messageContent;
 
-      void bind(ChatMessage message) {
-        tvMessageText.setText(message.getMessageText());
-        tvMessageTimestamp.setText(message.getTimestamp());
-
-        String avatarUrl = message.getSenderAvatarUrl();
-        if (avatarUrl != null && !avatarUrl.isEmpty()) {
-          Glide.with(itemView.getContext())
-                  .load(avatarUrl)
-                  .placeholder(R.drawable.roomie_logo)
-                  .error(R.drawable.roomie_logo)
-                  .into(ivSenderProfile);
-        } else {
-          ivSenderProfile.setImageResource(R.drawable.roomie_logo);
-        }
-
-        btnReport.setVisibility(View.GONE); // always hide first
-
-        // Toggle visibility when the message content is clicked
-        messageContent.setOnClickListener(v -> {
-          btnReport.setVisibility(
-                  btnReport.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE
-          );
-        });
-
-        btnReport.setOnClickListener(v -> {
-          Toast.makeText(itemView.getContext(),
-                  "Report clicked for: " + message.getMessageText(),
-                  Toast.LENGTH_SHORT).show();
-        });
-      }
+    ReceivedMessageViewHolder(@NonNull View itemView) {
+      super(itemView);
+      ivSenderProfile    = itemView.findViewById(R.id.ivSenderProfile);
+      tvMessageText      = itemView.findViewById(R.id.tvMessageText);
+      tvMessageTimestamp = itemView.findViewById(R.id.tvMessageTimestamp);
+      btnReport          = itemView.findViewById(R.id.btnReport);
+      messageContent     = itemView.findViewById(R.id.messageContent);
     }
 
+    void bind(ChatMessage message) {
+      // 1) Standard binding
+      tvMessageText.setText(message.messageText);
+      tvMessageTimestamp.setText(message.timestamp);
+
+      String avatarUrl = message.senderAvatarUrl;
+      if (avatarUrl != null && !avatarUrl.isEmpty()) {
+        Glide.with(itemView.getContext())
+                .load(avatarUrl)
+                .placeholder(R.drawable.roomie_logo)
+                .error(R.drawable.roomie_logo)
+                .into(ivSenderProfile);
+      } else {
+        ivSenderProfile.setImageResource(R.drawable.roomie_logo);
+      }
+
+      // 2) Toggle and handle report
+      btnReport.setVisibility(View.GONE);
+      messageContent.setOnClickListener(v -> {
+        btnReport.setVisibility(
+                btnReport.getVisibility() == View.VISIBLE
+                        ? View.GONE
+                        : View.VISIBLE
+        );
+      });
+
+      btnReport.setOnClickListener(v -> {
+        long msgId = message.messageId; // ensure ChatMessage exposes its DB id
+        long row   = dbHelper.insertMessageReport(msgId, "Inappropriate message");
+        if (row != -1) {
+          Toast.makeText(itemView.getContext(),
+                  "Message reported!",
+                  Toast.LENGTH_SHORT).show();
+        } else {
+          Toast.makeText(itemView.getContext(),
+                  "Failed to report message.",
+                  Toast.LENGTH_SHORT).show();
+        }
+      });
+    }
+  }
 }

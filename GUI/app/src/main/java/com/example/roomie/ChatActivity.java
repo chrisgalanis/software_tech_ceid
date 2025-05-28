@@ -217,8 +217,9 @@ public class ChatActivity extends AppCompatActivity {
 
         ChatMessage newMessage =
             new ChatMessage(
-                String.valueOf(currentUserId),
-                String.valueOf(chatPartnerId),
+                    newRowId,
+                currentUserId,
+                chatPartnerId,
                 messageText,
                 timeString,
                 true, // isSentByCurrentUser
