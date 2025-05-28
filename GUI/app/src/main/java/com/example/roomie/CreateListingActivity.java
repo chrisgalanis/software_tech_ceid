@@ -153,7 +153,7 @@ public class CreateListingActivity extends AppCompatActivity implements OnMapRea
 
       Uri srcUri = data.getData();
       processAndStoreUri(srcUri);
-      btnSubmit.setEnabled(selectedUris.size() >= 2);
+      btnSubmit.setEnabled(selectedUris.size() >= 1);
     }
   }
 

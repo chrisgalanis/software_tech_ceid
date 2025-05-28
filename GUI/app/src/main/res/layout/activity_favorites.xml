@@ -34,7 +34,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="View liked houses:"
+        android:text="View Saved houses:"
         android:paddingStart="16dp"
         android:paddingTop="8dp"
         android:textStyle="bold"

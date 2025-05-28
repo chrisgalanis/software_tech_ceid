@@ -16,7 +16,7 @@ import java.util.List;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME    = "RoomieApp.db";
-    private static final int    DATABASE_VERSION = 22;   // bumped to include reports table
+    private static final int    DATABASE_VERSION = 23;   // bumped to include reports table
 
     // users table
     public static final String TABLE_USERS           = "users";
@@ -119,6 +119,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_MSGREP_MESSAGE_ID        = "message_id";
     public static final String COLUMN_MSGREP_TEXT              = "text";
     public static final String COLUMN_MSGREP_STATUS            = "status";
+
+    // Saved‐houses table
+    public static final String TABLE_SAVED_HOUSES      = "saved_houses";
+    public static final String COLUMN_SAVED_ID         = "_id";
+    public static final String COLUMN_SAVED_USER_ID    = "user_id";
+    public static final String COLUMN_SAVED_HOUSE_ID   = "house_id";
+    public static final String COLUMN_SAVED_TIMESTAMP  = "saved_at";
+
 
 
     // ─── CREATE TABLE STATEMENTS ─────────────────────────────────────────────────
@@ -358,6 +366,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     + TABLE_CHAT_MESSAGES + "(" + COLUMN_MESSAGE_ID + ") ON DELETE CASCADE"
                     + ");";
 
+
+    private static final String SQL_CREATE_SAVED_HOUSES =
+            "CREATE TABLE " + TABLE_SAVED_HOUSES + " ("
+                    + COLUMN_SAVED_ID        + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + COLUMN_SAVED_USER_ID   + " INTEGER NOT NULL, "
+                    + COLUMN_SAVED_HOUSE_ID  + " INTEGER NOT NULL, "
+                    + COLUMN_SAVED_TIMESTAMP + " DATETIME DEFAULT CURRENT_TIMESTAMP, "
+                    + "FOREIGN KEY(" + COLUMN_SAVED_USER_ID  + ") REFERENCES "
+                    + TABLE_USERS       + "(" + COLUMN_ID       + ") ON DELETE CASCADE, "
+                    + "FOREIGN KEY(" + COLUMN_SAVED_HOUSE_ID + ") REFERENCES "
+                    + TABLE_HOUSES      + "(" + COLUMN_HOUSE_ID + ") ON DELETE CASCADE, "
+                    + "UNIQUE(" + COLUMN_SAVED_USER_ID + "," + COLUMN_SAVED_HOUSE_ID + ")"
+                    + ");";
+
+
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -382,12 +405,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(SQL_CREATE_WARNINGS);
         db.execSQL(SQL_CREATE_HOUSE_LISTINGS);
         db.execSQL(SQL_CREATE_MESSAGE_REPORTS);
-
+        db.execSQL(SQL_CREATE_SAVED_HOUSES);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldV, int newV) {
-        // Drop tables in reverse-dependency order
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_SAVED_HOUSES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_MESSAGE_REPORTS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_HOUSE_LISTINGS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_CHAT_MESSAGES);
@@ -1586,6 +1609,100 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         );
         db.close();
         return rows > 0;
+    }
+
+    public long insertSavedHouse(long userId, long houseId) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_SAVED_USER_ID,  userId);
+        cv.put(COLUMN_SAVED_HOUSE_ID, houseId);
+        long id = db.insertWithOnConflict(
+                TABLE_SAVED_HOUSES,
+                null,
+                cv,
+                SQLiteDatabase.CONFLICT_IGNORE  // ignores duplicates
+        );
+        db.close();
+        return id;
+    }
+
+    public HouseListing getHouseListingByHouseId(long houseId) {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor c = db.query(
+                TABLE_HOUSE_LISTINGS,
+                new String[]{
+                        COLUMN_LISTING_OWNER_NAME,
+                        COLUMN_LISTING_OWNER_AVATAR_URL,
+                        COLUMN_LISTING_HOUSE_AVATAR_URL,
+                        COLUMN_LISTING_IS_APPROVED
+                },
+                COLUMN_LISTING_HOUSE_ID + "=?",
+                new String[]{ String.valueOf(houseId) },
+                null, null, null
+        );
+        if (!c.moveToFirst()) {
+            c.close();
+            return null;
+        }
+        String ownerName      = c.getString(0);
+        String ownerAvatarUrl = c.getString(1);
+        String houseAvatarUrl = c.getString(2);
+        boolean isApproved    = c.getInt(3) == 1;
+        c.close();
+
+        House h = getHouseById(houseId);
+        return (h != null)
+                ? new HouseListing(h, ownerName, ownerAvatarUrl, houseAvatarUrl, isApproved)
+                : null;
+    }
+
+    /** Get all saved listings for a user */
+    public List<HouseListing> getSavedHouseListingsForUser(long userId) {
+        List<HouseListing> list = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor c = db.query(
+                TABLE_SAVED_HOUSES,
+                new String[]{ COLUMN_SAVED_HOUSE_ID },
+                COLUMN_SAVED_USER_ID + "=?",
+                new String[]{ String.valueOf(userId) },
+                null, null, null
+        );
+        while (c.moveToNext()) {
+            long hid = c.getLong(0);
+            HouseListing hl = getHouseListingByHouseId(hid);
+            if (hl != null) list.add(hl);
+        }
+        c.close();
+        return list;
+    }
+
+
+    /** Un‐save a house for a user; returns true if deleted. */
+    public boolean deleteSavedHouse(long userId, long houseId) {
+        SQLiteDatabase db = getWritableDatabase();
+        HouseListing hl = getHouseListingByHouseId(houseId);
+        int rows = db.delete(
+                TABLE_SAVED_HOUSES,
+                COLUMN_SAVED_USER_ID + "=? AND " + COLUMN_SAVED_HOUSE_ID + "=?",
+                new String[]{ String.valueOf(userId), String.valueOf(houseId) }
+        );
+        db.close();
+        return rows > 0;
+    }
+
+    /** Returns true if this user has already saved this house */
+    public boolean isHouseSaved(long userId, long houseId) {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor c = db.query(
+                TABLE_SAVED_HOUSES,
+                new String[]{ COLUMN_SAVED_ID },
+                COLUMN_SAVED_USER_ID + "=? AND " + COLUMN_SAVED_HOUSE_ID + "=?",
+                new String[]{ String.valueOf(userId), String.valueOf(houseId) },
+                null, null, null
+        );
+        boolean exists = (c != null && c.getCount() > 0);
+        if (c != null) c.close();
+        return exists;
     }
 
 }
