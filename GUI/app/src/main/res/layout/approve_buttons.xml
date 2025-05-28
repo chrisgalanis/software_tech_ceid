@@ -12,6 +12,8 @@
         android:layout_weight="1"
         android:layout_marginEnd="8dp"
         android:text="DISAPPROVE"
+        android:backgroundTint="@android:color/holo_blue_light"
+        android:textColor="#FFFFFFFF"
         android:layout_width="0dp"
         android:layout_height="wrap_content"/>
 
@@ -19,6 +21,8 @@
         android:id="@+id/btnApprove"
         android:layout_weight="1"
         android:text="APPROVE"
+        android:backgroundTint="@android:color/holo_blue_light"
+        android:textColor="#FFFFFFFF"
         android:layout_width="0dp"
         android:layout_height="wrap_content"/>
 </LinearLayout>
