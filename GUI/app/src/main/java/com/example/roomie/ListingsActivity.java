@@ -3,50 +3,43 @@ package com.example.roomie;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.example.roomie.BottomNavigationHelper;
-import com.example.roomie.DatabaseHelper;
-import com.example.roomie.HouseDetailActivity;
-import com.example.roomie.HouseListing;
-import com.example.roomie.ListingsAdapter;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class ListingsActivity extends AppCompatActivity {
 
   private RecyclerView recycler;
-  private List<HouseListing> allListings;      // now HouseListing
+  private List<HouseListing> allListings; // now HouseListing
   private ListingsAdapter adapter;
   private DatabaseHelper dbHelper;
-  private View               tvEmpty;
+  private View tvEmpty;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_listings);
 
-    BottomNavigationHelper.setup(
-            findViewById(R.id.bottom_navigation),
-            this, R.id.nav_home
-    );
+    BottomNavigationHelper.setup(findViewById(R.id.bottom_navigation), this, R.id.nav_home);
 
-    recycler    = findViewById(R.id.recyclerHouses);
+    recycler = findViewById(R.id.recyclerHouses);
     recycler.setLayoutManager(new LinearLayoutManager(this));
 
     allListings = new ArrayList<>();
-    adapter     = new ListingsAdapter(allListings, listing -> {
-      // now click gives you full listing
-      startActivity(new Intent(this, HouseDetailActivity.class)
-              .putExtra("EXTRA_HOUSE_ID", listing.house.id));
-    });
+    adapter =
+        new ListingsAdapter(
+            allListings,
+            listing -> {
+              // now click gives you full listing
+              startActivity(
+                  new Intent(this, HouseDetailActivity.class)
+                      .putExtra("EXTRA_HOUSE_ID", listing.house.id));
+            });
     recycler.setAdapter(adapter);
 
-    tvEmpty  = findViewById(R.id.tvEmpty);
+    tvEmpty = findViewById(R.id.tvEmpty);
     dbHelper = new DatabaseHelper(this);
 
     loadHouses();
@@ -68,8 +61,6 @@ public class ListingsActivity extends AppCompatActivity {
     adapter.notifyDataSetChanged();
 
     // 3) empty-state
-    tvEmpty.setVisibility(
-            allListings.isEmpty() ? View.VISIBLE : View.GONE
-    );
+    tvEmpty.setVisibility(allListings.isEmpty() ? View.VISIBLE : View.GONE);
   }
 }

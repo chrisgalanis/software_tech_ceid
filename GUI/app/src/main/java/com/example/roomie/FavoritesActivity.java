@@ -53,16 +53,14 @@ public class FavoritesActivity extends AppCompatActivity {
     RecyclerView recyclerHouses = findViewById(R.id.recyclerHouses);
     recyclerHouses.setLayoutManager(new LinearLayoutManager(this));
     recyclerHouses.setAdapter(
-            new LikedHousesAdapter(
-                    this,
-                    listings,
-                    listing -> {
-                      // now click gives you full listing
-                      startActivity(new Intent(this, HouseDetailActivity.class)
-                              .putExtra("EXTRA_HOUSE_ID", listing.house.id));
-                    }
-            )
-    );
+        new LikedHousesAdapter(
+            this,
+            listings,
+            listing -> {
+              // now click gives you full listing
+              startActivity(
+                  new Intent(this, HouseDetailActivity.class)
+                      .putExtra("EXTRA_HOUSE_ID", listing.house.id));
+            }));
   }
-
 }
