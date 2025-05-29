@@ -86,7 +86,7 @@ public class ListingsActivity extends AppCompatActivity {
   }
 
   private void loadHouses() {
-    List<HouseListing> listings = dbHelper.getAllHouseListings();
+    List<HouseListing> listings = dbHelper.getApprovedHouseListings();
     allListings.clear();
     allListings.addAll(listings);
     adapter.notifyDataSetChanged();

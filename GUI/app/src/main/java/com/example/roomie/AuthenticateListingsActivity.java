@@ -50,7 +50,7 @@ public class AuthenticateListingsActivity extends AppCompatActivity {
                         }
                         Toast.makeText(
                                 this,
-                                "Approved listing at " + listing.house.address,
+                                "Approved listing ",
                                 Toast.LENGTH_SHORT
                         ).show();
                     } else {
@@ -69,7 +69,7 @@ public class AuthenticateListingsActivity extends AppCompatActivity {
                     }
                     Toast.makeText(
                             this,
-                            "Disapproved listing at " + listing.house.address,
+                            "Disapproved listing",
                             Toast.LENGTH_SHORT
                     ).show();
 
@@ -92,7 +92,7 @@ public class AuthenticateListingsActivity extends AppCompatActivity {
 
     private void loadListings() {
         listingList.clear();
-        listingList.addAll(dbHelper.getAllHouseListings());
+        listingList.addAll(dbHelper.getUnapprovedHouseListings());
         adapter.notifyDataSetChanged();
     }
 }

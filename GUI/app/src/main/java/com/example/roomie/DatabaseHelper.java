@@ -16,7 +16,7 @@ import java.util.List;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME    = "RoomieApp.db";
-    private static final int    DATABASE_VERSION = 23;   // bumped to include reports table
+    private static final int    DATABASE_VERSION = 24;   // bumped to include reports table
 
     // users table
     public static final String TABLE_USERS           = "users";
@@ -406,6 +406,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(SQL_CREATE_HOUSE_LISTINGS);
         db.execSQL(SQL_CREATE_MESSAGE_REPORTS);
         db.execSQL(SQL_CREATE_SAVED_HOUSES);
+        insertDefaultAdmin(db);
     }
 
     @Override
@@ -427,6 +428,41 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /*** ORIGINAL METHODS ***/
+
+    private void insertDefaultAdmin(SQLiteDatabase db) {
+        // you can choose any email/password you like
+        final String adminEmail = "admin";
+        // password should be hashed in real apps!
+        final String adminPass  = "admin";
+
+        // Use INSERT OR IGNORE so this only runs once
+        db.execSQL(
+                "INSERT OR IGNORE INTO " + TABLE_USERS + "("
+                        + COLUMN_USER_EMAIL + ","
+                        + COLUMN_USER_PASSWORD + ","
+                        + COLUMN_USER_FIRSTNAME + ","
+                        + COLUMN_USER_LASTNAME + ","
+                        + COLUMN_USER_GENDER + ","
+                        + COLUMN_USER_BIRTHDAY + ","
+                        + COLUMN_USER_CITY + ","
+                        + COLUMN_USER_BUDGET_FROM + ","
+                        + COLUMN_USER_BUDGET_TO + ","
+                        + COLUMN_USER_AVATAR_URL
+                        + ") VALUES(?,?,?,?,?,?,?,?,?,?);",
+                new Object[]{
+                        adminEmail,
+                        adminPass,
+                        "Admin",
+                        "User",
+                        "OTHER",          // or “UNSPECIFIED”
+                        "1970-01-01",     // dummy birthday
+                        "Headquarters",   // dummy city
+                        0,                // budget_from
+                        0,                // budget_to
+                        ""                // avatar_url
+                }
+        );
+    }
     public long getUserIdByEmail(String email) {
         SQLiteDatabase db = getReadableDatabase();
         Cursor c = db.query(
@@ -753,50 +789,61 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         );
     }
     // Fetch all house listings
-    public List<HouseListing> getAllHouseListings() {
+    /**
+     * Returns only the approved listings.
+     */
+    public List<HouseListing> getApprovedHouseListings() {
         List<HouseListing> listings = new ArrayList<>();
-        SQLiteDatabase db = getReadableDatabase();
-
-        // 1) include is_approved in the SELECT
         String sql =
                 "SELECT "
-                        + COLUMN_LISTING_HOUSE_ID            + ", "
-                        + COLUMN_LISTING_OWNER_NAME          + ", "
-                        + COLUMN_LISTING_OWNER_AVATAR_URL    + ", "
-                        + COLUMN_LISTING_HOUSE_AVATAR_URL    + ", "
-                        + COLUMN_LISTING_IS_APPROVED         // ← new column
-                        + " FROM " + TABLE_HOUSE_LISTINGS;
-        Cursor c = db.rawQuery(sql, null);
+                        +     COLUMN_LISTING_HOUSE_ID + ","
+                        +     COLUMN_LISTING_OWNER_NAME + ","
+                        +     COLUMN_LISTING_OWNER_AVATAR_URL + ","
+                        +     COLUMN_LISTING_HOUSE_AVATAR_URL + ","
+                        +     COLUMN_LISTING_IS_APPROVED
+                        + " FROM " + TABLE_HOUSE_LISTINGS
+                        + " WHERE " + COLUMN_LISTING_IS_APPROVED + "=1";
 
-        // 2) iterate and pull out all five columns
-        while (c.moveToNext()) {
-            long   houseId        = c.getLong(0);
-            String ownerName      = c.getString(1);
-            String ownerAvatarUrl = c.getString(2);
-            String houseAvatarUrl = c.getString(3);
-            boolean isApproved    = c.getInt(4) == 1;  // convert 0/1 → boolean
+        try (Cursor c = getReadableDatabase().rawQuery(sql, null)) {
+            while (c.moveToNext()) {
+                long   houseId        = c.getLong(0);
+                String ownerName      = c.getString(1);
+                String ownerAvatarUrl = c.getString(2);
+                String houseAvatarUrl = c.getString(3);
+                boolean isApproved    = c.getInt(4) == 1;
 
-            // 3) reuse getHouseById(...) for full House object
-            House house = getHouseById(houseId);
-            if (house != null) {
-                listings.add(new HouseListing(
-                        house,
-                        ownerName,
-                        ownerAvatarUrl,
-                        houseAvatarUrl,
-                        isApproved         // pass the new flag in
-                ));
+                House house = getHouseById(houseId);
+                if (house != null) {
+                    listings.add(new HouseListing(
+                            house,
+                            ownerName,
+                            ownerAvatarUrl,
+                            houseAvatarUrl,
+                            isApproved
+                    ));
+                }
             }
         }
-        c.close();
-
         return listings;
     }
 
+
     /**
-     * Inserts a new house‐listing, automatically inserting the House first
-     * if needed so that the foreign‐key constraint always passes.
+     * Delete a House (and all its dependent rows via ON DELETE CASCADE).
+     * @param houseId the ID of the house to remove
+     * @return true if at least one row was deleted
      */
+    public boolean deleteHouse(long houseId) {
+        SQLiteDatabase db = getWritableDatabase();
+        int rows = db.delete(
+                TABLE_HOUSES,
+                COLUMN_HOUSE_ID + " = ?",
+                new String[]{ String.valueOf(houseId) }
+        );
+        db.close();
+        return rows > 0;
+    }
+
     public long insertHouseListing(HouseListing listing) {
         SQLiteDatabase db = getWritableDatabase();
         long listingId = -1;
@@ -846,6 +893,45 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         return listingId;
     }
+
+    /**
+     * Fetches all house listings that are not yet approved.
+     */
+    public List<HouseListing> getUnapprovedHouseListings() {
+        List<HouseListing> listings = new ArrayList<>();
+        String sql =
+                "SELECT "
+                        +     COLUMN_LISTING_HOUSE_ID + ","
+                        +     COLUMN_LISTING_OWNER_NAME + ","
+                        +     COLUMN_LISTING_OWNER_AVATAR_URL + ","
+                        +     COLUMN_LISTING_HOUSE_AVATAR_URL + ","
+                        +     COLUMN_LISTING_IS_APPROVED
+                        + " FROM " + TABLE_HOUSE_LISTINGS
+                        + " WHERE " + COLUMN_LISTING_IS_APPROVED + "=0";
+
+        try (Cursor c = getReadableDatabase().rawQuery(sql, null)) {
+            while (c.moveToNext()) {
+                long   houseId        = c.getLong(0);
+                String ownerName      = c.getString(1);
+                String ownerAvatarUrl = c.getString(2);
+                String houseAvatarUrl = c.getString(3);
+                boolean isApproved    = c.getInt(4) == 1;
+
+                House house = getHouseById(houseId);
+                if (house != null) {
+                    listings.add(new HouseListing(
+                            house,
+                            ownerName,
+                            ownerAvatarUrl,
+                            houseAvatarUrl,
+                            isApproved
+                    ));
+                }
+            }
+        }
+        return listings;
+    }
+
     public boolean approveListing(HouseListing listing) {
         if (listing == null || listing.house == null) return false;
 
@@ -867,6 +953,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (listing == null || listing.house == null) return false;
         long houseId = listing.house.id;
         SQLiteDatabase db = this.getWritableDatabase();
+        deleteHouse(houseId);
         int rows = db.delete(
                 TABLE_HOUSE_LISTINGS,
                 COLUMN_LISTING_HOUSE_ID + " = ?",
