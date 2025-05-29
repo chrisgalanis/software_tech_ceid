@@ -53,7 +53,7 @@ public class FavoritesActivity extends AppCompatActivity {
   private void setupHouseLikes() {
     // Load only houses this user has liked
     List<HouseListing> likedListings =
-            db.getAllHouseListings();
+            db.getSavedHouseListingsForUser(currentUserId);
 
     RecyclerView recyclerHouses = findViewById(R.id.recyclerHouses);
     recyclerHouses.setLayoutManager(new LinearLayoutManager(this));

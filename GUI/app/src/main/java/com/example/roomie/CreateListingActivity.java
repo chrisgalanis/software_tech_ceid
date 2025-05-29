@@ -122,7 +122,7 @@ public class CreateListingActivity extends AppCompatActivity implements OnMapRea
     String ownerAvatarUrl = u.avatarUrl;
     String houseAvatarUrl = photoUrls.get(0);
 
-    HouseListing listing = new HouseListing(house, ownerName, ownerAvatarUrl, houseAvatarUrl, true);
+    HouseListing listing = new HouseListing(house, ownerName, ownerAvatarUrl, houseAvatarUrl, false);
 
     db.insertHouseListing(listing);
     Toast.makeText(this, "Listing created!", Toast.LENGTH_SHORT).show();
@@ -153,7 +153,7 @@ public class CreateListingActivity extends AppCompatActivity implements OnMapRea
 
       Uri srcUri = data.getData();
       processAndStoreUri(srcUri);
-      btnSubmit.setEnabled(selectedUris.size() >= 2);
+      btnSubmit.setEnabled(selectedUris.size() >= 1);
     }
   }
 

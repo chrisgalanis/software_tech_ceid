@@ -42,7 +42,8 @@ public class AdminLoginActivity extends AppCompatActivity {
 
           // TODO: replace this check with real admin authentication (DB, API, etc)
           if (user.equals("admin") && pass.equals("admin123")) {
-            // on success, navigate to Admin dashboard/activity
+              SessionManager.init(this);
+              SessionManager.get().setUserId(1);
             Intent intent = new Intent(AdminLoginActivity.this, AdminReportsActivity.class);
             startActivity(intent);
             finish();

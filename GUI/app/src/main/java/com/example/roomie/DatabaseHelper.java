@@ -16,7 +16,7 @@ import java.util.List;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME    = "RoomieApp.db";
-    private static final int    DATABASE_VERSION = 22;   // bumped to include reports table
+    private static final int    DATABASE_VERSION = 24;   // bumped to include reports table
 
     // users table
     public static final String TABLE_USERS           = "users";
@@ -119,6 +119,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_MSGREP_MESSAGE_ID        = "message_id";
     public static final String COLUMN_MSGREP_TEXT              = "text";
     public static final String COLUMN_MSGREP_STATUS            = "status";
+
+    // Saved‐houses table
+    public static final String TABLE_SAVED_HOUSES      = "saved_houses";
+    public static final String COLUMN_SAVED_ID         = "_id";
+    public static final String COLUMN_SAVED_USER_ID    = "user_id";
+    public static final String COLUMN_SAVED_HOUSE_ID   = "house_id";
+    public static final String COLUMN_SAVED_TIMESTAMP  = "saved_at";
+
 
 
     // ─── CREATE TABLE STATEMENTS ─────────────────────────────────────────────────
@@ -358,6 +366,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     + TABLE_CHAT_MESSAGES + "(" + COLUMN_MESSAGE_ID + ") ON DELETE CASCADE"
                     + ");";
 
+
+    private static final String SQL_CREATE_SAVED_HOUSES =
+            "CREATE TABLE " + TABLE_SAVED_HOUSES + " ("
+                    + COLUMN_SAVED_ID        + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + COLUMN_SAVED_USER_ID   + " INTEGER NOT NULL, "
+                    + COLUMN_SAVED_HOUSE_ID  + " INTEGER NOT NULL, "
+                    + COLUMN_SAVED_TIMESTAMP + " DATETIME DEFAULT CURRENT_TIMESTAMP, "
+                    + "FOREIGN KEY(" + COLUMN_SAVED_USER_ID  + ") REFERENCES "
+                    + TABLE_USERS       + "(" + COLUMN_ID       + ") ON DELETE CASCADE, "
+                    + "FOREIGN KEY(" + COLUMN_SAVED_HOUSE_ID + ") REFERENCES "
+                    + TABLE_HOUSES      + "(" + COLUMN_HOUSE_ID + ") ON DELETE CASCADE, "
+                    + "UNIQUE(" + COLUMN_SAVED_USER_ID + "," + COLUMN_SAVED_HOUSE_ID + ")"
+                    + ");";
+
+
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -382,12 +405,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(SQL_CREATE_WARNINGS);
         db.execSQL(SQL_CREATE_HOUSE_LISTINGS);
         db.execSQL(SQL_CREATE_MESSAGE_REPORTS);
-
+        db.execSQL(SQL_CREATE_SAVED_HOUSES);
+        insertDefaultAdmin(db);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldV, int newV) {
-        // Drop tables in reverse-dependency order
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_SAVED_HOUSES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_MESSAGE_REPORTS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_HOUSE_LISTINGS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_CHAT_MESSAGES);
@@ -404,6 +428,41 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /*** ORIGINAL METHODS ***/
+
+    private void insertDefaultAdmin(SQLiteDatabase db) {
+        // you can choose any email/password you like
+        final String adminEmail = "admin";
+        // password should be hashed in real apps!
+        final String adminPass  = "admin";
+
+        // Use INSERT OR IGNORE so this only runs once
+        db.execSQL(
+                "INSERT OR IGNORE INTO " + TABLE_USERS + "("
+                        + COLUMN_USER_EMAIL + ","
+                        + COLUMN_USER_PASSWORD + ","
+                        + COLUMN_USER_FIRSTNAME + ","
+                        + COLUMN_USER_LASTNAME + ","
+                        + COLUMN_USER_GENDER + ","
+                        + COLUMN_USER_BIRTHDAY + ","
+                        + COLUMN_USER_CITY + ","
+                        + COLUMN_USER_BUDGET_FROM + ","
+                        + COLUMN_USER_BUDGET_TO + ","
+                        + COLUMN_USER_AVATAR_URL
+                        + ") VALUES(?,?,?,?,?,?,?,?,?,?);",
+                new Object[]{
+                        adminEmail,
+                        adminPass,
+                        "Admin",
+                        "User",
+                        "OTHER",          // or “UNSPECIFIED”
+                        "1970-01-01",     // dummy birthday
+                        "Headquarters",   // dummy city
+                        0,                // budget_from
+                        0,                // budget_to
+                        ""                // avatar_url
+                }
+        );
+    }
     public long getUserIdByEmail(String email) {
         SQLiteDatabase db = getReadableDatabase();
         Cursor c = db.query(
@@ -730,50 +789,61 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         );
     }
     // Fetch all house listings
-    public List<HouseListing> getAllHouseListings() {
+    /**
+     * Returns only the approved listings.
+     */
+    public List<HouseListing> getApprovedHouseListings() {
         List<HouseListing> listings = new ArrayList<>();
-        SQLiteDatabase db = getReadableDatabase();
-
-        // 1) include is_approved in the SELECT
         String sql =
                 "SELECT "
-                        + COLUMN_LISTING_HOUSE_ID            + ", "
-                        + COLUMN_LISTING_OWNER_NAME          + ", "
-                        + COLUMN_LISTING_OWNER_AVATAR_URL    + ", "
-                        + COLUMN_LISTING_HOUSE_AVATAR_URL    + ", "
-                        + COLUMN_LISTING_IS_APPROVED         // ← new column
-                        + " FROM " + TABLE_HOUSE_LISTINGS;
-        Cursor c = db.rawQuery(sql, null);
+                        +     COLUMN_LISTING_HOUSE_ID + ","
+                        +     COLUMN_LISTING_OWNER_NAME + ","
+                        +     COLUMN_LISTING_OWNER_AVATAR_URL + ","
+                        +     COLUMN_LISTING_HOUSE_AVATAR_URL + ","
+                        +     COLUMN_LISTING_IS_APPROVED
+                        + " FROM " + TABLE_HOUSE_LISTINGS
+                        + " WHERE " + COLUMN_LISTING_IS_APPROVED + "=1";
 
-        // 2) iterate and pull out all five columns
-        while (c.moveToNext()) {
-            long   houseId        = c.getLong(0);
-            String ownerName      = c.getString(1);
-            String ownerAvatarUrl = c.getString(2);
-            String houseAvatarUrl = c.getString(3);
-            boolean isApproved    = c.getInt(4) == 1;  // convert 0/1 → boolean
+        try (Cursor c = getReadableDatabase().rawQuery(sql, null)) {
+            while (c.moveToNext()) {
+                long   houseId        = c.getLong(0);
+                String ownerName      = c.getString(1);
+                String ownerAvatarUrl = c.getString(2);
+                String houseAvatarUrl = c.getString(3);
+                boolean isApproved    = c.getInt(4) == 1;
 
-            // 3) reuse getHouseById(...) for full House object
-            House house = getHouseById(houseId);
-            if (house != null) {
-                listings.add(new HouseListing(
-                        house,
-                        ownerName,
-                        ownerAvatarUrl,
-                        houseAvatarUrl,
-                        isApproved         // pass the new flag in
-                ));
+                House house = getHouseById(houseId);
+                if (house != null) {
+                    listings.add(new HouseListing(
+                            house,
+                            ownerName,
+                            ownerAvatarUrl,
+                            houseAvatarUrl,
+                            isApproved
+                    ));
+                }
             }
         }
-        c.close();
-
         return listings;
     }
 
+
     /**
-     * Inserts a new house‐listing, automatically inserting the House first
-     * if needed so that the foreign‐key constraint always passes.
+     * Delete a House (and all its dependent rows via ON DELETE CASCADE).
+     * @param houseId the ID of the house to remove
+     * @return true if at least one row was deleted
      */
+    public boolean deleteHouse(long houseId) {
+        SQLiteDatabase db = getWritableDatabase();
+        int rows = db.delete(
+                TABLE_HOUSES,
+                COLUMN_HOUSE_ID + " = ?",
+                new String[]{ String.valueOf(houseId) }
+        );
+        db.close();
+        return rows > 0;
+    }
+
     public long insertHouseListing(HouseListing listing) {
         SQLiteDatabase db = getWritableDatabase();
         long listingId = -1;
@@ -823,6 +893,45 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         return listingId;
     }
+
+    /**
+     * Fetches all house listings that are not yet approved.
+     */
+    public List<HouseListing> getUnapprovedHouseListings() {
+        List<HouseListing> listings = new ArrayList<>();
+        String sql =
+                "SELECT "
+                        +     COLUMN_LISTING_HOUSE_ID + ","
+                        +     COLUMN_LISTING_OWNER_NAME + ","
+                        +     COLUMN_LISTING_OWNER_AVATAR_URL + ","
+                        +     COLUMN_LISTING_HOUSE_AVATAR_URL + ","
+                        +     COLUMN_LISTING_IS_APPROVED
+                        + " FROM " + TABLE_HOUSE_LISTINGS
+                        + " WHERE " + COLUMN_LISTING_IS_APPROVED + "=0";
+
+        try (Cursor c = getReadableDatabase().rawQuery(sql, null)) {
+            while (c.moveToNext()) {
+                long   houseId        = c.getLong(0);
+                String ownerName      = c.getString(1);
+                String ownerAvatarUrl = c.getString(2);
+                String houseAvatarUrl = c.getString(3);
+                boolean isApproved    = c.getInt(4) == 1;
+
+                House house = getHouseById(houseId);
+                if (house != null) {
+                    listings.add(new HouseListing(
+                            house,
+                            ownerName,
+                            ownerAvatarUrl,
+                            houseAvatarUrl,
+                            isApproved
+                    ));
+                }
+            }
+        }
+        return listings;
+    }
+
     public boolean approveListing(HouseListing listing) {
         if (listing == null || listing.house == null) return false;
 
@@ -844,6 +953,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (listing == null || listing.house == null) return false;
         long houseId = listing.house.id;
         SQLiteDatabase db = this.getWritableDatabase();
+        deleteHouse(houseId);
         int rows = db.delete(
                 TABLE_HOUSE_LISTINGS,
                 COLUMN_LISTING_HOUSE_ID + " = ?",
@@ -1586,6 +1696,100 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         );
         db.close();
         return rows > 0;
+    }
+
+    public long insertSavedHouse(long userId, long houseId) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_SAVED_USER_ID,  userId);
+        cv.put(COLUMN_SAVED_HOUSE_ID, houseId);
+        long id = db.insertWithOnConflict(
+                TABLE_SAVED_HOUSES,
+                null,
+                cv,
+                SQLiteDatabase.CONFLICT_IGNORE  // ignores duplicates
+        );
+        db.close();
+        return id;
+    }
+
+    public HouseListing getHouseListingByHouseId(long houseId) {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor c = db.query(
+                TABLE_HOUSE_LISTINGS,
+                new String[]{
+                        COLUMN_LISTING_OWNER_NAME,
+                        COLUMN_LISTING_OWNER_AVATAR_URL,
+                        COLUMN_LISTING_HOUSE_AVATAR_URL,
+                        COLUMN_LISTING_IS_APPROVED
+                },
+                COLUMN_LISTING_HOUSE_ID + "=?",
+                new String[]{ String.valueOf(houseId) },
+                null, null, null
+        );
+        if (!c.moveToFirst()) {
+            c.close();
+            return null;
+        }
+        String ownerName      = c.getString(0);
+        String ownerAvatarUrl = c.getString(1);
+        String houseAvatarUrl = c.getString(2);
+        boolean isApproved    = c.getInt(3) == 1;
+        c.close();
+
+        House h = getHouseById(houseId);
+        return (h != null)
+                ? new HouseListing(h, ownerName, ownerAvatarUrl, houseAvatarUrl, isApproved)
+                : null;
+    }
+
+    /** Get all saved listings for a user */
+    public List<HouseListing> getSavedHouseListingsForUser(long userId) {
+        List<HouseListing> list = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor c = db.query(
+                TABLE_SAVED_HOUSES,
+                new String[]{ COLUMN_SAVED_HOUSE_ID },
+                COLUMN_SAVED_USER_ID + "=?",
+                new String[]{ String.valueOf(userId) },
+                null, null, null
+        );
+        while (c.moveToNext()) {
+            long hid = c.getLong(0);
+            HouseListing hl = getHouseListingByHouseId(hid);
+            if (hl != null) list.add(hl);
+        }
+        c.close();
+        return list;
+    }
+
+
+    /** Un‐save a house for a user; returns true if deleted. */
+    public boolean deleteSavedHouse(long userId, long houseId) {
+        SQLiteDatabase db = getWritableDatabase();
+        HouseListing hl = getHouseListingByHouseId(houseId);
+        int rows = db.delete(
+                TABLE_SAVED_HOUSES,
+                COLUMN_SAVED_USER_ID + "=? AND " + COLUMN_SAVED_HOUSE_ID + "=?",
+                new String[]{ String.valueOf(userId), String.valueOf(houseId) }
+        );
+        db.close();
+        return rows > 0;
+    }
+
+    /** Returns true if this user has already saved this house */
+    public boolean isHouseSaved(long userId, long houseId) {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor c = db.query(
+                TABLE_SAVED_HOUSES,
+                new String[]{ COLUMN_SAVED_ID },
+                COLUMN_SAVED_USER_ID + "=? AND " + COLUMN_SAVED_HOUSE_ID + "=?",
+                new String[]{ String.valueOf(userId), String.valueOf(houseId) },
+                null, null, null
+        );
+        boolean exists = (c != null && c.getCount() > 0);
+        if (c != null) c.close();
+        return exists;
     }
 
 }

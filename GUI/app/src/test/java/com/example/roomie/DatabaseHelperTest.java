@@ -152,7 +152,7 @@ public class DatabaseHelperTest {
         List<ChatMessage> conv = dbHelper.getChatMessagesBetweenUsers(a, b);
         assertEquals(2, conv.size());
         ChatMessage latest = dbHelper.getLatestChatMessage(a, b);
-        assertEquals("Hi", latest.getMessageText());
+        assertEquals("Hi", latest.messageText);
     }
 
     @Test

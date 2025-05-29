@@ -85,7 +85,7 @@ public class HomeFilterActivity
         mMap.getUiSettings().setZoomControlsEnabled(true);
 
         // load all listings and drop markers
-        allHL    = dbHelper.getAllHouseListings();
+        allHL    = dbHelper.getApprovedHouseListings();
         allHouses = new ArrayList<>(allHL.size());
         LatLngBounds.Builder bounds = new LatLngBounds.Builder();
 

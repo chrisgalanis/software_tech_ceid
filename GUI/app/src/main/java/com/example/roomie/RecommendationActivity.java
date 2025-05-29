@@ -58,12 +58,14 @@ public class RecommendationActivity extends AppCompatActivity {
     // listeners
     btnReject.setOnClickListener(
         v -> {
-          mark(false);
+          User u = recs.get(currentIndex);
+          dbHelper.unlikeUser(currentUserId, u.id);
           nextCard();
         });
     btnAccept.setOnClickListener(
         v -> {
-          mark(true);
+          User u = recs.get(currentIndex);
+          dbHelper.likeUser(currentUserId, u.id);
           nextCard();
         });
     btnViewProfile.setOnClickListener(
@@ -106,15 +108,6 @@ public class RecommendationActivity extends AppCompatActivity {
     tvNameAge.setText(u.firstName + " " + u.lastName + ageStr);
 
     tvBudgetCity.setText("Budget: €" + u.minBudget + " - " + u.maxBudget + " • City: " + u.city);
-  }
-
-  private void mark(boolean liked) {
-    User u = recs.get(currentIndex);
-    if (liked) {
-      dbHelper.likeUser(currentUserId, u.id);
-    } else {
-      dbHelper.unlikeUser(currentUserId, u.id);
-    }
   }
 
   private void nextCard() {
