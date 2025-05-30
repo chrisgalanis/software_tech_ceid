@@ -1,0 +1,266 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/27.0.2 Chrome/134.0.6998.205 Electron/35.3.0 Safari/537.36" version="27.0.2">
+  <diagram name="Page-1" id="KWWoUNK9eB_WrfMmx4_L">
+    <mxGraphModel dx="1362" dy="652" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="3L3tTE2W2Cg_F21fLDMk-1" value="User&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" parent="1" vertex="1">
+          <mxGeometry x="10" y="180" width="30" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--2" value="NavigationBar" style="shape=umlBoundary;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="150" y="20" width="100" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--3" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="3L3tTE2W2Cg_F21fLDMk-1" target="NGPRnN3K31xEpY0pnwu--2" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="140" y="230" as="sourcePoint" />
+            <mxPoint x="190" y="180" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--4" value="Eπιλογή&amp;nbsp;&lt;div&gt;HomeFilterPage&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="NGPRnN3K31xEpY0pnwu--3" vertex="1" connectable="0">
+          <mxGeometry x="-0.0209" y="2" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--5" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.625;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="NGPRnN3K31xEpY0pnwu--2" target="NGPRnN3K31xEpY0pnwu--6" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="330" y="140" as="sourcePoint" />
+            <mxPoint x="350" y="60" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--6" value="Εμφάνιση Σελίδας" style="ellipse;shape=umlControl;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="370" y="10" width="70" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--17" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="NGPRnN3K31xEpY0pnwu--7" target="NGPRnN3K31xEpY0pnwu--16" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--7" value="HomeFilterPage" style="shape=umlBoundary;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="300" y="140" width="110" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--9" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.511;exitY=1.03;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.696;entryY=0.027;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="NGPRnN3K31xEpY0pnwu--6" target="NGPRnN3K31xEpY0pnwu--7" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="330" y="240" as="sourcePoint" />
+            <mxPoint x="380" y="190" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--11" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.016;entryY=0.502;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="3L3tTE2W2Cg_F21fLDMk-1" target="NGPRnN3K31xEpY0pnwu--7" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="80" y="240" as="sourcePoint" />
+            <mxPoint x="130" y="190" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--12" value="Eισαγωγή&amp;nbsp;&lt;div&gt;Φίλτρων,&lt;/div&gt;&lt;div&gt;Έναρξη Αναζήτησης&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="NGPRnN3K31xEpY0pnwu--11" vertex="1" connectable="0">
+          <mxGeometry x="0.1014" y="-3" relative="1" as="geometry">
+            <mxPoint x="-28" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--14" value="Λίστα Διαθέσιμων Houses" style="shape=umlBoundary;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="150" y="360" width="100" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--16" value="&lt;div&gt;&lt;span style=&quot;font-size: 11px; text-wrap-mode: nowrap; background-color: rgb(18, 18, 18);&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;span style=&quot;font-size: 11px; text-wrap-mode: nowrap; background-color: rgb(18, 18, 18);&quot;&gt;Εμφάνιση&lt;/span&gt;&lt;br&gt;&lt;div style=&quot;font-size: 11px; text-wrap-mode: nowrap;&quot;&gt;Λίστας&amp;nbsp;&lt;/div&gt;&lt;div style=&quot;font-size: 11px; text-wrap-mode: nowrap;&quot;&gt;Διαθέσιμων&lt;/div&gt;&lt;div style=&quot;font-size: 11px; text-wrap-mode: nowrap;&quot;&gt;&amp;nbsp;Houses&lt;/div&gt;" style="ellipse;shape=umlControl;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="320" y="290" width="70" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--18" value="" style="endArrow=classic;html=1;rounded=0;exitX=-0.02;exitY=0.585;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.814;entryY=0.08;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="NGPRnN3K31xEpY0pnwu--16" target="NGPRnN3K31xEpY0pnwu--14" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="220" y="410" as="sourcePoint" />
+            <mxPoint x="270" y="360" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--19" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.014;entryY=0.52;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="3L3tTE2W2Cg_F21fLDMk-1" target="NGPRnN3K31xEpY0pnwu--14" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="110" y="300" as="sourcePoint" />
+            <mxPoint x="160" y="250" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--25" value="&lt;div&gt;View&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="NGPRnN3K31xEpY0pnwu--19" vertex="1" connectable="0">
+          <mxGeometry x="-0.2307" y="1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--21" value="" style="endArrow=classic;html=1;rounded=0;exitX=1.002;exitY=0.555;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.069;entryY=0.45;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="NGPRnN3K31xEpY0pnwu--14" target="NGPRnN3K31xEpY0pnwu--22" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="350" y="470" as="sourcePoint" />
+            <mxPoint x="330" y="404" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--22" value="Eμφάνιση" style="ellipse;shape=umlControl;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="355" y="370" width="85" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--23" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.08;exitY=0.81;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.998;entryY=0.37;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="NGPRnN3K31xEpY0pnwu--22" target="NGPRnN3K31xEpY0pnwu--28" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="270" y="580" as="sourcePoint" />
+            <mxPoint x="260" y="570" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--26" value="HouseListing" style="ellipse;shape=umlEntity;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="550" y="390" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--27" value="" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1.049;entryY=0.628;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="NGPRnN3K31xEpY0pnwu--26" target="NGPRnN3K31xEpY0pnwu--22" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="440" y="560" as="sourcePoint" />
+            <mxPoint x="490" y="510" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--28" value="HouseDetailsPage" style="shape=umlBoundary;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="150" y="520" width="120" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--29" value="" style="endArrow=classic;html=1;rounded=0;entryX=-0.002;entryY=0.492;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="3L3tTE2W2Cg_F21fLDMk-1" target="NGPRnN3K31xEpY0pnwu--28" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="40" y="280" as="sourcePoint" />
+            <mxPoint x="150" y="480" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="80" y="560" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--30" value="Button &quot;Add To Saved&quot;/&lt;div&gt;&quot;Remove from Saved&quot;&lt;br&gt;&lt;div&gt;Button&quot;Match With Owner&quot;&lt;/div&gt;&lt;div&gt;Interact With Map Pin&lt;/div&gt;&lt;div&gt;Swipe through Pictures&lt;/div&gt;&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="NGPRnN3K31xEpY0pnwu--29" vertex="1" connectable="0">
+          <mxGeometry x="-0.2118" y="2" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--32" value="Button Listeners" style="ellipse;shape=umlControl;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="400" y="530" width="70" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--33" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.6;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.003;entryY=0.58;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="NGPRnN3K31xEpY0pnwu--28" target="NGPRnN3K31xEpY0pnwu--32" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="390" y="610" as="sourcePoint" />
+            <mxPoint x="440" y="560" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--34" value="House" style="ellipse;shape=umlEntity;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="560" y="290" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--35" value="" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="NGPRnN3K31xEpY0pnwu--34" target="NGPRnN3K31xEpY0pnwu--22" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="440" y="340" as="sourcePoint" />
+            <mxPoint x="490" y="290" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--36" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.571;entryY=0.125;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="NGPRnN3K31xEpY0pnwu--32" target="NGPRnN3K31xEpY0pnwu--44" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="390" y="800" as="sourcePoint" />
+            <mxPoint x="310" y="730" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="320" y="630" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--37" value="&quot;Add to Saved&quot;/&lt;div&gt;&quot;Remove From Saved&quot;&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="NGPRnN3K31xEpY0pnwu--36" vertex="1" connectable="0">
+          <mxGeometry x="-0.1652" y="2" relative="1" as="geometry">
+            <mxPoint x="-13" y="-5" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--38" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.203;exitY=0.88;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.6;entryY=0.195;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="NGPRnN3K31xEpY0pnwu--32" target="NGPRnN3K31xEpY0pnwu--60" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="660" as="sourcePoint" />
+            <mxPoint x="370" y="780" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="370" y="650" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--39" value="Map Pin" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="NGPRnN3K31xEpY0pnwu--38" vertex="1" connectable="0">
+          <mxGeometry x="0.04" y="-1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--40" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.9;exitY=0.875;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.509;entryY=0.13;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="NGPRnN3K31xEpY0pnwu--32" target="NGPRnN3K31xEpY0pnwu--54" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="530" y="710" as="sourcePoint" />
+            <mxPoint x="550" y="740" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="540" y="630" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--41" value="&quot;Match With Owner&quot;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="NGPRnN3K31xEpY0pnwu--40" vertex="1" connectable="0">
+          <mxGeometry x="0.1971" y="2" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--42" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.591;exitY=1.025;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.3;entryY=0.17;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="NGPRnN3K31xEpY0pnwu--32" target="NGPRnN3K31xEpY0pnwu--51" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="490" y="760" as="sourcePoint" />
+            <mxPoint x="460" y="790" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--43" value="Swipe Through Pictures" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="NGPRnN3K31xEpY0pnwu--42" vertex="1" connectable="0">
+          <mxGeometry x="0.3229" y="1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--44" value="Αποθήκευση" style="ellipse;shape=umlControl;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="240" y="710" width="70" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--45" value="Likes Houses" style="ellipse;shape=umlEntity;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="230" y="890" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--46" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.431;exitY=1.035;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="NGPRnN3K31xEpY0pnwu--44" target="NGPRnN3K31xEpY0pnwu--45" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="230" y="840" as="sourcePoint" />
+            <mxPoint x="200" y="750" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--48" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.026;exitY=0.68;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="NGPRnN3K31xEpY0pnwu--44" target="NGPRnN3K31xEpY0pnwu--49" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="160" y="750" as="sourcePoint" />
+            <mxPoint x="180" y="760" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--49" value="Αλλαγή Βutton από Save σε Remove ή αντίστροφα&amp;nbsp;" style="ellipse;shape=umlControl;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="110" y="710" width="90" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--50" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.472;entryY=0.996;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.704;exitY=0.164;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="NGPRnN3K31xEpY0pnwu--49" target="NGPRnN3K31xEpY0pnwu--28" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="210" y="700" as="sourcePoint" />
+            <mxPoint x="260" y="650" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--51" value="Show Next/Previous&lt;div&gt;Photo&lt;/div&gt;" style="ellipse;shape=umlControl;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="440" y="790" width="70" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--52" value="House:&lt;div&gt;Photos&lt;/div&gt;" style="ellipse;shape=umlEntity;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="435" y="940" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--53" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1.025;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="NGPRnN3K31xEpY0pnwu--51" target="NGPRnN3K31xEpY0pnwu--52" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="550" y="910" as="sourcePoint" />
+            <mxPoint x="600" y="860" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--54" value="Aποθήκευση" style="ellipse;shape=umlControl;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="565" y="725" width="70" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--55" value="Like" style="ellipse;shape=umlEntity;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="710" y="730" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--56" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.983;exitY=0.608;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="NGPRnN3K31xEpY0pnwu--54" target="NGPRnN3K31xEpY0pnwu--55" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="670" y="880" as="sourcePoint" />
+            <mxPoint x="720" y="830" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--58" value="Match" style="ellipse;shape=umlEntity;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="710" y="850" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--59" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.038;entryY=0.34;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.786;exitY=0.938;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="NGPRnN3K31xEpY0pnwu--54" target="NGPRnN3K31xEpY0pnwu--58" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="650" y="880" as="sourcePoint" />
+            <mxPoint x="700" y="830" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--60" value="Show Rent" style="ellipse;shape=umlControl;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="330" y="790" width="70" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--61" value="House:&lt;div&gt;Rent&lt;/div&gt;" style="ellipse;shape=umlEntity;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="330" y="910" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="NGPRnN3K31xEpY0pnwu--62" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" parent="1" source="NGPRnN3K31xEpY0pnwu--61" target="NGPRnN3K31xEpY0pnwu--60" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="910" as="sourcePoint" />
+            <mxPoint x="450" y="860" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
